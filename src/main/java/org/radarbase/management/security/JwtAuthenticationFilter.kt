@@ -1,5 +1,14 @@
 package org.radarbase.management.security
 
+import io.ktor.http.*
+import java.io.IOException
+import java.time.Instant
+import javax.annotation.Nonnull
+import javax.servlet.FilterChain
+import javax.servlet.ServletException
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpSession
 import org.radarbase.auth.authentication.TokenValidator
 import org.radarbase.auth.authorization.AuthorityReference
 import org.radarbase.auth.authorization.RoleAuthority
@@ -8,6 +17,7 @@ import org.radarbase.auth.token.RadarToken
 import org.radarbase.management.domain.Role
 import org.radarbase.management.domain.User
 import org.radarbase.management.repository.UserRepository
+import org.radarbase.management.web.rest.util.HeaderUtil.parseCookies
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -18,14 +28,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsUtils
 import org.springframework.web.filter.OncePerRequestFilter
-import java.io.IOException
-import java.time.Instant
-import javax.annotation.Nonnull
-import javax.servlet.FilterChain
-import javax.servlet.ServletException
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpSession
+
 
 /**
  * Authentication filter using given validator.
@@ -74,20 +77,18 @@ class JwtAuthenticationFilter @JvmOverloads constructor(
             val stringToken = tokenFromHeader(httpRequest)
             var token: RadarToken? = null
             var exMessage = "No token provided"
-            if (stringToken != null) {
+            token = session?.radarToken
+                ?.takeIf { Instant.now() < it.expiresAt }
+            if (token != null) {
+                Companion.logger.debug("Using token from session")
+            }
+            else if (stringToken != null) {
                 try {
                     token = validator.validateBlocking(stringToken)
                     Companion.logger.debug("Using token from header")
                 } catch (ex: TokenValidationException) {
                     ex.message?.let { exMessage = it }
                     Companion.logger.info("Failed to validate token from header: {}", exMessage)
-                }
-            }
-            if (token == null) {
-                token = session?.radarToken
-                    ?.takeIf { Instant.now() < it.expiresAt }
-                if (token != null) {
-                    Companion.logger.debug("Using token from session")
                 }
             }
             if (!validateToken(token, httpRequest, httpResponse, session, exMessage)) {
@@ -107,11 +108,14 @@ class JwtAuthenticationFilter @JvmOverloads constructor(
         }
     }
 
-    private fun tokenFromHeader(httpRequest: HttpServletRequest): String? =
-        httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
+    private fun tokenFromHeader(httpRequest: HttpServletRequest): String? {
+        return httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
             ?.takeIf { it.startsWith(AUTHORIZATION_BEARER_HEADER) }
             ?.removePrefix(AUTHORIZATION_BEARER_HEADER)
             ?.trim { it <= ' ' }
+            ?: parseCookies(httpRequest.getHeader(HttpHeaders.COOKIE)).find { it.name == "ory_kratos_session" }
+                ?.value
+    }
 
     @Throws(IOException::class)
     private fun validateToken(

@@ -4,6 +4,7 @@ import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoginModalService } from '../../shared';
 import { Subscription } from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Component({
     selector: 'jhi-error',
@@ -14,6 +15,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     error403: boolean;
     modalRef: NgbModalRef;
     private routeSubscription: Subscription;
+    private loginUrl = 'oauth/login';
 
     constructor(
             private loginModalService: LoginModalService,
@@ -33,6 +35,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     login() {
-        this.modalRef = this.loginModalService.open();
+        window.location.href =  this.loginUrl;
     }
 }
