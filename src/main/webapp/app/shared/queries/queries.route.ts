@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 
-import { QueryGroupListComponent } from './queryGroupList.component';
+import { QueriesComponent } from './queries.component';
 import { AddQueryComponent } from './addQuery.component';
 
 export const queriesRoute: Routes = [
     {
-        path: 'querygroups',
-        component: QueryGroupListComponent,
+        path: 'queries',
+        component: QueriesComponent,
         data: {
             authorities: [],
             pageTitle: 'global.menu.queries',
