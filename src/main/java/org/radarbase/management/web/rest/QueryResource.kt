@@ -1,5 +1,6 @@
 package org.radarbase.management.web.rest
 
+import QueryContentGroupDTO
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.annotation.Timed
@@ -164,18 +165,6 @@ class QueryResource(
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("querycontent/querygroup/{queryGroupId}")
-    fun saveQueryContent(@PathVariable queryGroupId: Long, @RequestBody queryContentDTO: List<QueryContentDTO>): ResponseEntity<*> {
-        queryContentService.saveAll(queryGroupId, queryContentDTO);
-        return ResponseEntity.ok(null);
-    }
-
-    @GetMapping("querycontent/querygroup/{queryGroupId}")
-    fun getQueryContent(@PathVariable queryGroupId: Long): ResponseEntity<*> {
-        val result =  queryContentService.findAllByQueryGroupId(queryGroupId)
-        return ResponseEntity.ok(result)
-    }
-
     @DeleteMapping("queryevaluation/querygroup/{querygroupid}/subject/{subjectid}")
     fun deleteQueryEvaluationContent(
         @PathVariable querygroupid: Long,
@@ -183,6 +172,25 @@ class QueryResource(
     ): ResponseEntity<Void> {
         queryEValuationService.removeQueryEvaluationByQueryGroupAndSubject(querygroupid, subjectid)
         return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("querycontentgroup")
+    fun saveOrUpdate(@RequestBody request: QueryContentGroupDTO): ResponseEntity<Void> {
+        queryContentService.saveAllOrUpdate(
+            request
+        )
+        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping("querycontentgroup/{queryContentGroupId}")
+    fun deleteContentGroup(@PathVariable queryContentGroupId: Long){
+        queryContentService.deleteQueryContentGroup(queryContentGroupId)
+    }
+
+    @GetMapping("querycontent/querygroup/{queryGroupId}")
+    fun getQueryContent(@PathVariable queryGroupId: Long): ResponseEntity<*> {
+        val result =  queryContentService.getAllContentGroupsWithContentsQueryGroupId(queryGroupId)
+        return ResponseEntity.ok(result)
     }
 
 
