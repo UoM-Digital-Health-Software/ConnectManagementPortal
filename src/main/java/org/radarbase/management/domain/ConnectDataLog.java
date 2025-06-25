@@ -25,8 +25,7 @@ public class ConnectDataLog {
     private String userId;
 
     @Column(name = "datagroupingtype")
-    @Enumerated(EnumType.STRING)
-    private DataGroupingType dataGroupingType;
+    private String dataGroupingType;
 
     @Column(name = "time")
     private Instant time;
@@ -48,12 +47,21 @@ public class ConnectDataLog {
         this.userId = userId;
     }
 
-    public DataGroupingType getDataGroupingType() {
+    public String getDataGroupingType() {
         return dataGroupingType;
     }
 
+@Override
+ public String toString() {
+        return ("Group{"
+                + "dataGroupingType=" + dataGroupingType.toString() + ", "
+                + "userId=" + userId + ", "
+                + "time=" + time + ", "
+                + "}");
+    }
+
     public void setDataGroupingType(DataGroupingType dataGroupingType) {
-        this.dataGroupingType = dataGroupingType;
+        this.dataGroupingType = dataGroupingType.toString();
     }
 }
 

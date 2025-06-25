@@ -46,6 +46,8 @@ import java.util.*
 import java.util.stream.Stream
 import javax.validation.Valid
 import org.hibernate.Hibernate
+import org.springframework.data.web.PageableDefault
+
 /**
  * REST controller for managing Subject.
  */
@@ -596,6 +598,18 @@ class SubjectResource(
         return ResponseEntity.ok(dataLogDTOList);
     }
 
+    @GetMapping("/datalogs")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun getDataLogs(@RequestParam  ids: List<String>) : ResponseEntity<*> {
+        authService.checkScope(Permission.SUBJECT_READ)
+        val logs = connectDataLogRepository.findLatestLogsByUserIds(ids)
+        val result =  logs.groupBy { it.userId }
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/subjects/{login:" + Constants.ENTITY_ID_REGEX + "}/reportready")
     @Timed
     @Throws (
@@ -675,7 +689,7 @@ class SubjectResource(
 
         val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
         val project = subject!!.activeProject!!.projectName!!;
-        
+
         val monthlyStatistics =   awsService.startProcessing(project, login, DataSource.S3)
         return ResponseEntity.ok(monthlyStatistics);
     }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Subject } from './subject.model';
@@ -53,6 +53,15 @@ export class SubjectService {
         const params = createRequestOption(req);
         return this.http.get(
             `${this.resourceUrl}/${encodeURIComponent(login)}/datalogs`,
+            { params, observe: 'response' }
+        );
+
+    }
+
+    findDataLogsForSubjects(ids: any[]) {
+        const params = new HttpParams().set('ids', ids.join(','));
+        return this.http.get(
+            `api/datalogs`,
             { params, observe: 'response' }
         );
     }
