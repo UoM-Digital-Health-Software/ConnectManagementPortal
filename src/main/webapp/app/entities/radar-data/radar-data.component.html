@@ -1,4 +1,7 @@
 <div *ngIf="allProjects$ | async as projects">
+
+
+    <div class="padding-bottom">
     <label  for="field_clientApp">Select a project</label>
     <select class="form-control" id="field_clientApp" name="client" (change)="selectedProjectName$.next($event.target.value)"
             (change)="changeProject" required>
@@ -6,6 +9,8 @@
         <option [ngValue]="project.projectName"
                 *ngFor="let project of projects">{{project.projectName}}</option>
     </select>
+    </div>
+
 
 
 <div *ngIf="projectWithSubjects$ | async as prn">
