@@ -1,9 +1,21 @@
-<div *ngIf="groupedSubjects$ | async as groups">
-    <div *ngFor="let group of groups">
-        <h2>Organization: {{ group.organization.name }}</h2>
+<div *ngIf="allProjects$ | async as projects">
 
-        <div *ngFor="let proj of group.projects" class="mb-4">
-            <h4>Project- {{ proj.project.projectName }}</h4>
+
+    <div class="padding-bottom">
+    <label  for="field_clientApp">Select a project</label>
+    <select class="form-control" id="field_clientApp" name="client" (change)="selectedProjectName$.next($event.target.value)"
+            (change)="changeProject" required>
+        <option [ngValue]="null" selected></option>
+        <option [ngValue]="project.projectName"
+                *ngFor="let project of projects">{{project.projectName}}</option>
+    </select>
+    </div>
+
+
+
+<div *ngIf="projectWithSubjects$ | async as prn">
+
+            <h4>{{prn.project.projectName}}</h4>
 
             <div class="table-responsive">
                 <table class="table table-bordered">
@@ -24,7 +36,7 @@
                         <tr
                             *ngFor="
                                 let subject of visibleSubjectsMap[
-                                    proj.project.projectName
+                                    prn.project.projectName
                                 ]
                             "
                         >
@@ -58,19 +70,22 @@
 
 
             <app-load-more
-                [totalItems]="proj.totalItems"
+                [totalItems]="currentProject.totalItems"
                 [shownItems]="
-                    visibleSubjectsCount[proj.project.projectName] ||
+                    visibleSubjectsCount[currentProject.project.projectName] ||
                     defaultVisibleCount
                 "
                 (load)="
                     showMore(
-                        proj.project.projectName,
-                        proj.totalItems,
-                        proj.subjects
+                        currentProject.project.projectName,
+                        currentProject.totalItems,
+                        currentProject.subjects
                     )
                 "
             ></app-load-more>
-        </div>
-    </div>
+
+
 </div>
+</div>
+
+
