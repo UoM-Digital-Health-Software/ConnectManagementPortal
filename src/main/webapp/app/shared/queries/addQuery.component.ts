@@ -115,6 +115,13 @@ export class AddQueryComponent {
 
     queryId = null;
 
+    public groupNameError = false;
+    public groupDescError = false;
+    public queryBuilderError = false;
+    public groupNameDuplicateError = false;
+    public contentGroupNameError = false;
+    public contentGroupItemsError = false;
+
     constructor(
         private queryService: QueriesService,
         private formBuilder: FormBuilder,
@@ -320,21 +327,68 @@ export class AddQueryComponent {
     }
 
     async saveQueryGroupToDB() {
-        const query_group: QueryGroup = {
-            name: this.queryGrouName,
-            description: this.queryGroupDesc,
-        };
+        this.groupNameError = false;
+        this.groupDescError = false;
+        this.queryBuilderError = false;
+        this.groupNameDuplicateError = false;
+        this.contentGroupNameError = false;
+
+        let hasError = false;
+
+        if (!this.queryGrouName || !this.queryGrouName.trim()) {
+            this.groupNameError = true;
+            hasError = true;
+        }
+
+        await this.queryService
+            .checkDuplicateQueryGroupName(this.queryGrouName, this.queryGroupId)
+            .subscribe((result) => {
+                if (result) {
+                    this.groupNameDuplicateError = true;
+                    hasError = true;
+                }
+            });
+
+        if (!this.queryGroupDesc || !this.queryGroupDesc.trim()) {
+            this.groupDescError = true;
+            hasError = true;
+        }
+
+        if (!this.query || !this.query.rules || this.query.rules.length === 0) {
+            this.queryBuilderError = true;
+            hasError = true;
+        }
+
+        for (const group of this.contentGroups) {
+            if (!group.name || !group.name.trim()) {
+                this.contentGroupNameError = true;
+                break;
+            }
+            if (!group.items || group.items.length === 0) {
+                this.contentGroupItemsError = true;
+                break;
+            }
+        }
+
+        if (hasError) {
+            return;
+        }
 
         if (this.queryGroupId) {
-            this.queryGroupId = await this.updateQueryGroup(query_group);
+            this.queryGroupId = await this.updateQueryGroup({
+                name: this.queryGrouName,
+                description: this.queryGroupDesc,
+            });
             await this.updateIndividualQueries();
         } else {
-            this.queryGroupId = await this.saveNewQueryGroup(query_group);
+            this.queryGroupId = await this.saveNewQueryGroup({
+                name: this.queryGrouName,
+                description: this.queryGroupDesc,
+            });
             await this.saveIndividualQueries();
         }
 
         await this.saveContent();
-
         this.goBack();
     }
 

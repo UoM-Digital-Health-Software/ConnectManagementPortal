@@ -102,12 +102,33 @@
                 </div>
             </div>
         </div>
+        <div *ngIf="groupNameError" class="alert alert-danger">
+            <label>Query Group Name is required.</label>
+        </div>
 
-        <button
-            (click)="saveQueryGroupToDB()"
-            class="btn btn-primary saveBtn"
-            [disabled]="isSaveButtonDisabled"
-        >
+        <div *ngIf="groupNameDuplicateError" class="alert alert-danger">
+            <label
+                >The Query Group Name already exists, please use another
+                name.</label
+            >
+        </div>
+
+        <div *ngIf="groupDescError" class="alert alert-danger">
+            <label>Query Group Description is required.</label>
+        </div>
+
+        <div *ngIf="queryBuilderError" class="alert alert-danger">
+            <label>Please add at least one rule to the Query Builder.</label>
+        </div>
+
+        <div *ngIf="contentGroupNameError||contentGroupItemsError" class="alert alert-danger">
+            <label
+                >All Content Groups must have a name and at least one content
+                item.</label
+            >
+        </div>
+
+        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn">
             Save
         </button>
     </div>

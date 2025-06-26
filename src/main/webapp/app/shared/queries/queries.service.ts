@@ -67,4 +67,9 @@ export class QueriesService {
                 `/querycontentgroup/${queryContentGroupId}`
         );
     }
+
+    checkDuplicateQueryGroupName(name: string, currentId: number | null) {
+        return this.http.get<boolean>(this.baseURL+ `/querygroups/check-name?name=${encodeURIComponent(name)}&excludeId=${currentId || ''}`);
+    }
+    
 }
