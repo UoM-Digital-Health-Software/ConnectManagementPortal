@@ -214,6 +214,16 @@ class QueryResource(
         return ResponseEntity.ok(result)
     }
 
+    @GetMapping("querygroups/check-name")
+    fun checkQueryGroupNameUnique(
+        @RequestParam name: String,
+        @RequestParam(required = false) excludeId: Long?
+    ): ResponseEntity<Boolean> {
+        val exists = queryBuilderService.checkQueryGroupName(name, excludeId)
+        return ResponseEntity.ok(exists)
+    }
+
+
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)
