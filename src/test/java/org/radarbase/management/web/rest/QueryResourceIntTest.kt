@@ -690,6 +690,31 @@ internal class QueryResourceIntTest(
 
     @Test
     @Transactional
+    fun shouldCheckQueryGroupName() {
+        createAndAddQueryGroupToDB()
+
+        val returnedValue = mockMvc.perform(
+            get("$baseURL/querygroups/check-name")
+                .param("name", "unique")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string("false"))
+            .andReturn()
+
+        val returnedValue1 = mockMvc.perform(
+            get("$baseURL/querygroups/check-name")
+                .param("name", "Name")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+        )
+            .andExpect(status().isOk)
+            .andExpect(content().string("true"))
+            .andReturn()
+    }
+
+
+    @Test
+    @Transactional
     fun shouldDeleteContentGroup() {
         var mockContentGroup = createContentGroup("test", createAndAddQueryGroupToDB())
         var contentGroupID = mockContentGroup.id
