@@ -332,6 +332,7 @@ export class AddQueryComponent {
         this.queryBuilderError = false;
         this.groupNameDuplicateError = false;
         this.contentGroupNameError = false;
+        this.contentGroupItemsError = false;
 
         let hasError = false;
 
@@ -447,6 +448,25 @@ export class AddQueryComponent {
     }
 
     saveCurrentEditingGroup() {
+        this.contentGroupNameError = false;
+        this.contentGroupItemsError = false;
+
+        if (
+            !this.currentEditingCopy?.name ||
+            !this.currentEditingCopy.name.trim()
+        ) {
+            this.contentGroupNameError = true;
+
+            return;
+        }
+        if (
+            !this.currentEditingCopy.items ||
+            this.currentEditingCopy.items.length === 0
+        ) {
+            this.contentGroupItemsError = false;
+            return;
+        }
+
         if (this.currentEditingIndex !== null && this.currentEditingCopy) {
             this.contentGroups[this.currentEditingIndex] =
                 this.currentEditingCopy;
