@@ -226,6 +226,12 @@ class QueryResource(
         return ResponseEntity.ok().build()
     }
 
+    @PatchMapping("/querygroups/{id}/unarchive")
+    fun unarchiveQueryGroup(@PathVariable id: Long): ResponseEntity<Void> {
+        queryBuilderService.unarchiveQueryGroup(id);
+        return ResponseEntity.ok().build()
+    }
+
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)

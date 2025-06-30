@@ -1,0 +1,24 @@
+<h1>Archived Query Groups</h1>
+
+<div class="padding">
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>Query Group Name</th>
+            <th>Date Archived</th>
+            <th>Researcher</th>
+            <th>Action</th>
+        </tr>
+        <tr *ngFor="let group of archivedQueryGroupList">
+            <td>
+                <span class="text-muted">{{ group.name }}</span>
+            </td>
+            <td>{{ group.updatedDate | date: 'yyyy-MM-dd' }}</td>
+            <td>{{ group.createdBy?.firstName }} {{ group.createdBy?.lastName }}</td>
+            <td>
+                <button class="btn btn-success" (click)="unarchiveQueryGroup(group.id)">
+                    Unarchive
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>

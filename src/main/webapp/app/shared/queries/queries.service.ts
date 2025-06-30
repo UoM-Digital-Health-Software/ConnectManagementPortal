@@ -76,6 +76,15 @@ export class QueriesService {
     }
 
     canArchiveQueryGroup(id: number) {
-        return this.http.get<boolean>(this.baseURL +`/querygroups/${id}/can-archive`);
+        return this.http.get<boolean>(
+            this.baseURL + `/querygroups/${id}/can-archive`
+        );
+    }
+
+    unarchiveQueryGroup(id: number) {
+        return this.http.patch(
+            this.baseURL + `/querygroups/${id}/unarchive`,
+            null
+        );
     }
 }
