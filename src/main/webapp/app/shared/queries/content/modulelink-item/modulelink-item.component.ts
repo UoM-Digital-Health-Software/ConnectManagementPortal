@@ -21,12 +21,10 @@ export class ModulelinkItemComponent implements OnInit {
 
     ngOnInit(): void {
         this.queryService.getModules().toPromise().then((response) => {
-            console.log("response modules", response)
             this.modules = response as Module[]
 
             if (this.item.resourceId) {
                 const result = this.modules.filter((module) => module.id == this.item.resourceId)
-                console.log("result", result)
                 if (result && result.length > 0) {
                     this.selectedModule = result[0]
                 }
@@ -35,10 +33,7 @@ export class ModulelinkItemComponent implements OnInit {
     }
 
     changeModule() {
-        console.log("selected module", this.selectedModule)
         this.item.resourceId = this.selectedModule.id
-
-        console.log("this item", this.item)
     }
     onDeleteItem() {
         this.triggerDeleteItemFunction.emit()
