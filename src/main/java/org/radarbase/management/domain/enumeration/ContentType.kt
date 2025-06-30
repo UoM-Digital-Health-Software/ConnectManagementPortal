@@ -6,7 +6,7 @@ enum class ContentType {
     PARAGRAPH,
     IMAGE,
     VIDEO,
-    LIBRARY_LINK
+    MODULE_LINK
 
 
 

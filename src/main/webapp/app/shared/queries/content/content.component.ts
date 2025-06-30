@@ -70,7 +70,7 @@ export class ContentComponent implements OnInit {
                 });
         }
 
-        if (contentType == ContentType.LIBRARY_LINK) {
+        if (contentType == ContentType.MODULE_LINK) {
             this.items.push({ type: contentType });
             this.itemsChange.emit(this.items);
         }

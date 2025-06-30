@@ -75,7 +75,7 @@ export enum ContentType {
     PARAGRAPH = 'PARAGRAPH',
     IMAGE = 'IMAGE',
     VIDEO = 'VIDEO',
-    LIBRARY_LINK = "LIBRARY_LINK"
+    MODULE_LINK = "MODULE_LINK"
 }
 
 

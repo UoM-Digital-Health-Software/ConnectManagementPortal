@@ -14,7 +14,7 @@
     </div>
 
 
-    <div *ngIf="item.type == ContentType.LIBRARY_LINK">
+    <div *ngIf="item.type == ContentType.MODULE_LINK">
         <query-modulelink-item [item]="item" (triggerDeleteItemFunction)="deleteItem()"></query-modulelink-item>
 
 
