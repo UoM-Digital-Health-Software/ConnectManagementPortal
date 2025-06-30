@@ -1,6 +1,7 @@
 package org.radarbase.management.repository
 
 import org.radarbase.management.domain.QueryContentGroup
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -27,4 +28,8 @@ interface QueryContentGroupRepository: JpaRepository<QueryContentGroup, Long> {
     )
 
     fun findByQueryGroupIdAndContentGroupName(queryGroupId: Long, contentGroupName: String): QueryContentGroup?
+
+    fun findByStatus(status: ContentGroupStatus): List<QueryContentGroup>
+
+
 }
