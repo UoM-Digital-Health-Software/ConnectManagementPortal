@@ -719,4 +719,35 @@ internal class QueryResourceIntTest(
         mockMvc.perform(patch(baseURL+ "querygroups/${queryGroup1.id}/archive")).andExpect(status().isBadRequest)
     }
 
+    @Transactional
+    @Throws(Exception::class)
+    fun getAllModules() {
+        val queryParticipant = createAndAddQueryParticipantToDB();
+
+        mockMvc.perform(get(baseURL + "modules"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.[*].name").value<Iterable<String?>>(
+                    Matchers.hasItem(
+                        "How to meditate"
+                    )
+                )
+            )
+    }
+
+
+    @Test
+    @Transactional
+    @Throws(Exception::class)
+    fun getModule() {
+        val queryParticipant = createAndAddQueryParticipantToDB();
+
+        mockMvc.perform(get(baseURL + "modules/1"))
+            .andExpect(status().isOk).andExpect(jsonPath("$.name").value("How to meditate"))
+
+    }
+
+
+
 }

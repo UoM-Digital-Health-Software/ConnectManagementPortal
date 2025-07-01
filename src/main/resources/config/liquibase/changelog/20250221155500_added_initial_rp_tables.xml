@@ -285,6 +285,9 @@
 			<column name="image" type="BYTEA">
 				<constraints nullable="true" />
 			</column>
+            <column name="resource_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
 			<column name="query_group_id" type="bigint">
 				<constraints nullable="false" />
 			</column>
@@ -413,6 +416,25 @@
                                  constraintName="fk_metric_averages_subject_id"
                                  referencedColumnNames="id"
                                  referencedTableName="subject"/>
+    </changeSet>
+
+
+    <changeSet id="create-modules-table" author="generated">
+        <createTable tableName="modules">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+
+        <loadData encoding="UTF-8"
+                  file="config/liquibase/modules.csv"
+                  separator=";"
+                  tableName="modules"/>
     </changeSet>
 
 
