@@ -14,10 +14,12 @@ import org.radarbase.management.web.rest.errors.ErrorConstants
 import org.radarbase.management.web.rest.errors.ErrorVM
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 
 @RestController
@@ -214,14 +216,16 @@ class QueryResource(
         return ResponseEntity.ok(result)
     }
 
-    @GetMapping("/querygroups/{id}/can-archive")
-    fun canArchive(@PathVariable id: Long): ResponseEntity<Boolean> {
-        val isAssigned = queryBuilderService.isQueryGroupAssignedToParticipant(id)
-        return ResponseEntity.ok(!isAssigned)
-    }
-
     @PatchMapping("/querygroups/{id}/archive")
     fun archiveQueryGroup(@PathVariable id: Long): ResponseEntity<Void> {
+
+        if (queryBuilderService.isQueryGroupAssignedToParticipant(id)) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "This query group cannot be archived because it is currently assigned to a participant/s"
+            )
+        }
+
         queryBuilderService.archiveQueryGroup(id)
         return ResponseEntity.ok().build()
     }

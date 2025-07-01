@@ -13,9 +13,13 @@ export class QueryGroupListComponent implements OnInit, OnDestroy {
     constructor(private queriesService: QueriesService) {}
 
     getQueryGroupList() {
-        this.queriesService.getQueryGroupList().subscribe((result: QueryGroup[]) => {
-            this.queryGroupList = result.filter(group => !group.isArchived);
-        });
+        this.queriesService
+            .getQueryGroupList()
+            .subscribe((result: QueryGroup[]) => {
+                this.queryGroupList = result.filter(
+                    (group) => !group.isArchived
+                );
+            });
     }
 
     ngOnInit() {
@@ -24,15 +28,14 @@ export class QueryGroupListComponent implements OnInit, OnDestroy {
 
     archiveQueryGroup(id: number) {
         if (confirm('Are you sure you want to archive this query group?')) {
-            this.queriesService.canArchiveQueryGroup(id).subscribe((canArchive: boolean) => {
-                if (!canArchive) {
-                    alert('This query group cannot be archived because it is currently assigned to a participant/s');
-                    return;
-                }
-
-                this.queriesService.archiveQueryGroup(id).subscribe(() => {
-                    this.getQueryGroupList();
-                });
+            this.queriesService.archiveQueryGroup(id).subscribe({
+                next: () => this.getQueryGroupList(),
+                error: (err) => {
+                    alert(
+                        err.error.message ||
+                            'Failed to archive query group, the query group has been assigned.'
+                    );
+                },
             });
         }
     }

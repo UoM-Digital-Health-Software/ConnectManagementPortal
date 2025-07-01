@@ -74,8 +74,4 @@ export class QueriesService {
             null
         );
     }
-
-    canArchiveQueryGroup(id: number) {
-        return this.http.get<boolean>(this.baseURL +`/querygroups/${id}/can-archive`);
-    }
 }

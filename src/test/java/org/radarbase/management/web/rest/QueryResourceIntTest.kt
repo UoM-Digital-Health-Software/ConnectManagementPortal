@@ -699,4 +699,24 @@ internal class QueryResourceIntTest(
     }
 
 
+    @Test
+    fun testArchivefunction() {
+        //should archive group when not assigned
+        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+        val existingUser = userRepository.findAll()[0];
+
+        val queryGroup = createQueryGroup(existingUser);
+        queryGroup.id = queryGroupRepository.saveAndFlush(queryGroup).id;
+
+        mockMvc.perform(patch(baseURL+ "querygroups/${queryGroup.id}/archive")).andExpect(status().isOk)
+
+        val updated = queryGroupRepository.findById(queryGroup.id).get()
+        Assertions.assertThat(updated.isArchived).isEqualTo(true)
+
+        //should fail to archive when group assigned
+        val queryParticipant = createAndAddQueryParticipantToDB()
+        val queryGroup1 = queryParticipant.queryGroup!!
+        mockMvc.perform(patch(baseURL+ "querygroups/${queryGroup1.id}/archive")).andExpect(status().isBadRequest)
+    }
+
 }
