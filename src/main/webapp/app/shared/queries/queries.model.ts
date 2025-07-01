@@ -76,6 +76,7 @@ export enum ContentType {
     PARAGRAPH = 'PARAGRAPH',
     IMAGE = 'IMAGE',
     VIDEO = 'VIDEO',
+    MODULE_LINK = "MODULE_LINK"
 }
 
 
@@ -88,4 +89,11 @@ export interface ContentItem {
     imageBlob?: String;
     isValidImage?: Boolean;
     queryGroupId?: Number;
+    resourceId?: Number;
+}
+
+
+export interface Module {
+    id?: Number;
+    name?: String
 }

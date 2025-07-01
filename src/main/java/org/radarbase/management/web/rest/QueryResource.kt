@@ -10,6 +10,7 @@ import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.service.*
 import org.radarbase.management.service.dto.*
+import org.radarbase.management.web.rest.errors.BadRequestException
 import org.radarbase.management.web.rest.errors.ErrorConstants
 import org.radarbase.management.web.rest.errors.ErrorVM
 import org.slf4j.LoggerFactory
@@ -212,7 +213,6 @@ class QueryResource(
     fun getQueryContent(@PathVariable queryGroupId: Long): ResponseEntity<*> {
         val result =  queryContentService.getAllContentGroupsWithContentsQueryGroupId(queryGroupId)
 
-        log.info("result {}", result)
         return ResponseEntity.ok(result)
     }
 
@@ -236,6 +236,25 @@ class QueryResource(
         return ResponseEntity.ok().build()
     }
 
+    @GetMapping("modules")
+    fun getAllModules(): ResponseEntity<*> {
+        val result =  queryContentService.getAllModules()
+        return ResponseEntity.ok(result)
+    }
+
+
+    @GetMapping("modules/{moduleId}")
+    fun getModule(@PathVariable moduleId: Long?): ResponseEntity<*> {
+        if(moduleId == null) {
+            throw BadRequestException(
+                "The module id must be provided to retrieve a module", "Module",
+                ErrorConstants.ERR_VALIDATION
+            )
+        }
+
+        val result =  queryContentService.getModuleById(moduleId)
+        return ResponseEntity.ok(result)
+    }
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)

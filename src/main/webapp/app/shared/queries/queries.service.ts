@@ -81,4 +81,8 @@ export class QueriesService {
             null
         );
     }
+
+    getModules() {
+        return this.http.get(this.baseURL + '/modules');
+    }
 }

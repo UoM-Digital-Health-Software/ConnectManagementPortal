@@ -38,6 +38,10 @@ class QueryContent : AbstractEntity(), Serializable {
     public var imageBlob: ByteArray? = null
 
 
+    @Column(name = "resource_id")
+    public var resourceId: Long? = null
+
+
     @Column(name = "image_alternative_text")
     public val imageAltText: String? = null
 
@@ -48,6 +52,10 @@ class QueryContent : AbstractEntity(), Serializable {
     @ManyToOne
     @JoinColumn(unique = true, name = "query_content_group_id")
     var queryContentGroup: QueryContentGroup? = null
+
+
+
+
 
 
     override fun toString(): String {

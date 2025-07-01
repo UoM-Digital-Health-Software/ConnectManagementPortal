@@ -3,7 +3,6 @@ package org.radarbase.management.service.dto
 import org.radarbase.management.domain.enumeration.ContentType
 
 class QueryContentDTO {
-
     var id : Long? = null ;
     var type: ContentType? = null
     var heading: String? = null
@@ -12,4 +11,5 @@ class QueryContentDTO {
     var imageAltText: String? = null
     var queryGroupId: Long? = null
     var queryContentGroupId: Long? = null
+    var resourceId : Long? = null
 }
