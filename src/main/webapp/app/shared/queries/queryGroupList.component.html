@@ -1,4 +1,9 @@
-<h1>Query List</h1>
+<div class="d-flex justify-content-start align-items-center">
+    <h1 style="padding-right:20px">Query List</h1>
+    <button class="btn btn-primary mr-2" routerLink="/archivedQueryGroups">
+        Archived Queires
+    </button>
+</div>
 
 <div class="padding">
     <table class="table table-striped table-bordered">
@@ -27,12 +32,9 @@
             </td>
         </tr>
     </table>
-    <div class="d-flex justify-content-between">
+    <div>
         <button class="btn btn-success" routerLink="/add-query">
             Add Query
-        </button>
-        <button class="btn btn-warning" routerLink="/archivedQueryGroups">
-            Archived Queires
         </button>
     </div>
 </div>
