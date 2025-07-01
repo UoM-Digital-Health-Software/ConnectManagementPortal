@@ -67,4 +67,8 @@ export class QueriesService {
                 `/querycontentgroup/${queryContentGroupId}`
         );
     }
+
+    getModules() {
+        return this.http.get(this.baseURL + '/modules');
+    }
 }
