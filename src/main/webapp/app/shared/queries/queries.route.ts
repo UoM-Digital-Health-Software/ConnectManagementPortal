@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { QueryGroupListComponent } from './queryGroupList.component';
 import { AddQueryComponent } from './addQuery.component';
+import { ArchivedQueryGroupListComponent } from './archivedQueryGroupList.component';
 
 export const queriesRoute: Routes = [
     {
@@ -29,4 +30,12 @@ export const queriesRoute: Routes = [
             pageTitle: 'global.menu.queries',
         },
     },
+    {
+        path: 'archivedQueryGroups',
+        component: ArchivedQueryGroupListComponent,
+        data: {
+            authorities: [],
+            pageTitle: 'global.menu.archivedQueries',
+        },
+    }
 ];

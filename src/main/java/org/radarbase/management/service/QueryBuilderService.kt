@@ -254,6 +254,12 @@ public class QueryBuilderService(
         queryGroupRepository.save(group)
     }
 
+    fun unarchiveQueryGroup(id: Long){
+        val group = queryGroupRepository.findById(id).orElseThrow()
+        group.isArchived = false
+        group.updatedDate = ZonedDateTime.now()
+        queryGroupRepository.save(group)
+    }
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryBuilderService::class.java)

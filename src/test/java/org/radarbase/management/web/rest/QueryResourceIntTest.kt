@@ -719,6 +719,24 @@ internal class QueryResourceIntTest(
         mockMvc.perform(patch(baseURL+ "querygroups/${queryGroup1.id}/archive")).andExpect(status().isBadRequest)
     }
 
+    @Test
+    fun testUnarchivefunction() {
+        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+        val existingUser = userRepository.findAll()[0];
+
+        val queryGroup = createQueryGroup(existingUser);
+        queryGroup.id = queryGroupRepository.saveAndFlush(queryGroup).id;
+
+        mockMvc.perform(patch(baseURL+ "querygroups/${queryGroup.id}/archive")).andExpect(status().isOk)
+
+
+        mockMvc.perform(patch(baseURL+ "querygroups/${queryGroup.id}/unarchive")).andExpect(status().isOk)
+
+
+        val updatedGroup = queryGroupRepository.findById(queryGroup.id!!).get()
+        Assertions.assertThat(updatedGroup.isArchived).isEqualTo(false)
+    }
+
     @Transactional
     @Throws(Exception::class)
     fun getAllModules() {

@@ -230,6 +230,12 @@ class QueryResource(
         return ResponseEntity.ok().build()
     }
 
+    @PatchMapping("/querygroups/{id}/unarchive")
+    fun unarchiveQueryGroup(@PathVariable id: Long): ResponseEntity<Void> {
+        queryBuilderService.unarchiveQueryGroup(id);
+        return ResponseEntity.ok().build()
+    }
+
     @GetMapping("modules")
     fun getAllModules(): ResponseEntity<*> {
         val result =  queryContentService.getAllModules()
