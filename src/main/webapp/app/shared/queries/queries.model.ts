@@ -88,3 +88,16 @@ export interface ContentItem {
     isValidImage?: Boolean;
     queryGroupId?: Number;
 }
+
+export interface ContentGroup {
+    name: string;
+    items: ContentItem[];
+    queryGroupId: number;
+    id: number;
+    status: ContentGroupStatus;
+}
+
+export enum ContentGroupStatus{
+    ACTIVE,
+    INACTIVE
+}

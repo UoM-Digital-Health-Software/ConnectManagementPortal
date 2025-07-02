@@ -114,6 +114,7 @@ class QueryContentService(
                 this.queryGroupId = queryGroupId
                 queryContentDTOList = contentDTOs
                 id = group.id
+                status = group.status
             }
         }
     }

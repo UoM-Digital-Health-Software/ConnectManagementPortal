@@ -16,19 +16,13 @@ import { ContentComponent } from './content/content.component';
 
 import { delusions, questionnaire } from './questionnaire';
 
-import { ContentItem, ContentType } from './queries.model';
+import { ContentType, ContentGroup, ContentGroupStatus } from './queries.model';
 
 const sliderOptions = Array.from({ length: 7 }, (_, i) => {
     const val = String(i + 1);
     return { name: val, value: val };
 });
 
-interface ContentGroup {
-    name: string;
-    items: ContentItem[];
-    queryGroupId: number;
-    id: number;
-}
 
 @Component({
     selector: 'jhi-queries',
@@ -363,6 +357,7 @@ export class AddQueryComponent {
             ],
             queryGroupId: null,
             id: null,
+            status: ContentGroupStatus.ACTIVE
         };
         this.isEditingContent = true;
     }
@@ -385,6 +380,7 @@ export class AddQueryComponent {
             items: original.items.map((item) => ({ ...item })),
             queryGroupId: original.queryGroupId,
             id: original.id,
+            status: original.status
         };
         this.isEditingContent = true;
     }
