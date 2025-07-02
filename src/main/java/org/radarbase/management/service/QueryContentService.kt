@@ -32,7 +32,8 @@ class QueryContentService(
     private val queryContentGroup: QueryContentGroupRepository,
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val queryGroupContentMapper: QueryGroupContentMapper,
-    private val queryContentGroupMapper: QueryContentGroupMapper
+    private val queryContentGroupMapper: QueryContentGroupMapper,
+    private val moduleRepository: ModuleRepository
 
 
 ) {
@@ -80,6 +81,7 @@ class QueryContentService(
             )
         }
 
+
         contentGroupDTO.queryContentDTOList?.forEach { dto ->
             val queryContent = QueryContent().apply {
                 this.queryGroup = queryGroup
@@ -91,6 +93,7 @@ class QueryContentService(
                     this.value = dto.value
                     this.heading = dto.heading
                 }
+               this.resourceId = dto.resourceId
             }
             queryContentRepository.save(queryContent)
         }
@@ -288,6 +291,17 @@ class QueryContentService(
             queryParticipantContentRepository.deleteByQueryContentGroupId(id)
         }
 
+    fun getAllModules() : List<Module> {
+        return moduleRepository.findAll()
+    }
+
+    fun getModuleById(moduleId: Long) : Module? {
+        val moduleOpt = moduleRepository.findById(moduleId)
+
+        if(moduleOpt.isPresent) {
+            return moduleOpt.get()
+        }
+        return null;
     }
 
     companion object {

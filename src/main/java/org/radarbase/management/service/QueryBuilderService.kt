@@ -244,6 +244,23 @@ public class QueryBuilderService(
         return resultDto
     }
 
+    fun isQueryGroupAssignedToParticipant(id: Long): Boolean {
+        return queryParticipantRepository.existsByQueryGroupId(id)
+    }
+
+    fun archiveQueryGroup(id: Long) {
+        val group = queryGroupRepository.findById(id).orElseThrow()
+        group.isArchived = true
+        queryGroupRepository.save(group)
+    }
+
+    fun unarchiveQueryGroup(id: Long){
+        val group = queryGroupRepository.findById(id).orElseThrow()
+        group.isArchived = false
+        group.updatedDate = ZonedDateTime.now()
+        queryGroupRepository.save(group)
+    }
+
     companion object {
         private val log = LoggerFactory.getLogger(QueryBuilderService::class.java)
     }
