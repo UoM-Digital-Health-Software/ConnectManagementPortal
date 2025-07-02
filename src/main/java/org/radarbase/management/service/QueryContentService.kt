@@ -290,6 +290,7 @@ class QueryContentService(
         if (status == ContentGroupStatus.INACTIVE) {
             queryParticipantContentRepository.deleteByQueryContentGroupId(id)
         }
+    }
 
     fun getAllModules() : List<Module> {
         return moduleRepository.findAll()
