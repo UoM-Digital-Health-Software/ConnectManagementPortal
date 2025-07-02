@@ -12,6 +12,7 @@ export interface QueryGroup {
     updatedDate?: Date;
     createdBy?: Subject;
     updatedBy?: Subject;
+    isArchived?: Boolean;
 }
 
 export interface QueryParticipant {
@@ -75,6 +76,7 @@ export enum ContentType {
     PARAGRAPH = 'PARAGRAPH',
     IMAGE = 'IMAGE',
     VIDEO = 'VIDEO',
+    MODULE_LINK = "MODULE_LINK"
 }
 
 
@@ -87,4 +89,11 @@ export interface ContentItem {
     imageBlob?: String;
     isValidImage?: Boolean;
     queryGroupId?: Number;
+    resourceId?: Number;
+}
+
+
+export interface Module {
+    id?: Number;
+    name?: String
 }

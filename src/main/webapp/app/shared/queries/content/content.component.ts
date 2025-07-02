@@ -69,6 +69,11 @@ export class ContentComponent implements OnInit {
                     console.log('Modal dismissed:', reason);
                 });
         }
+
+        if (contentType == ContentType.MODULE_LINK) {
+            this.items.push({ type: contentType });
+            this.itemsChange.emit(this.items);
+        }
     }
 
     updateContent(event: { content: string; index: string }) {

@@ -10,14 +10,17 @@ import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.service.*
 import org.radarbase.management.service.dto.*
+import org.radarbase.management.web.rest.errors.BadRequestException
 import org.radarbase.management.web.rest.errors.ErrorConstants
 import org.radarbase.management.web.rest.errors.ErrorVM
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 
 @RestController
@@ -210,10 +213,48 @@ class QueryResource(
     fun getQueryContent(@PathVariable queryGroupId: Long): ResponseEntity<*> {
         val result =  queryContentService.getAllContentGroupsWithContentsQueryGroupId(queryGroupId)
 
-        log.info("result {}", result)
         return ResponseEntity.ok(result)
     }
 
+    @PatchMapping("/querygroups/{id}/archive")
+    fun archiveQueryGroup(@PathVariable id: Long): ResponseEntity<Void> {
+
+        if (queryBuilderService.isQueryGroupAssignedToParticipant(id)) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "This query group cannot be archived because it is currently assigned to a participant/s"
+            )
+        }
+
+        queryBuilderService.archiveQueryGroup(id)
+        return ResponseEntity.ok().build()
+    }
+
+    @PatchMapping("/querygroups/{id}/unarchive")
+    fun unarchiveQueryGroup(@PathVariable id: Long): ResponseEntity<Void> {
+        queryBuilderService.unarchiveQueryGroup(id);
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("modules")
+    fun getAllModules(): ResponseEntity<*> {
+        val result =  queryContentService.getAllModules()
+        return ResponseEntity.ok(result)
+    }
+
+
+    @GetMapping("modules/{moduleId}")
+    fun getModule(@PathVariable moduleId: Long?): ResponseEntity<*> {
+        if(moduleId == null) {
+            throw BadRequestException(
+                "The module id must be provided to retrieve a module", "Module",
+                ErrorConstants.ERR_VALIDATION
+            )
+        }
+
+        val result =  queryContentService.getModuleById(moduleId)
+        return ResponseEntity.ok(result)
+    }
     @GetMapping("querygroups/check-name")
     fun checkQueryGroupNameUnique(
         @RequestParam name: String,
