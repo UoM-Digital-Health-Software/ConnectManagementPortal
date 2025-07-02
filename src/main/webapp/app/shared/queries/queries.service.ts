@@ -63,8 +63,17 @@ export class QueriesService {
 
     deleteContentGroupByID(queryContentGroupId: any) {
         return this.http.delete(
-            this.baseURL +
-                `/querycontentgroup/${queryContentGroupId}`
+            this.baseURL + `/querycontentgroup/${queryContentGroupId}`
+        );
+    }
+
+    updateContentGroupStatus(contentGroup: any, status: string) {
+        return this.http.put(
+            this.baseURL + `/querycontentgroup/${contentGroup.id}/status`,
+            null,
+            {
+                params: { status },
+            }
         );
     }
 }

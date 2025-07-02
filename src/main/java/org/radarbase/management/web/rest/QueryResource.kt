@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.annotation.Timed
 import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.service.*
@@ -214,6 +215,16 @@ class QueryResource(
         return ResponseEntity.ok(result)
     }
 
+    @PutMapping("querycontentgroup/{queryContentGroupId}/status")
+    fun updateStatus(
+        @PathVariable queryContentGroupId: Long,
+        @RequestParam status: ContentGroupStatus
+    ): ResponseEntity<Void> {
+
+
+        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
+        return ResponseEntity.ok().build()
+    }
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)

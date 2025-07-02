@@ -2,6 +2,7 @@ package org.radarbase.management.service
 
 
 import org.radarbase.management.domain.*
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.repository.*
 import org.radarbase.management.service.dto.QueryContentDTO
@@ -274,6 +275,17 @@ class QueryContentService(
 
         return true;
 
+
+    }
+
+    fun updateContentGroupStatus(id: Long, status: ContentGroupStatus){
+        val contentGroup = queryContentGroupRepository.findById(id).orElseThrow { RuntimeException("Content Group not found") }
+        contentGroup.status = status
+        queryContentGroupRepository.save(contentGroup)
+
+        if (status == ContentGroupStatus.INACTIVE) {
+            queryParticipantContentRepository.deleteByQueryContentGroupId(id)
+        }
 
     }
 
