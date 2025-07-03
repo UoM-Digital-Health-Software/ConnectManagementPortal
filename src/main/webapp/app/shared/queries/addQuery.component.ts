@@ -341,14 +341,16 @@ export class AddQueryComponent {
             hasError = true;
         }
 
-        await this.queryService
-            .checkDuplicateQueryGroupName(this.queryGrouName, this.queryGroupId)
-            .subscribe((result) => {
-                if (result) {
-                    this.groupNameDuplicateError = true;
-                    hasError = true;
-                }
-            });
+        const isDuplicate =
+            await this.queryService.checkDuplicateQueryGroupName(
+                this.queryGrouName.trim(),
+                this.queryGroupId
+            );
+
+        if (isDuplicate) {
+            this.groupNameDuplicateError = true;
+            hasError = true;
+        }
 
         if (!this.queryGroupDesc || !this.queryGroupDesc.trim()) {
             this.groupDescError = true;
@@ -422,7 +424,9 @@ export class AddQueryComponent {
     }
 
     deleteContentGroup(id: number) {
-        const confirmDelete = confirm('Are you sure you want to delete this?');
+        const confirmDelete = confirm(
+            "Are you sure you want to delete this? This will also delete the content from the participants' phones."
+        );
         if (!confirmDelete) {
             return;
         }
