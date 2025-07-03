@@ -106,7 +106,6 @@ export class AddQueryComponent {
     public allowCollapse: boolean;
     public persistValueOnFieldChange: boolean = true;
 
-    private canGoBack: boolean = false;
     selectedGroupIndex: number | null = null;
 
     isEditingContent = false;
@@ -121,6 +120,8 @@ export class AddQueryComponent {
     public groupNameDuplicateError = false;
     public contentGroupNameError = false;
     public contentGroupItemsError = false;
+    public queryRulesError = false;
+    public contentParagraphError = false;
 
     constructor(
         private queryService: QueriesService,
@@ -132,8 +133,6 @@ export class AddQueryComponent {
     ) {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
-        this.canGoBack =
-            !!this.router.getCurrentNavigation()?.previousNavigation;
 
         // process the config
 
@@ -248,11 +247,6 @@ export class AddQueryComponent {
         this.isEditingContent = false;
     }
 
-    goBack(): void {
-        if (this.canGoBack) {
-            this.location.back();
-        }
-    }
     changeDisabled(event: Event) {
         (<HTMLInputElement>event.target).checked
             ? this.queryCtrl.disable()
@@ -326,13 +320,31 @@ export class AddQueryComponent {
         }
     }
 
+    validateQueryRules(rules: any[]): boolean {
+        for (const rule of rules) {
+            if (rule.rules && Array.isArray(rule.rules)) {
+                if (!this.validateQueryRules(rule.rules)) {
+                    return false;
+                }
+            } else {
+                if (
+                    rule.value === undefined ||
+                    rule.value === null ||
+                    rule.value.toString().trim() === ''
+                ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     async saveQueryGroupToDB() {
         this.groupNameError = false;
         this.groupDescError = false;
         this.queryBuilderError = false;
         this.groupNameDuplicateError = false;
-        this.contentGroupNameError = false;
-        this.contentGroupItemsError = false;
+        this.queryRulesError = false;
 
         let hasError = false;
 
@@ -341,11 +353,12 @@ export class AddQueryComponent {
             hasError = true;
         }
 
-        const isDuplicate =
-            await this.queryService.checkDuplicateQueryGroupName(
+        const isDuplicate = await this.queryService
+            .checkDuplicateQueryGroupName(
                 this.queryGrouName.trim(),
                 this.queryGroupId
-            );
+            )
+            .toPromise();
 
         if (isDuplicate) {
             this.groupNameDuplicateError = true;
@@ -362,15 +375,9 @@ export class AddQueryComponent {
             hasError = true;
         }
 
-        for (const group of this.contentGroups) {
-            if (!group.name || !group.name.trim()) {
-                this.contentGroupNameError = true;
-                break;
-            }
-            if (!group.items || group.items.length === 0) {
-                this.contentGroupItemsError = true;
-                break;
-            }
+        if (!this.validateQueryRules(this.query.rules)) {
+            this.queryRulesError = true;
+            hasError = true;
         }
 
         if (hasError) {
@@ -392,7 +399,7 @@ export class AddQueryComponent {
         }
 
         await this.saveContent();
-        this.goBack();
+        this.router.navigate(['querygroups']);
     }
 
     async saveContent() {
@@ -452,14 +459,17 @@ export class AddQueryComponent {
     }
 
     saveCurrentEditingGroup() {
+        let hasError = false;
         this.contentGroupNameError = false;
         this.contentGroupItemsError = false;
+        this.contentParagraphError = false;
 
         if (
             !this.currentEditingCopy?.name ||
             !this.currentEditingCopy.name.trim()
         ) {
             this.contentGroupNameError = true;
+            hasError = true;
 
             return;
         }
@@ -467,7 +477,29 @@ export class AddQueryComponent {
             !this.currentEditingCopy.items ||
             this.currentEditingCopy.items.length === 0
         ) {
-            this.contentGroupItemsError = false;
+            this.contentGroupItemsError = true;
+            hasError = true;
+
+            return;
+        }
+
+        for (const item of this.currentEditingCopy.items) {
+            if (item.type === 'PARAGRAPH') {
+                const headingValid = item.heading && item.heading.trim() !== '';
+                const valueValid =
+                    typeof item.value === 'string'
+                        ? item.value.trim() !== ''
+                        : item.value !== undefined && item.value !== null;
+
+                if (!headingValid || !valueValid) {
+                    this.contentParagraphError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasError) {
             return;
         }
 

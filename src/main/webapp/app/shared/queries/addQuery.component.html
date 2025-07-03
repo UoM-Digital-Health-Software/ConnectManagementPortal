@@ -127,6 +127,12 @@
                 item.</label
             >
         </div>
+        <div *ngIf="contentParagraphError||queryRulesError" class="alert alert-danger">
+            <label
+                >Please fill in all fields.</label
+            >
+        </div>
+        
 
         <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn">
             Save
