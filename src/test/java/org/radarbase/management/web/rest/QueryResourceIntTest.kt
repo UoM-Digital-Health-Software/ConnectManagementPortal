@@ -766,6 +766,23 @@ internal class QueryResourceIntTest(
 
     }
 
+    @Test
+    fun updateStatus(){
+        val status = ContentGroupStatus.ACTIVE
+        var mockContentGroup = createContentGroup("test", createAndAddQueryGroupToDB())
+        mockContentGroup.status = status;
+        queryContentGroupRepository.save(mockContentGroup)
+
+        val queryContentGroupId = mockContentGroup.id;
+
+        mockMvc.perform(put(baseURL+ "querycontentgroup/$queryContentGroupId/status")
+            .param("status", "INACTIVE")
+        ).andExpect(status().isOk)
+
+        val updatedContentGroup = queryContentGroupRepository.findById(queryContentGroupId).get()
+        Assertions.assertThat(updatedContentGroup.status).isEqualTo(ContentGroupStatus.INACTIVE)
+    }
+
 
 
 }
