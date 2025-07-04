@@ -18,6 +18,8 @@ class AngularQueryBuilderDTO {
     var type: QueryLogicType? = null
     var entity : String? = null
 
+    var canEdit: Boolean? = true
+
     override fun toString(): String {
         return ("QueryLogicDTO{"
                 + "queryGroupName='" + queryGroupName + '\''
@@ -31,6 +33,7 @@ class AngularQueryBuilderDTO {
                 + ", entity='" + entity + '\''
                 + ", rules='" + rules + '\''
                 + ", type='" + type + '\''
+                + ", canEdit='" + canEdit + '\''
                 + "}")
     }
 }

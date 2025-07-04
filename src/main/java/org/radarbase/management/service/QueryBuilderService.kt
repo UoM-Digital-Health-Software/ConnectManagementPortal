@@ -157,6 +157,7 @@ public class QueryBuilderService(
         queryParticipant.subject = subjectRepository.findById(queryParticipantDTO.subjectId!!).get();
         queryParticipant.createdDate = ZonedDateTime.now();
         queryParticipant = queryParticipantRepository.save(queryParticipant)
+        queryGroup.canEdit = false;
         queryGroupRepository.flush()
 
         return queryParticipant.id;
@@ -240,6 +241,7 @@ public class QueryBuilderService(
 
         resultDto.queryGroupName = rootBuilder.entity.queryGroup?.name
         resultDto.queryGroupDescription = rootBuilder.entity.queryGroup?.description
+        resultDto.canEdit = rootBuilder.entity.queryGroup?.canEdit
 
         return resultDto
     }

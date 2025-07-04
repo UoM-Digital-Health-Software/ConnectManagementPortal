@@ -16,8 +16,8 @@ type SizeRatio = {
 }
 
 type SelectedImageBase64 = {
-    imageBase64Data?: String;
-    isImageValid?: Boolean;
+    imageBase64Data?: string;
+    isImageValid?: boolean;
 }
 
 @Component({

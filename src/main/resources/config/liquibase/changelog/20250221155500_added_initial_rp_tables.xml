@@ -47,6 +47,9 @@
 			<column name="is_archived" type="boolean" defaultValueDate="false">
 				<constraints nullable="false"/>
 			</column>
+			<column name="can_edit" type="boolean" defaultValueDate="true">
+				<constraints nullable="false"/>
+			</column>
 
 		</createTable>
 	</changeSet>

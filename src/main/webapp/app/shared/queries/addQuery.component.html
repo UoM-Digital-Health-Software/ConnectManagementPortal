@@ -2,6 +2,9 @@
     <div class="page">
         <div class="block" style="align-items: center">
             <h1>Query Builder</h1>
+            <div *ngIf="!query.canEdit&&queryId" class="warning-box">
+                ⚠️ This query group can no longer be edited.
+            </div>
             <div class="inputs">
                 <div class="query_group">
                     <mat-label>Query Group Name</mat-label>
