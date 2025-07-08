@@ -86,11 +86,6 @@ export class AddQueryComponent {
 
     public config: QueryBuilderConfig = {
         entities: {
-            // physical: { name: 'Passive data' },
-            // questionnaire: { name: 'Questionnaire Slider' },
-            // questionnaire_histogram: { name: 'Questionnaire Multichoice' },
-            // questionnaire_slider: { name: 'Questionnaire Group' },
-            // delusions: { name: 'Delusions' },
         },
         fields: {
         },
