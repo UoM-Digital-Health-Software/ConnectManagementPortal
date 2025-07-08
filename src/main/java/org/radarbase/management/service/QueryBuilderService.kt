@@ -1,11 +1,15 @@
 package org.radarbase.management.service
 import io.ktor.util.*
+import org.radarbase.management.config.QuestionnaireItemsLoader
 import org.radarbase.management.domain.*
 import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
 import org.radarbase.management.domain.QueryLogic
 import org.radarbase.management.domain.User
+import org.radarbase.management.domain.enumeration.PhysicalMetric
+import org.radarbase.management.domain.enumeration.QueryBuilderEntities
 import org.radarbase.management.domain.enumeration.QueryLogicType
+import org.radarbase.management.domain.enumeration.physicalMetricExists
 import org.radarbase.management.repository.QueryGroupRepository
 import org.radarbase.management.repository.QueryLogicRepository
 import org.radarbase.management.repository.QueryRepository
@@ -28,13 +32,24 @@ public class QueryBuilderService(
     private val queryLogicRepository:  QueryLogicRepository,
     private val queryGroupRepository: QueryGroupRepository,
     private val queryRepository: QueryRepository,
-    private var userRepository: UserRepository,
     private val subjectRepository: SubjectRepository,
-    @Autowired private val userService: UserService,
     private var queryParticipantRepository: QueryParticipantRepository,
-    private val queryContentGroupRepository: QueryContentGroupRepository,
-    private val queryContentRepository: QueryContentRepository
+    @Autowired private val questionnaireItemsLoader: QuestionnaireItemsLoader
 ) {
+
+
+
+    private fun validateQuery(entity: QueryBuilderEntities?, fieldName: String?) : Boolean {
+       val result = when (entity) {
+            QueryBuilderEntities.PHYSICAL -> physicalMetricExists(fieldName)
+            QueryBuilderEntities.QUESTIONNAIRE_SLIDER,
+            QueryBuilderEntities.QUESTIONNAIRE_HISTOGRAM-> questionnaireItemsLoader.questionnaireItems.any { it.field_name == fieldName }
+            QueryBuilderEntities.QUESTIONNAIRE_DELUSIONS -> questionnaireItemsLoader.delusionsItems.any { it.field_name == fieldName }
+            else -> true
+        }
+
+        return result
+    }
 
     @Transactional
     fun saveQuery(queryGroup: QueryGroup, query: QueryDTO): Query {
@@ -45,10 +60,14 @@ public class QueryBuilderService(
         newQuery.operator = query.operator
         newQuery.value = query.value
         newQuery.timeFrame = query.timeFrame
-        newQuery.entity = query.entity;
+
+        newQuery.entity = query.entity.toString();
+
+        if(!validateQuery(query.entity, query.field))  {
+            throw IllegalArgumentException("Invalid query: entity ${query.entity}, field ${query.field}")
+        }
 
         newQuery = queryRepository.save(newQuery);
-        queryRepository.flush();
         return newQuery;
     }
 
@@ -248,7 +267,7 @@ public class QueryBuilderService(
         val exists = queryGroupRepository.existsByNameAndIdNot(name, excludeId)
         return exists;
     }
-    
+
     fun isQueryGroupAssignedToParticipant(id: Long): Boolean {
         return queryParticipantRepository.existsByQueryGroupId(id)
     }

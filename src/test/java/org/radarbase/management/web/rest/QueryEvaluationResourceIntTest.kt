@@ -122,11 +122,11 @@ internal class QueryEvaluationResourceIntTest(
         return queryGroupRepository.saveAndFlush(queryGroup) ;
     }
 
-    fun createQuery(queryGroup: QueryGroup, queryMetric: QueryMetric, queryOperator: ComparisonOperator, timeframe: QueryTimeFrame, value: String)  : Query {
+    fun createQuery(queryGroup: QueryGroup, physicalMetric: PhysicalMetric, queryOperator: ComparisonOperator, timeframe: QueryTimeFrame, value: String)  : Query {
         var query = Query();
 
         query.queryGroup = queryGroup
-        query.field = queryMetric.toString()
+        query.field = physicalMetric.toString()
         query.operator = queryOperator
         query.value = value
         query.timeFrame = timeframe
@@ -236,7 +236,7 @@ internal class QueryEvaluationResourceIntTest(
 
         val queryGroup = createQueryGroup();
 
-        val query = createQuery(queryGroup, QueryMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_6_MONTH, "55");
+        val query = createQuery(queryGroup, PhysicalMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_6_MONTH, "55");
 
         val parentQueryLogic = createQueryLogic(queryGroup,QueryLogicType.LOGIC, QueryLogicOperator.AND, null,null);
         createQueryLogic(queryGroup,QueryLogicType.CONDITION, null, query,parentQueryLogic);
@@ -250,7 +250,7 @@ internal class QueryEvaluationResourceIntTest(
         queryLogicDTO.logic_operator = QueryLogicOperator.OR
         queryLogicDTO.type = QueryLogicType.LOGIC
 
-        val queryDTO = QueryDTO(QueryMetric.HEART_RATE.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "65", QueryTimeFrame.LAST_7_DAYS, "domain")
+        val queryDTO = QueryDTO(PhysicalMetric.HEART_RATE.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "65", QueryTimeFrame.LAST_7_DAYS, "domain")
 
         val queryLogicChildDTO = QueryLogicDTO()
         queryLogicChildDTO.query = queryDTO
@@ -294,7 +294,7 @@ internal class QueryEvaluationResourceIntTest(
 
         val queryGroup = createQueryGroup();
 
-        val query = createQuery(queryGroup, QueryMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_YEAR, "55");
+        val query = createQuery(queryGroup, PhysicalMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_YEAR, "55");
 
         val parentQueryLogic = createQueryLogic(queryGroup,QueryLogicType.LOGIC, QueryLogicOperator.AND, null,null);
         createQueryLogic(queryGroup,QueryLogicType.CONDITION, null, query,parentQueryLogic);
@@ -324,7 +324,7 @@ internal class QueryEvaluationResourceIntTest(
         assertEquals(false, queryEvaluation.result)
 
         val queryGroup1 = createQueryGroup();
-        val query1 = createQuery(queryGroup1, QueryMetric.HEART_RATE, ComparisonOperator.GREATER_THAN, QueryTimeFrame.PAST_YEAR, "55");
+        val query1 = createQuery(queryGroup1, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN, QueryTimeFrame.PAST_YEAR, "55");
 
         val parentQueryLogic1 = createQueryLogic(queryGroup1,QueryLogicType.LOGIC, QueryLogicOperator.AND, null,null);
         createQueryLogic(queryGroup1,QueryLogicType.CONDITION, null, query1 ,parentQueryLogic1);

@@ -6,7 +6,7 @@ import {
 } from '@uom-digital-health-software/ngx-angular-query-builder';
 import { FormBuilder, FormControl, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { QueryDTO, QueryNode, QueryString } from './queries.model';
+import { QueryDTO, QueryNode, QueryString, Question } from './queries.model';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -14,7 +14,7 @@ import { QueryGroup } from './queries.model';
 import { QueriesService } from './queries.service';
 import { ContentComponent } from './content/content.component';
 
-import { delusions, questionnaire } from './questionnaire';
+
 
 import { ContentItem, ContentType } from './queries.model';
 
@@ -47,6 +47,8 @@ export class AddQueryComponent {
     public queryGrouName: string;
 
     public queryGroupDesc: string;
+
+    public isLoaded: Boolean = false;
 
     public queryGroupId: number | any | null;
 
@@ -84,26 +86,21 @@ export class AddQueryComponent {
 
     public config: QueryBuilderConfig = {
         entities: {
-            physical: { name: 'Passive data' },
-            questionnaire: { name: 'Questionnaire Slider' },
-            questionnaire_histogram: { name: 'Questionnaire Multichoice' },
-            questionnaire_slider: { name: 'Questionnaire Group' },
-            delusions: { name: 'Delusions' },
+            // physical: { name: 'Passive data' },
+            // questionnaire: { name: 'Questionnaire Slider' },
+            // questionnaire_histogram: { name: 'Questionnaire Multichoice' },
+            // questionnaire_slider: { name: 'Questionnaire Group' },
+            // delusions: { name: 'Delusions' },
         },
         fields: {
-            heart_rate: {
-                name: 'Heart Rate',
-                type: 'number',
-                entity: 'physical',
-            },
-            sleep_length: { name: 'Sleep', type: 'number', entity: 'physical' },
-            hrv: { name: 'HRV', type: 'number', entity: 'physical' },
         },
     };
 
     public currentConfig: QueryBuilderConfig;
     public allowRuleset: boolean = true;
     public allowCollapse: boolean;
+    public questionnare: Question[]
+    public delusions: Question[]
     public persistValueOnFieldChange: boolean = true;
 
     selectedGroupIndex: number | null = null;
@@ -134,14 +131,29 @@ export class AddQueryComponent {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
 
-        // process the config
+        let physicalTypesPromise = this.queryService.gellAllPhysicalTypes().toPromise()
+        let questionnaireItems = this.queryService.getQuestionnaireItems().toPromise()
+        let entitiesPromise =  this.queryService.getEntities().toPromise()
 
-        this.addQuestionnaireItemsToQueryBuilder();
+        Promise.all([physicalTypesPromise, questionnaireItems, entitiesPromise]).then(allTypes => {
+            let physicalTypes = allTypes[0] as any
+            let questionnareTypes = allTypes[1]
+            let entities = allTypes[2]
 
-        this.addDelusionsToQueryBuilder();
+            this.questionnare = questionnareTypes["questionnaire"] as Question[]
+            this.delusions = questionnareTypes["delusions"] as Question[]
+
+            this.addQuestionnaireItemsToQueryBuilder();
+            this.addDelusionsToQueryBuilder();
+            this.config.entities = { ...entities }
+            this.config.fields = { ...this.config.fields, ...physicalTypes }
+
+            this.isLoaded = true
+
+        })
     }
 
-    private addQuestionnaireItemsToQueryBuilder() {
+    private async addQuestionnaireItemsToQueryBuilder() {
         // histogram to include only
         let histogramQuestionsToInclude = [
             'whereabouts_1',
@@ -149,15 +161,14 @@ export class AddQueryComponent {
             'social_1',
         ];
 
-        for (const question of questionnaire) {
+        for (const question of this.questionnare) {
             let fieldName = question.field_name;
 
             const field = {
-                name: `${question.field_label} ${
-                    question.field_sublabel ? question.field_sublabel : ''
-                }`,
+                name: `${question.field_label} ${question.field_sublabel ? question.field_sublabel : ''
+                    }`,
                 type: 'category',
-                entity: 'questionnaire',
+                entity: 'QUESTIONNAIRE_SLIDER',
                 operators: ['=', '!=', '<', '>', '<=', '>='],
             };
             if (question.field_type == 'slider') {
@@ -167,7 +178,7 @@ export class AddQueryComponent {
             ) {
                 fieldName = question.field_name.split('_')[0];
                 field.name = `${question.field_label}`;
-                field.entity = 'questionnaire_histogram';
+                field.entity = 'QUESTIONNAIRE_HISTOGRAM';
                 field.operators = ['IS'];
                 let mappedOptions = question.select_choices_or_calculations.map(
                     (item) => {
@@ -184,24 +195,25 @@ export class AddQueryComponent {
                 const group = {
                     name: `${question.group_name}`,
                     type: 'category',
-                    entity: 'questionnaire_slider',
+                    entity: 'QUESTIONNAIRE_GROUP',
                     operators: ['=', '!=', '<', '>', '<=', '>='],
                     options: sliderOptions,
                 };
                 this.config.fields[question.group_name] = group;
             }
             this.config.fields[fieldName] = field;
+
+
         }
     }
 
     private addDelusionsToQueryBuilder() {
-        for (const delusion of delusions) {
+        for (const delusion of this.delusions) {
             const field = {
-                name: `${delusion.field_label} ${
-                    delusion.field_sublabel ? delusion.field_sublabel : ''
-                }`,
+                name: `${delusion.field_label} ${delusion.field_sublabel ? delusion.field_sublabel : ''
+                    }`,
                 type: 'category',
-                entity: 'delusions',
+                entity: 'QUESTIONNAIRE_DELUSIONS',
                 options: sliderOptions,
             };
 
