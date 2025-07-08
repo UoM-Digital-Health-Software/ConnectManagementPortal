@@ -11,6 +11,8 @@ interface QueryParticipantContentRepository : JpaRepository<QueryParticipantCont
 
     fun findBySubjectAndQueryGroup(subject: Subject, queryGroup: QueryGroup): List<QueryParticipantContent>
 
+    fun findByQueryContentGroupId(queryContentGroupId: Long): List<QueryParticipantContent>
+
     fun findBySubject(subject: Subject) : List<QueryParticipantContent>
 
     fun findByQueryContentGroupAndSubject(queryContentGroup: QueryContentGroup, subject: Subject) : List<QueryParticipantContent>

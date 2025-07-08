@@ -781,6 +781,10 @@ internal class QueryResourceIntTest(
 
         val updatedContentGroup = queryContentGroupRepository.findById(queryContentGroupId).get()
         Assertions.assertThat(updatedContentGroup.status).isEqualTo(ContentGroupStatus.INACTIVE)
+
+        var queryParticipantContentList = queryParticipantContentRepository.findByQueryContentGroupId(queryContentGroupId!!)
+        Assertions.assertThat(queryParticipantContentList.size).isEqualTo(0)
+
     }
 
 

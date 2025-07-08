@@ -31,7 +31,7 @@ class QueryContentGroup : AbstractEntity(), Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    var status: ContentGroupStatus = ContentGroupStatus.ACTIVE
+    var status: ContentGroupStatus = ContentGroupStatus.INACTIVE
 
 
     override fun toString(): String {
