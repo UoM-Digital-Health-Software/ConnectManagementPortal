@@ -122,6 +122,7 @@ export class AddQueryComponent {
     public contentGroupItemsError = false;
     public queryRulesError = false;
     public contentParagraphError = false;
+    public contentModuleLinkError = false;
 
     constructor(
         private queryService: QueriesService,
@@ -330,7 +331,9 @@ export class AddQueryComponent {
                 if (
                     rule.value === undefined ||
                     rule.value === null ||
-                    rule.value.toString().trim() === ''
+                    rule.value.toString().trim() === '' ||
+                    rule.timeFame === undefined ||
+                    rule.timeFame === null
                 ) {
                     return false;
                 }
@@ -374,7 +377,6 @@ export class AddQueryComponent {
             this.queryBuilderError = true;
             hasError = true;
         }
-
         if (!this.validateQueryRules(this.query.rules)) {
             this.queryRulesError = true;
             hasError = true;
@@ -463,6 +465,7 @@ export class AddQueryComponent {
         this.contentGroupNameError = false;
         this.contentGroupItemsError = false;
         this.contentParagraphError = false;
+        this.contentModuleLinkError = false;
 
         if (
             !this.currentEditingCopy?.name ||
@@ -493,6 +496,13 @@ export class AddQueryComponent {
 
                 if (!headingValid || !valueValid) {
                     this.contentParagraphError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+            if (item.type === 'MODULE_LINK') {
+                if (item.resourceId === null || item.resourceId === undefined) {
+                    this.contentModuleLinkError = true;
                     hasError = true;
                     break;
                 }

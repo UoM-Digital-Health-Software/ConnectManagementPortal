@@ -121,18 +121,25 @@
             <label>Please add at least one rule to the Query Builder.</label>
         </div>
 
-        <div *ngIf="contentGroupNameError||contentGroupItemsError" class="alert alert-danger">
+        <div
+            *ngIf="contentGroupNameError || contentGroupItemsError"
+            class="alert alert-danger"
+        >
             <label
                 >All Content Groups must have a name and at least one content
                 item.</label
             >
         </div>
-        <div *ngIf="contentParagraphError||queryRulesError" class="alert alert-danger">
-            <label
-                >Please fill in all fields.</label
-            >
+        <div
+            *ngIf="
+                contentParagraphError ||
+                queryRulesError ||
+                contentModuleLinkError
+            "
+            class="alert alert-danger"
+        >
+            <label>Please fill in all fields.</label>
         </div>
-        
 
         <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn">
             Save
