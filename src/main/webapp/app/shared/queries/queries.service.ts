@@ -67,7 +67,7 @@ export class QueriesService {
             this.baseURL + `/querycontentgroup/${queryContentGroupId}`
         );
     }
-
+    
     archiveQueryGroup(id: number) {
         return this.http.patch(
             this.baseURL + `/querygroups/${id}/archive`,

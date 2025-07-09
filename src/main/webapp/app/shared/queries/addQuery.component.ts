@@ -106,7 +106,6 @@ export class AddQueryComponent {
     public allowCollapse: boolean;
     public persistValueOnFieldChange: boolean = true;
 
-    private canGoBack: boolean = false;
     selectedGroupIndex: number | null = null;
 
     isEditingContent = false;
@@ -114,6 +113,16 @@ export class AddQueryComponent {
     currentEditingCopy: ContentGroup | null = null;
 
     queryId = null;
+
+    public groupNameError = false;
+    public groupDescError = false;
+    public queryBuilderError = false;
+    public groupNameDuplicateError = false;
+    public contentGroupNameError = false;
+    public contentGroupItemsError = false;
+    public queryRulesError = false;
+    public contentParagraphError = false;
+    public contentModuleLinkError = false;
 
     constructor(
         private queryService: QueriesService,
@@ -125,8 +134,6 @@ export class AddQueryComponent {
     ) {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
-        this.canGoBack =
-            !!this.router.getCurrentNavigation()?.previousNavigation;
 
         // process the config
 
@@ -249,11 +256,6 @@ export class AddQueryComponent {
         this.isEditingContent = false;
     }
 
-    goBack(): void {
-        if (this.canGoBack) {
-            this.location.back();
-        }
-    }
     changeDisabled(event: Event) {
         (<HTMLInputElement>event.target).checked
             ? this.queryCtrl.disable()
@@ -327,23 +329,85 @@ export class AddQueryComponent {
         }
     }
 
+    validateQueryRules(rules: any[]): boolean {
+        for (const rule of rules) {
+            if (rule.rules && Array.isArray(rule.rules)) {
+                if (!this.validateQueryRules(rule.rules)) {
+                    return false;
+                }
+            } else {
+                if (
+                    rule.value === undefined ||
+                    rule.value === null ||
+                    rule.value.toString().trim() === '' ||
+                    rule.timeFame === undefined ||
+                    rule.timeFame === null
+                ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     async saveQueryGroupToDB() {
-        const query_group: QueryGroup = {
-            name: this.queryGrouName,
-            description: this.queryGroupDesc,
-        };
+        this.groupNameError = false;
+        this.groupDescError = false;
+        this.queryBuilderError = false;
+        this.groupNameDuplicateError = false;
+        this.queryRulesError = false;
+
+        let hasError = false;
+
+        if (!this.queryGrouName || !this.queryGrouName.trim()) {
+            this.groupNameError = true;
+            hasError = true;
+        }
+
+        if (!this.queryGroupDesc || !this.queryGroupDesc.trim()) {
+            this.groupDescError = true;
+            hasError = true;
+        }
+
+        if (!this.query || !this.query.rules || this.query.rules.length === 0) {
+            this.queryBuilderError = true;
+            hasError = true;
+        }
+        if (!this.validateQueryRules(this.query.rules)) {
+            this.queryRulesError = true;
+            hasError = true;
+        }
+
+        if (hasError) {
+            return;
+        }
 
         if (this.queryGroupId) {
-            this.queryGroupId = await this.updateQueryGroup(query_group);
+            let result = await this.updateQueryGroup({
+                name: this.queryGrouName,
+                description: this.queryGroupDesc,
+            });
+            if (result === -1) {
+                this.groupNameDuplicateError = true;
+                return;
+            }
             await this.updateIndividualQueries();
         } else {
-            this.queryGroupId = await this.saveNewQueryGroup(query_group);
+            this.queryGroupId = await this.saveNewQueryGroup({
+                name: this.queryGrouName,
+                description: this.queryGroupDesc,
+            });
+
+            if (this.queryGroupId === -1) {
+                this.groupNameDuplicateError = true;
+                this.queryGroupId = null;
+                return;
+            }
             await this.saveIndividualQueries();
         }
 
         await this.saveContent();
-
-        this.goBack();
+        this.router.navigate(['querygroups']);
     }
 
     async saveContent() {
@@ -375,6 +439,12 @@ export class AddQueryComponent {
     }
 
     deleteContentGroup(id: number) {
+        const confirmDelete = confirm(
+            "Are you sure you want to delete this? This will also delete the content from the participants' phones."
+        );
+        if (!confirmDelete) {
+            return;
+        }
         this.queryService
             .deleteContentGroupByID(id)
             .subscribe((result: any) => {
@@ -397,6 +467,58 @@ export class AddQueryComponent {
     }
 
     saveCurrentEditingGroup() {
+        let hasError = false;
+        this.contentGroupNameError = false;
+        this.contentGroupItemsError = false;
+        this.contentParagraphError = false;
+        this.contentModuleLinkError = false;
+
+        if (
+            !this.currentEditingCopy?.name ||
+            !this.currentEditingCopy.name.trim()
+        ) {
+            this.contentGroupNameError = true;
+            hasError = true;
+
+            return;
+        }
+        if (
+            !this.currentEditingCopy.items ||
+            this.currentEditingCopy.items.length === 0
+        ) {
+            this.contentGroupItemsError = true;
+            hasError = true;
+
+            return;
+        }
+
+        for (const item of this.currentEditingCopy.items) {
+            if (item.type === 'PARAGRAPH') {
+                const headingValid = item.heading && item.heading.trim() !== '';
+                const valueValid =
+                    typeof item.value === 'string'
+                        ? item.value.trim() !== ''
+                        : item.value !== undefined && item.value !== null;
+
+                if (!headingValid || !valueValid) {
+                    this.contentParagraphError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+            if (item.type === 'MODULE_LINK') {
+                if (item.resourceId === null || item.resourceId === undefined) {
+                    this.contentModuleLinkError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasError) {
+            return;
+        }
+
         if (this.currentEditingIndex !== null && this.currentEditingCopy) {
             this.contentGroups[this.currentEditingIndex] =
                 this.currentEditingCopy;
