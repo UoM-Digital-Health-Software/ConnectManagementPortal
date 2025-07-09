@@ -382,7 +382,11 @@ export class AddQueryComponent {
             return;
         }
 
-        if (this.queryGroupId) {
+        if (
+            this.queryGroupId &&
+            this.route.snapshot.url[0].path !== 'duplicateQuery'
+        ) {
+            // editing existing query
             let result = await this.updateQueryGroup({
                 name: this.queryGrouName,
                 description: this.queryGroupDesc,
@@ -393,12 +397,13 @@ export class AddQueryComponent {
             }
             await this.updateIndividualQueries();
         } else {
+            // creating new query or duplicating query
             this.queryGroupId = await this.saveNewQueryGroup({
                 name: this.queryGrouName,
                 description: this.queryGroupDesc,
             });
-
-            if (this.queryGroupId === -1) {
+            
+            if (this.queryGroupId === -1) {// if the group name exist
                 this.groupNameDuplicateError = true;
                 this.queryGroupId = null;
                 return;
