@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-start align-items-center">
-    <h1 style="padding-right:20px">Query List</h1>
+    <h1 style="padding-right: 20px">Query List</h1>
     <button class="btn btn-primary mr-2" routerLink="/archivedQueryGroups">
         Archived Queires
     </button>
@@ -23,12 +23,20 @@
                 {{ group.createdBy.lastName }}
             </td>
             <td>
-                <button
-                    class="btn btn-warning"
-                    (click)="archiveQueryGroup(group.id)"
-                >
-                    Archive
-                </button>
+                <div class="d-flex justify-content-start">
+                    <button
+                        class="btn btn-warning mr-md-3"
+                        (click)="archiveQueryGroup(group.id)"
+                    >
+                        Archive
+                    </button>
+                    <button
+                        class="btn btn-success"
+                        (click)="duplicateQueryGroup(group.id)"
+                    >
+                        Duplicate
+                    </button>
+                </div>
             </td>
         </tr>
     </table>
