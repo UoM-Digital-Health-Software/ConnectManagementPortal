@@ -356,18 +356,6 @@ export class AddQueryComponent {
             hasError = true;
         }
 
-        const isDuplicate = await this.queryService
-            .checkDuplicateQueryGroupName(
-                this.queryGrouName.trim(),
-                this.queryGroupId
-            )
-            .toPromise();
-
-        if (isDuplicate) {
-            this.groupNameDuplicateError = true;
-            hasError = true;
-        }
-
         if (!this.queryGroupDesc || !this.queryGroupDesc.trim()) {
             this.groupDescError = true;
             hasError = true;
@@ -387,16 +375,26 @@ export class AddQueryComponent {
         }
 
         if (this.queryGroupId) {
-            this.queryGroupId = await this.updateQueryGroup({
+            let result = await this.updateQueryGroup({
                 name: this.queryGrouName,
                 description: this.queryGroupDesc,
             });
+            if (result === -1) {
+                this.groupNameDuplicateError = true;
+                return;
+            }
             await this.updateIndividualQueries();
         } else {
             this.queryGroupId = await this.saveNewQueryGroup({
                 name: this.queryGrouName,
                 description: this.queryGroupDesc,
             });
+
+            if (this.queryGroupId === -1) {
+                this.groupNameDuplicateError = true;
+                this.queryGroupId = null;
+                return;
+            }
             await this.saveIndividualQueries();
         }
 
