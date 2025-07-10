@@ -73,7 +73,7 @@
         </div>
 
         <!-- Add Content Group Button -->
-        <div class="block" *ngIf="!isEditingContent&&query.canEdit">
+        <div class="block" *ngIf="(!isEditingContent)&&(!readonlyMode)">
             <button class="btn btn-outline-primary" (click)="addContentGroup()">
                 Add Content Group
             </button>
@@ -91,9 +91,10 @@
 
                 <query-content
                     [(items)]="currentEditingCopy.items"
+                    [isReadOnlyMode]="readonlyMode"
                 ></query-content>
 
-                <div class="mt-3 d-flex" *ngIf="query.canEdit">
+                <div class="mt-3 d-flex" *ngIf="!readonlyMode">
                     <button
                         class="btn btn-primary mr-2"
                         (click)="saveCurrentEditingGroup()"

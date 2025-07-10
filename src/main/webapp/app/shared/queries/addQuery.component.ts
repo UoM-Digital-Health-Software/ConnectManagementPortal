@@ -115,6 +115,8 @@ export class AddQueryComponent {
 
     queryId = null;
 
+    public readonlyMode = false;
+
     constructor(
         private queryService: QueriesService,
         private formBuilder: FormBuilder,
@@ -215,11 +217,14 @@ export class AddQueryComponent {
                         this.query = response;
                         this.queryGrouName = response.queryGroupName;
                         this.queryGroupDesc = response.queryGroupDescription;
+                        if(!this.query.canEdit)
+                            this.readonlyMode = true;
                     });
 
                 this.refreshContentGroups();
             }
         });
+
     }
 
     refreshContentGroups() {
