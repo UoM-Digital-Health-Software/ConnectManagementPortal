@@ -404,7 +404,7 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
-            await this.saveContent();
+            await this.saveContent().toPromise();
 
             this.router.navigate(['querygroups']);
         } catch (err: any) {
