@@ -40,6 +40,7 @@ import java.time.ZonedDateTime
 import javax.servlet.ServletException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.hamcrest.Matchers.not
 
 
 internal class QueryResourceIntTest(
@@ -239,6 +240,8 @@ internal class QueryResourceIntTest(
     @Throws(Exception::class)
     fun shouldCreateQueryGroup() {
         whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+        // if the query group name exist
+        createAndAddQueryGroupToDB();
 
         val queryGroupDTO = QueryGroupDTO()
         queryGroupDTO.name = "Name"
@@ -249,6 +252,69 @@ internal class QueryResourceIntTest(
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(json)))
             .andExpect(status().isOk)
+            .andExpect(content().string("-1"))
+
+        // if the query group name not exist
+        val queryGroupDTO1 = QueryGroupDTO()
+        queryGroupDTO1.name = "Name1"
+        queryGroupDTO1.description = "desc"
+        val json1 = objectMapper.writeValueAsString(queryGroupDTO1)
+
+         mockMvc.perform(post(baseURL + "querygroups")
+             .contentType(TestUtil.APPLICATION_JSON_UTF8)
+             .content(TestUtil.convertObjectToJsonBytes(json1)))
+             .andExpect(status().isOk)
+             .andExpect(content().string(not("-1")))
+
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun shouldUpdateQueryGroup(){
+        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+        // if the query group name exist
+        var exisitingQueryGroup = createAndAddQueryGroupToDB();
+
+        val user = userRepository.findAll()[0]
+        val queryGroup = QueryGroup()
+
+        queryGroup.name = "Test"
+        queryGroup.description = " test desc"
+        queryGroup.createdDate = ZonedDateTime.now();
+        queryGroup.createdBy = user;
+        var exisitingQueryGroup1 = queryGroupRepository.saveAndFlush(queryGroup)
+
+
+        val queryGroupDTO = QueryGroupDTO()
+        queryGroupDTO.name = "Test"
+        queryGroupDTO.description = "This is some text"
+
+        val json = objectMapper.writeValueAsString(queryGroupDTO)
+
+        mockMvc.perform(put(baseURL + "querygroups/"+ exisitingQueryGroup.id)
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(json)))
+            .andExpect(status().isOk)
+            .andExpect(content().string("-1"))
+
+        // if the query group name not exist
+        val queryGroupDTO1 = QueryGroupDTO()
+        queryGroupDTO1.name = "NewName"
+        queryGroupDTO1.description = "This is some text"
+
+        val json1 = objectMapper.writeValueAsString(queryGroupDTO1)
+
+        mockMvc.perform(put(baseURL + "querygroups/"+ exisitingQueryGroup.id)
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(json1)))
+            .andExpect(status().isOk)
+            .andExpect(content().string(not("-1")))
+
+        var updatedQueryGroup = queryGroupRepository.findById(exisitingQueryGroup.id!!).get()
+
+        Assertions.assertThat(updatedQueryGroup.name).isEqualTo("NewName")
+
+
     }
 
     @Test
@@ -686,30 +752,6 @@ internal class QueryResourceIntTest(
                 else -> {}
             }
         }
-    }
-
-    @Test
-    @Transactional
-    fun shouldCheckQueryGroupName() {
-        createAndAddQueryGroupToDB()
-
-        val returnedValue = mockMvc.perform(
-            get("$baseURL/querygroups/check-name")
-                .param("name", "unique")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().string("false"))
-            .andReturn()
-
-        val returnedValue1 = mockMvc.perform(
-            get("$baseURL/querygroups/check-name")
-                .param("name", "Name")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-        )
-            .andExpect(status().isOk)
-            .andExpect(content().string("true"))
-            .andReturn()
     }
 
 

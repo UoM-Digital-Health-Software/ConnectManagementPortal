@@ -69,15 +69,16 @@ class QueryResource(
 
 
     @PostMapping("querygroups")
-    fun createQueryGroup(@RequestBody queryJson: String?): ResponseEntity<Long?> {
+    fun createQueryGroup(@RequestBody queryJson: String?): ResponseEntity<*> {
         var queryGroupId: Long? = null
         if(queryJson.isNullOrEmpty() == false) {
             val objectMapper = jacksonObjectMapper()
             val queryGroupDTO: QueryGroupDTO = objectMapper.readValue(queryJson)
-            //check if query group name exists
+
             val exists = queryBuilderService.checkQueryGroupName(queryGroupDTO.name,null);
             if(exists) {
-                return ResponseEntity.ok(-1);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Query group name already exists.")
             }
 
             val user = userService.getUserWithAuthorities()
@@ -94,10 +95,11 @@ class QueryResource(
         if(!queryJson.isNullOrEmpty()) {
             val objectMapper = jacksonObjectMapper()
             val queryGroupDTO: QueryGroupDTO = objectMapper.readValue(queryJson)
-            //check if query group name exists
+
             val exists = queryBuilderService.checkQueryGroupName(queryGroupDTO.name,id);
             if(exists) {
-                return ResponseEntity.ok(-1);
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Query group name already exists.")
             }
 
             val user = userService.getUserWithAuthorities()
