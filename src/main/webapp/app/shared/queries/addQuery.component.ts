@@ -418,6 +418,7 @@ export class AddQueryComponent {
             }
 
             await this.saveContent().toPromise();
+
             this.router.navigate(['querygroups']);
         } catch (err: any) {
             if (
