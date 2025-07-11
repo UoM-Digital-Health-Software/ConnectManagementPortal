@@ -407,7 +407,6 @@ export class AddQueryComponent {
                     .toPromise();
                 await this.updateIndividualQueries().toPromise();
             } else {
-                console.log('dd');
                 this.queryGroupId = await this.queryService
                     .saveNewQueryGroup({
                         name: this.queryGrouName,
