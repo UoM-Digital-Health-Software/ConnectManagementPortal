@@ -289,7 +289,7 @@ class QueryContentService(
         queryContentGroupRepository.save(contentGroup)
 
         if (status == ContentGroupStatus.INACTIVE) {
-            queryParticipantContentRepository.deleteByQueryContentGroupId(id)
+            queryParticipantContentRepository.deleteAllByQueryContentGroupId(id)
         }
     }
 
