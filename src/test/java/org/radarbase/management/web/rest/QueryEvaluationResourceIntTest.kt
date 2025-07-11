@@ -250,7 +250,7 @@ internal class QueryEvaluationResourceIntTest(
         queryLogicDTO.logic_operator = QueryLogicOperator.OR
         queryLogicDTO.type = QueryLogicType.LOGIC
 
-        val queryDTO = QueryDTO(PhysicalMetric.HEART_RATE.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "65", QueryTimeFrame.LAST_7_DAYS, "domain")
+        val queryDTO = QueryDTO(PhysicalMetric.HEART_RATE.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "65", QueryTimeFrame.LAST_7_DAYS, "PHYSICAL")
 
         val queryLogicChildDTO = QueryLogicDTO()
         queryLogicChildDTO.query = queryDTO

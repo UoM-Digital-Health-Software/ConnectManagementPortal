@@ -76,6 +76,7 @@ internal class QueryResourceIntTest(
 
     @BeforeEach
     @Throws(ServletException::class)
+
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
@@ -205,7 +206,7 @@ internal class QueryResourceIntTest(
         val queryGroup = createAndAddQueryGroupToDB()
         val queryLogicParentDTO = QueryLogicDTO()
 
-        val queryDTO = QueryDTO(PhysicalMetric.SLEEP_LENGTH.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "domain")
+        val queryDTO = QueryDTO(PhysicalMetric.SLEEP_LENGTH.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "PHYSICAL")
         queryDTO.value = "80"
         queryDTO.timeFrame = QueryTimeFrame.LAST_7_DAYS
         queryDTO.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
@@ -398,6 +399,8 @@ internal class QueryResourceIntTest(
     fun shouldDeleteAssignedQueryGroup() {
         val queryParticipant = createAndAddQueryParticipantToDB();
 
+        val originalParticipantRepositorySize = queryParticipantRepository.findAll().size
+
         val queryGroupId = queryParticipant.queryGroup?.id
         val subjectId = queryParticipant.subject?.id
 
@@ -405,7 +408,10 @@ internal class QueryResourceIntTest(
         mockMvc.perform(delete(baseURL + "querygroups/" + queryGroupId + "/subject/" + subjectId))
             .andExpect(status().isOk)
 
-        Assertions.assertThat(queryParticipantRepository.findAll().size).isEqualTo(0)
+
+        val afterSize = queryParticipantRepository.findAll().size
+
+        Assertions.assertThat(originalParticipantRepositorySize - 1).isEqualTo(afterSize)
     }
 
     @Test
