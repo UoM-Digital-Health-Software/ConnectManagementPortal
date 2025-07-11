@@ -251,8 +251,7 @@ internal class QueryResourceIntTest(
         mockMvc.perform(post(baseURL + "querygroups")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(json)))
-            .andExpect(status().isOk)
-            .andExpect(content().string("-1"))
+            .andExpect(status().is4xxClientError)
 
         // if the query group name not exist
         val queryGroupDTO1 = QueryGroupDTO()
@@ -260,12 +259,14 @@ internal class QueryResourceIntTest(
         queryGroupDTO1.description = "desc"
         val json1 = objectMapper.writeValueAsString(queryGroupDTO1)
 
-         mockMvc.perform(post(baseURL + "querygroups")
+        mockMvc.perform(post(baseURL + "querygroups")
              .contentType(TestUtil.APPLICATION_JSON_UTF8)
              .content(TestUtil.convertObjectToJsonBytes(json1)))
              .andExpect(status().isOk)
-             .andExpect(content().string(not("-1")))
 
+        var savedQueryGroup = queryGroupRepository.findAll().get(1)
+
+        Assertions.assertThat(savedQueryGroup.name).isEqualTo("Name1")
     }
 
     @Test
@@ -294,8 +295,7 @@ internal class QueryResourceIntTest(
         mockMvc.perform(put(baseURL + "querygroups/"+ exisitingQueryGroup.id)
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(json)))
-            .andExpect(status().isOk)
-            .andExpect(content().string("-1"))
+            .andExpect(status().is4xxClientError)
 
         // if the query group name not exist
         val queryGroupDTO1 = QueryGroupDTO()
@@ -308,7 +308,6 @@ internal class QueryResourceIntTest(
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(json1)))
             .andExpect(status().isOk)
-            .andExpect(content().string(not("-1")))
 
         var updatedQueryGroup = queryGroupRepository.findById(exisitingQueryGroup.id!!).get()
 
