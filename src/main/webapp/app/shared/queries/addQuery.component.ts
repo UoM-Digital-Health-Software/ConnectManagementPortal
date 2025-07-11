@@ -125,6 +125,10 @@ export class AddQueryComponent {
     public contentParagraphError = false;
     public contentModuleLinkError = false;
 
+    public isDuplicateMode = false;
+
+    public isEditingMode = false;
+
     constructor(
         private queryService: QueriesService,
         private formBuilder: FormBuilder,
@@ -212,6 +216,12 @@ export class AddQueryComponent {
     }
 
     async ngOnInit() {
+        this.route.url.subscribe((urlSegments) => {
+            this.isDuplicateMode = urlSegments.some(
+                (seg) => seg.path === 'duplicateQuery'
+            );
+        });
+
         this.route.params.subscribe((params) => {
             this.queryId = params['query-id'];
             this.queryGroupId = this.queryId;
@@ -223,12 +233,8 @@ export class AddQueryComponent {
                         this.query = response;
                         this.queryGrouName = response.queryGroupName;
                         this.queryGroupDesc = response.queryGroupDescription;
-                        // if duplicating query
 
-                        if (
-                            this.route.snapshot.url[0].path === 'duplicateQuery'
-                        ) {
-                            this.queryGroupId = null;
+                        if (this.isDuplicateMode) {
                             this.queryGrouName += '_duplicate';
                         }
                     });
@@ -360,6 +366,8 @@ export class AddQueryComponent {
 
         let hasError = false;
 
+        this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
+
         if (!this.queryGrouName?.trim()) {
             this.groupNameError = true;
             hasError = true;
@@ -386,10 +394,8 @@ export class AddQueryComponent {
 
         if (hasError) return;
 
-        const isEditMode = !!this.queryGroupId;
-
         try {
-            if (isEditMode) {
+            if (this.isEditingMode) {
                 await this.queryService
                     .updateQueryGroup(
                         {
@@ -399,27 +405,27 @@ export class AddQueryComponent {
                         this.queryGroupId
                     )
                     .toPromise();
-
                 await this.updateIndividualQueries().toPromise();
             } else {
+                console.log('dd');
                 this.queryGroupId = await this.queryService
                     .saveNewQueryGroup({
                         name: this.queryGrouName,
                         description: this.queryGroupDesc,
                     })
                     .toPromise();
-
                 await this.saveIndividualQueries().toPromise();
             }
 
-            await this.saveContent();
-
+            await this.saveContent().toPromise();
             this.router.navigate(['querygroups']);
         } catch (err: any) {
-            if (err.status === 409 || err.message?.includes('already exists')) {
+            if (
+                err?.status === 409 ||
+                err?.message?.includes('already exists')
+            ) {
                 this.groupNameDuplicateError = true;
-
-                if (!isEditMode) {
+                if (!this.isEditingMode) {
                     this.queryGroupId = null;
                 }
             } else {
@@ -428,38 +434,6 @@ export class AddQueryComponent {
 
             return;
         }
-
-        if (
-            this.queryGroupId &&
-            this.route.snapshot.url[0].path !== 'duplicateQuery'
-        ) {
-            // editing existing query
-            let result = await this.updateQueryGroup({
-                name: this.queryGrouName,
-                description: this.queryGroupDesc,
-            });
-            if (result === -1) {
-                this.groupNameDuplicateError = true;
-                return;
-            }
-            await this.updateIndividualQueries();
-        } else {
-            // creating new query or duplicating query
-            this.queryGroupId = await this.saveNewQueryGroup({
-                name: this.queryGrouName,
-                description: this.queryGroupDesc,
-            });
-            
-            if (this.queryGroupId === -1) {// if the group name exist
-                this.groupNameDuplicateError = true;
-                this.queryGroupId = null;
-                return;
-            }
-            await this.saveIndividualQueries();
-        }
-
-        await this.saveContent();
-        this.router.navigate(['querygroups']);
     }
 
     saveContent(): Observable<any> {
