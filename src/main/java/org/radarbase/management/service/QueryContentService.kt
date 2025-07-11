@@ -123,6 +123,7 @@ class QueryContentService(
 
     fun deleteQueryContentGroup(queryContentGroupId: Long) {
         queryContentRepository.deleteAllByQueryContentGroupId(queryContentGroupId)
+        queryParticipantContentRepository.deleteAllByQueryContentGroupId(queryContentGroupId)
         queryContentGroupRepository.deleteById(queryContentGroupId)
     }
 

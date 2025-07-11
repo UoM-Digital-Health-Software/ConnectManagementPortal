@@ -83,7 +83,7 @@ export enum ContentType {
 
 export interface ContentItem {
     id?: number;
-    heading?: String;
+    heading?: string;
     type: ContentType;
     value?: string | Number;
     imageValue?: string;

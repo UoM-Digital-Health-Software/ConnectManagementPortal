@@ -246,6 +246,11 @@ public class QueryBuilderService(
         return resultDto
     }
 
+    fun checkQueryGroupName(name: String, excludeId: Long?): Boolean {
+        val exists = queryGroupRepository.existsByNameAndIdNot(name, excludeId)
+        return exists;
+    }
+    
     fun isQueryGroupAssignedToParticipant(id: Long): Boolean {
         return queryParticipantRepository.existsByQueryGroupId(id)
     }
