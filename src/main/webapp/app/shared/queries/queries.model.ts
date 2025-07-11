@@ -77,14 +77,14 @@ export enum ContentType {
 
 export interface ContentItem {
     id?: number;
-    heading?: String;
+    heading?: string;
     type: ContentType;
-    value?: String | Number;
-    imageValue?: String;
-    imageBlob?: String;
+    value?: string | number;
+    imageValue?: string;
+    imageBlob?: string;
     isValidImage?: Boolean;
-    queryGroupId?: Number;
-    resourceId?: Number;
+    queryGroupId?: number;
+    resourceId?: number;
 }
 
 export interface ContentGroup {
@@ -101,6 +101,6 @@ export enum ContentGroupStatus {
 }
 
 export interface Module {
-    id?: Number;
-    name?: String;
+    id?: number;
+    name?: string
 }

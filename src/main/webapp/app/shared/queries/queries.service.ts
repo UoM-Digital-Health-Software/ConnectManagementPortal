@@ -15,9 +15,10 @@ export class QueriesService {
         contentGroupName: string;
         queryContentDTOList: ContentItem[];
     }) {
-        return this.http
-            .post(this.baseURL + '/querycontentgroup', contentGroupData)
-            .toPromise();
+        return this.http.post(
+            this.baseURL + '/querycontentgroup',
+            contentGroupData
+        );
     }
 
     getQueryGroup(queryId: number) {
@@ -31,27 +32,22 @@ export class QueriesService {
     }
 
     saveNewQueryGroup(queryGroup: QueryGroup) {
-        return this.http
-            .post(this.baseURL + '/querygroups', queryGroup)
-            .toPromise();
+        return this.http.post(this.baseURL + '/querygroups', queryGroup);
     }
 
     updateQueryGroup(queryGroup: QueryGroup, queryGroupId: number) {
-        return this.http
-            .put(this.baseURL + '/querygroups/' + queryGroupId, queryGroup)
-            .toPromise();
+        return this.http.put(
+            this.baseURL + '/querygroups/' + queryGroupId,
+            queryGroup
+        );
     }
 
     saveQueryLogic(query_logic: any) {
-        return this.http
-            .post(this.baseURL + '/querylogic', query_logic)
-            .toPromise();
+        return this.http.post(this.baseURL + '/querylogic', query_logic);
     }
 
     updateQueryLogic(query_logic: any) {
-        return this.http
-            .put(this.baseURL + '/querylogic', query_logic)
-            .toPromise();
+        return this.http.put(this.baseURL + '/querylogic', query_logic);
     }
 
     deleteQueryGroup(groupId: number) {
