@@ -17,6 +17,7 @@ import { ContentComponent } from './content/content.component';
 import { delusions, questionnaire } from './questionnaire';
 
 import { ContentItem, ContentType } from './queries.model';
+import { Observable, forkJoin } from 'rxjs';
 
 const sliderOptions = Array.from({ length: 7 }, (_, i) => {
     const val = String(i + 1);
@@ -84,16 +85,20 @@ export class AddQueryComponent {
 
     public config: QueryBuilderConfig = {
         entities: {
-            physical: { name: "Passive data" },
-            questionnaire: { name: "Questionnaire Slider" },
-            questionnaire_histogram: { name: "Questionnaire Multichoice" },
-            questionnaire_slider: { name: "Questionnaire Group" },
-            delusions: { name: "Delusions" }
+            physical: { name: 'Passive data' },
+            questionnaire: { name: 'Questionnaire Slider' },
+            questionnaire_histogram: { name: 'Questionnaire Multichoice' },
+            questionnaire_slider: { name: 'Questionnaire Group' },
+            delusions: { name: 'Delusions' },
         },
         fields: {
-            heart_rate: { name: 'Heart Rate', type: 'number', entity: "physical" },
-            sleep_length: { name: 'Sleep', type: 'number', entity: "physical" },
-            hrv: { name: 'HRV', type: 'number', entity: "physical" },
+            heart_rate: {
+                name: 'Heart Rate',
+                type: 'number',
+                entity: 'physical',
+            },
+            sleep_length: { name: 'Sleep', type: 'number', entity: 'physical' },
+            hrv: { name: 'HRV', type: 'number', entity: 'physical' },
         },
     };
 
@@ -102,7 +107,6 @@ export class AddQueryComponent {
     public allowCollapse: boolean;
     public persistValueOnFieldChange: boolean = true;
 
-    private canGoBack: boolean = false;
     selectedGroupIndex: number | null = null;
 
     isEditingContent = false;
@@ -110,6 +114,16 @@ export class AddQueryComponent {
     currentEditingCopy: ContentGroup | null = null;
 
     queryId = null;
+
+    public groupNameError = false;
+    public groupDescError = false;
+    public queryBuilderError = false;
+    public groupNameDuplicateError = false;
+    public contentGroupNameError = false;
+    public contentGroupItemsError = false;
+    public queryRulesError = false;
+    public contentParagraphError = false;
+    public contentModuleLinkError = false;
 
     constructor(
         private queryService: QueriesService,
@@ -121,8 +135,6 @@ export class AddQueryComponent {
     ) {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
-        this.canGoBack =
-            !!this.router.getCurrentNavigation()?.previousNavigation;
 
         // process the config
 
@@ -133,62 +145,69 @@ export class AddQueryComponent {
 
     private addQuestionnaireItemsToQueryBuilder() {
         // histogram to include only
-        let histogramQuestionsToInclude = ["whereabouts_1", "sleep_5", "social_1"];
+        let histogramQuestionsToInclude = [
+            'whereabouts_1',
+            'sleep_5',
+            'social_1',
+        ];
 
         for (const question of questionnaire) {
-            let fieldName = question.field_name
+            let fieldName = question.field_name;
 
             const field = {
-                name: `${question.field_label} ${question.field_sublabel ? question.field_sublabel : ""}`,
-                type: "category",
-                entity: "questionnaire",
-                operators:  ["=", "!=", "<", ">", "<=", ">="]
-            }
-            if (question.field_type == "slider") {
-                field["options"] = sliderOptions
-            } else if (histogramQuestionsToInclude.includes(question.field_name)) {
-                fieldName = question.field_name.split("_")[0]
-                field.name = `${question.field_label}`
-                field.entity = "questionnaire_histogram"
-                field.operators = ["IS"]
-                let mappedOptions = question.select_choices_or_calculations.map((item) => {
-                    return {
-                        name: item.label,
-                        value: item.code
+                name: `${question.field_label} ${
+                    question.field_sublabel ? question.field_sublabel : ''
+                }`,
+                type: 'category',
+                entity: 'questionnaire',
+                operators: ['=', '!=', '<', '>', '<=', '>='],
+            };
+            if (question.field_type == 'slider') {
+                field['options'] = sliderOptions;
+            } else if (
+                histogramQuestionsToInclude.includes(question.field_name)
+            ) {
+                fieldName = question.field_name.split('_')[0];
+                field.name = `${question.field_label}`;
+                field.entity = 'questionnaire_histogram';
+                field.operators = ['IS'];
+                let mappedOptions = question.select_choices_or_calculations.map(
+                    (item) => {
+                        return {
+                            name: item.label,
+                            value: item.code,
+                        };
                     }
-
-                })
-                field["options"] = mappedOptions
+                );
+                field['options'] = mappedOptions;
             }
 
             if (!this.config.fields[question.group_name]) {
                 const group = {
                     name: `${question.group_name}`,
-                    type: "category",
-                    entity: "questionnaire_slider",
-                    operators:  ["=", "!=", "<", ">", "<=", ">="],
-                    options: sliderOptions
-                }
-                this.config.fields[question.group_name] = group
+                    type: 'category',
+                    entity: 'questionnaire_slider',
+                    operators: ['=', '!=', '<', '>', '<=', '>='],
+                    options: sliderOptions,
+                };
+                this.config.fields[question.group_name] = group;
             }
-            this.config.fields[fieldName] = field
+            this.config.fields[fieldName] = field;
         }
-
     }
 
-
     private addDelusionsToQueryBuilder() {
-
         for (const delusion of delusions) {
             const field = {
-                name: `${delusion.field_label} ${delusion.field_sublabel ? delusion.field_sublabel : ""}`,
-                type: "category",
-                entity: "delusions",
-                options: sliderOptions
+                name: `${delusion.field_label} ${
+                    delusion.field_sublabel ? delusion.field_sublabel : ''
+                }`,
+                type: 'category',
+                entity: 'delusions',
+                options: sliderOptions,
+            };
 
-            }
-
-            this.config.fields[delusion.field_name] = field
+            this.config.fields[delusion.field_name] = field;
         }
     }
 
@@ -230,11 +249,6 @@ export class AddQueryComponent {
         this.isEditingContent = false;
     }
 
-    goBack(): void {
-        if (this.canGoBack) {
-            this.location.back();
-        }
-    }
     changeDisabled(event: Event) {
         (<HTMLInputElement>event.target).checked
             ? this.queryCtrl.disable()
@@ -308,35 +322,118 @@ export class AddQueryComponent {
         }
     }
 
-    async saveQueryGroupToDB() {
-        const query_group: QueryGroup = {
-            name: this.queryGrouName,
-            description: this.queryGroupDesc,
-        };
-
-        if (this.queryGroupId) {
-            this.queryGroupId = await this.updateQueryGroup(query_group);
-            await this.updateIndividualQueries();
-        } else {
-            this.queryGroupId = await this.saveNewQueryGroup(query_group);
-            await this.saveIndividualQueries();
+    validateQueryRules(rules: any[]): boolean {
+        for (const rule of rules) {
+            if (rule.rules && Array.isArray(rule.rules)) {
+                if (!this.validateQueryRules(rule.rules)) {
+                    return false;
+                }
+            } else {
+                if (
+                    rule.value === undefined ||
+                    rule.value === null ||
+                    rule.value.toString().trim() === '' ||
+                    rule.timeFame === undefined ||
+                    rule.timeFame === null
+                ) {
+                    return false;
+                }
+            }
         }
-
-        await this.saveContent();
-
-        this.goBack();
+        return true;
     }
 
-    async saveContent() {
-        for (const group of this.contentGroups) {
+    async saveQueryGroupToDB() {
+        this.groupNameError = false;
+        this.groupDescError = false;
+        this.queryBuilderError = false;
+        this.groupNameDuplicateError = false;
+        this.queryRulesError = false;
+
+        let hasError = false;
+
+        if (!this.queryGrouName?.trim()) {
+            this.groupNameError = true;
+            hasError = true;
+        }
+
+        if (!this.queryGroupDesc?.trim()) {
+            this.groupDescError = true;
+            hasError = true;
+        }
+
+        if (
+            !this.query ||
+            !Array.isArray(this.query.rules) ||
+            this.query.rules.length === 0
+        ) {
+            this.queryBuilderError = true;
+            hasError = true;
+        }
+
+        if (!this.validateQueryRules(this.query.rules)) {
+            this.queryRulesError = true;
+            hasError = true;
+        }
+
+        if (hasError) return;
+
+        const isEditMode = !!this.queryGroupId;
+
+        try {
+            if (isEditMode) {
+                await this.queryService
+                    .updateQueryGroup(
+                        {
+                            name: this.queryGrouName,
+                            description: this.queryGroupDesc,
+                        },
+                        this.queryGroupId
+                    )
+                    .toPromise();
+
+                await this.updateIndividualQueries().toPromise();
+            } else {
+                this.queryGroupId = await this.queryService
+                    .saveNewQueryGroup({
+                        name: this.queryGrouName,
+                        description: this.queryGroupDesc,
+                    })
+                    .toPromise();
+
+                await this.saveIndividualQueries().toPromise();
+            }
+
+            await this.saveContent().toPromise();
+
+            this.router.navigate(['querygroups']);
+        } catch (err: any) {
+            if (err.status === 409 || err.message?.includes('already exists')) {
+                this.groupNameDuplicateError = true;
+
+                if (!isEditMode) {
+                    this.queryGroupId = null;
+                }
+            } else {
+                console.error('Unexpected error saving query group:', err);
+            }
+
+            return;
+        }
+    }
+
+    saveContent(): Observable<any> {
+        const requests = this.contentGroups.map((group) => {
             const payload = {
                 id: group.id,
                 queryGroupId: this.queryGroupId,
                 contentGroupName: group.name,
                 queryContentDTOList: group.items,
             };
-            await this.queryService.saveContentGroup(payload);
-        }
+            return this.queryService.saveContentGroup(payload);
+        });
+
+        return forkJoin(requests);
     }
 
     addContentGroup() {
@@ -356,6 +453,12 @@ export class AddQueryComponent {
     }
 
     deleteContentGroup(id: number) {
+        const confirmDelete = confirm(
+            "Are you sure you want to delete this? This will also delete the content from the participants' phones."
+        );
+        if (!confirmDelete) {
+            return;
+        }
         this.queryService
             .deleteContentGroupByID(id)
             .subscribe((result: any) => {
@@ -378,6 +481,58 @@ export class AddQueryComponent {
     }
 
     saveCurrentEditingGroup() {
+        let hasError = false;
+        this.contentGroupNameError = false;
+        this.contentGroupItemsError = false;
+        this.contentParagraphError = false;
+        this.contentModuleLinkError = false;
+
+        if (
+            !this.currentEditingCopy?.name ||
+            !this.currentEditingCopy.name.trim()
+        ) {
+            this.contentGroupNameError = true;
+            hasError = true;
+
+            return;
+        }
+        if (
+            !this.currentEditingCopy.items ||
+            this.currentEditingCopy.items.length === 0
+        ) {
+            this.contentGroupItemsError = true;
+            hasError = true;
+
+            return;
+        }
+
+        for (const item of this.currentEditingCopy.items) {
+            if (item.type === 'PARAGRAPH') {
+                const headingValid = item.heading && item.heading.trim() !== '';
+                const valueValid =
+                    typeof item.value === 'string'
+                        ? item.value.trim() !== ''
+                        : item.value !== undefined && item.value !== null;
+
+                if (!headingValid || !valueValid) {
+                    this.contentParagraphError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+            if (item.type === 'MODULE_LINK') {
+                if (item.resourceId === null || item.resourceId === undefined) {
+                    this.contentModuleLinkError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+        }
+
+        if (hasError) {
+            return;
+        }
+
         if (this.currentEditingIndex !== null && this.currentEditingCopy) {
             this.contentGroups[this.currentEditingIndex] =
                 this.currentEditingCopy;
@@ -393,15 +548,6 @@ export class AddQueryComponent {
         this.currentEditingCopy = null;
     }
 
-    saveNewQueryGroup(queryGroup: QueryGroup) {
-        return this.queryService.saveNewQueryGroup(queryGroup);
-    }
-    updateQueryGroup(queryGroup: QueryGroup) {
-        return this.queryService.updateQueryGroup(
-            queryGroup,
-            this.queryGroupId
-        );
-    }
     saveIndividualQueries() {
         const query_logic = {
             queryGroupId: this.queryGroupId,

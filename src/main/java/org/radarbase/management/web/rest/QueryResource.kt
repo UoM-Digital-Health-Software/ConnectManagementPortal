@@ -67,12 +67,20 @@ class QueryResource(
         }
     }
 
+
     @PostMapping("querygroups")
-    fun createQueryGroup(@RequestBody queryJson: String?): ResponseEntity<Long?> {
+    fun createQueryGroup(@RequestBody queryJson: String?): ResponseEntity<*> {
         var queryGroupId: Long? = null
         if(queryJson.isNullOrEmpty() == false) {
             val objectMapper = jacksonObjectMapper()
             val queryGroupDTO: QueryGroupDTO = objectMapper.readValue(queryJson)
+
+            val exists = queryBuilderService.checkQueryGroupName(queryGroupDTO.name,null);
+            if(exists) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Query group name already exists.")
+            }
+
             val user = userService.getUserWithAuthorities()
             if(user != null) {
                 queryGroupId = queryBuilderService.createQueryGroup(queryGroupDTO, user!!);
@@ -87,6 +95,13 @@ class QueryResource(
         if(!queryJson.isNullOrEmpty()) {
             val objectMapper = jacksonObjectMapper()
             val queryGroupDTO: QueryGroupDTO = objectMapper.readValue(queryJson)
+
+            val exists = queryBuilderService.checkQueryGroupName(queryGroupDTO.name,id);
+            if(exists) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Query group name already exists.")
+            }
+
             val user = userService.getUserWithAuthorities()
             if(user != null) {
                 queryBuilderService.updateQueryGroup(id, queryGroupDTO, user!!);
@@ -255,6 +270,7 @@ class QueryResource(
         val result =  queryContentService.getModuleById(moduleId)
         return ResponseEntity.ok(result)
     }
+
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)
