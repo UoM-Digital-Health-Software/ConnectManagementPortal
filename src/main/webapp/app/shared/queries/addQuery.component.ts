@@ -17,6 +17,7 @@ import { ContentComponent } from './content/content.component';
 import { delusions, questionnaire } from './questionnaire';
 
 import { ContentItem, ContentType } from './queries.model';
+import { Observable, forkJoin } from 'rxjs';
 
 const sliderOptions = Array.from({ length: 7 }, (_, i) => {
     const val = String(i + 1);
@@ -351,67 +352,88 @@ export class AddQueryComponent {
 
         let hasError = false;
 
-        if (!this.queryGrouName || !this.queryGrouName.trim()) {
+        if (!this.queryGrouName?.trim()) {
             this.groupNameError = true;
             hasError = true;
         }
 
-        if (!this.queryGroupDesc || !this.queryGroupDesc.trim()) {
+        if (!this.queryGroupDesc?.trim()) {
             this.groupDescError = true;
             hasError = true;
         }
 
-        if (!this.query || !this.query.rules || this.query.rules.length === 0) {
+        if (
+            !this.query ||
+            !Array.isArray(this.query.rules) ||
+            this.query.rules.length === 0
+        ) {
             this.queryBuilderError = true;
             hasError = true;
         }
+
         if (!this.validateQueryRules(this.query.rules)) {
             this.queryRulesError = true;
             hasError = true;
         }
 
-        if (hasError) {
+        if (hasError) return;
+
+        const isEditMode = !!this.queryGroupId;
+
+        try {
+            if (isEditMode) {
+                await this.queryService
+                    .updateQueryGroup(
+                        {
+                            name: this.queryGrouName,
+                            description: this.queryGroupDesc,
+                        },
+                        this.queryGroupId
+                    )
+                    .toPromise();
+
+                await this.updateIndividualQueries().toPromise();
+            } else {
+                this.queryGroupId = await this.queryService
+                    .saveNewQueryGroup({
+                        name: this.queryGrouName,
+                        description: this.queryGroupDesc,
+                    })
+                    .toPromise();
+
+                await this.saveIndividualQueries().toPromise();
+            }
+
+            await this.saveContent();
+
+            this.router.navigate(['querygroups']);
+        } catch (err: any) {
+            if (err.status === 409 || err.message?.includes('already exists')) {
+                this.groupNameDuplicateError = true;
+
+                if (!isEditMode) {
+                    this.queryGroupId = null;
+                }
+            } else {
+                console.error('Unexpected error saving query group:', err);
+            }
+
             return;
         }
-
-        if (this.queryGroupId) {
-            let result = await this.updateQueryGroup({
-                name: this.queryGrouName,
-                description: this.queryGroupDesc,
-            });
-            if (result === -1) {
-                this.groupNameDuplicateError = true;
-                return;
-            }
-            await this.updateIndividualQueries();
-        } else {
-            this.queryGroupId = await this.saveNewQueryGroup({
-                name: this.queryGrouName,
-                description: this.queryGroupDesc,
-            });
-
-            if (this.queryGroupId === -1) {
-                this.groupNameDuplicateError = true;
-                this.queryGroupId = null;
-                return;
-            }
-            await this.saveIndividualQueries();
-        }
-
-        await this.saveContent();
-        this.router.navigate(['querygroups']);
     }
 
-    async saveContent() {
-        for (const group of this.contentGroups) {
+    saveContent(): Observable<any> {
+        const requests = this.contentGroups.map((group) => {
             const payload = {
                 id: group.id,
                 queryGroupId: this.queryGroupId,
                 contentGroupName: group.name,
                 queryContentDTOList: group.items,
             };
-            await this.queryService.saveContentGroup(payload);
-        }
+            return this.queryService.saveContentGroup(payload);
+        });
+
+        return forkJoin(requests);
     }
 
     addContentGroup() {
@@ -526,15 +548,6 @@ export class AddQueryComponent {
         this.currentEditingCopy = null;
     }
 
-    saveNewQueryGroup(queryGroup: QueryGroup) {
-        return this.queryService.saveNewQueryGroup(queryGroup);
-    }
-    updateQueryGroup(queryGroup: QueryGroup) {
-        return this.queryService.updateQueryGroup(
-            queryGroup,
-            this.queryGroupId
-        );
-    }
     saveIndividualQueries() {
         const query_logic = {
             queryGroupId: this.queryGroupId,
