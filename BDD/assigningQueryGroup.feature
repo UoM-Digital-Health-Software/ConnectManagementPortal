@@ -4,7 +4,7 @@ Feature: Assigning a query group to a participant
 Scenario: Accessing a Add Query Group modal for a participant  
 	Given there is at least one already created query group
 	And the user navigated to the list of participants
-	And the user clicks Queries button for one of the participants 
+	And the user clicks "Queries" button for one of the participants 
 	Then a modal is opened 
 	And there is a dropdown with all the existing query groups 
 	And there is "Assign" button 
@@ -31,7 +31,7 @@ Scenario: Deleting a query group from a participant
 Scenario: Aggreing to delete the content from the user's device  
 	Given the user is deleting a query group from a participant 
 	And and the user has agreed to remove the content from the user's device
-	Then the content from the user's device is deleted by unassining it in the DB
+	Then the content from the user's device is deleted by unassigning it in the DB
 	And the query group is unassigned from the participant 
 
 

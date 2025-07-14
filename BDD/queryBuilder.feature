@@ -9,13 +9,13 @@ Scenario: Accessing Query Group create page
     And there is a field to add Query Group Description
     And there is a button to add a Rule 
     And there is a button to add a Ruleset  
-    And there is a Add Content Group button 
+    And there is a "Add Content Group" button 
     And there is a button to Save the whole query group 
 
 
 Scenario: Adding a new rule 
 	Given the user is on the Query Builder page
-	And the user clicks the Rule button 
+	And the user clicks the "Rule" button 
 
 	Then a new rule is added 
 	And there is a dropdown for Type
@@ -29,7 +29,7 @@ Scenario: Adding a new rule
 
 
 Scenario: Selecting a Type for a query 
-	Given the user clicked the Rule button
+	Given the user clicked the "Rule" button
 	Then the user can change the Type for that particular query
 	And the user can choose from the following options: 
 
@@ -61,8 +61,8 @@ Scenario: Metrics for Questionnaire Slider
 
 
 Scenario: Metrics for Questionnaire Multichoice
- Given the user has chosen "Questionnaire Slider"
- Then the following comparison operators can be chosen: "="
+ Given the user has chosen "Questionnaire Multichoice"
+ Then the following comparison operators can be chosen: "IS"
  And  all the histogram questions from the CONNECT questionnaire set can be chosen 
 
 Scenario: Metrics for Questionnaire Group
@@ -78,7 +78,7 @@ Scenario: Metrics for Questionnaire Delusions
 
 Scenario: Adding a new Ruleset
 	Given the user is on the Query Builder page
-	And the user clicks the Ruleset button 
+	And the user clicks the "Ruleset" button 
 	Then an inner query is create 
 	And there is a choice between AND and OR 
 	And there is a message saying "A ruleset cannot be empty. Please add a rule or remove it all together"
@@ -97,7 +97,7 @@ Scenario: Adding a text section to the content group
    And the user has clicked "Add Text" button 
    Then a heading field is displayed 
    And and a text editor is displayed 
-   And there is a Delete button for that particular item 
+   And there is a "Delete" button for that particular item 
 
 
 Scenario: Adding a video item to the content group 
@@ -105,8 +105,8 @@ Scenario: Adding a video item to the content group
    And the user has clicked "Add Video" button 
    Then a modal is displayed 
    And there is a field for Youtube URL 
-   And there is a Add button
-   And there is a Close button 
+   And there is a "Add" button
+   And there is a "Close" button 
 
 
 
@@ -130,9 +130,9 @@ Scenario: Adding a video item to the content group
    Given the user is adding a new content group 
    And the user has clicked "Add Image" button 
    Then a modal is displayed 
-   And there is a Choose file button 
-   And there is a Add button
-   And there is a Close button 
+   And there is a "Choose file" button 
+   And there is a "Add" button
+   And there is a "Close" button 
 
 
  Scenario: Selecting an image in the Add Image modal 
@@ -175,7 +175,7 @@ Scenario: Adding a video item to the content group
   	And the user clicks "Save" button 
   	Then the content group is added to the query builder 
   	And the added content group has a title
-  	And there is a delete button for each added content group 
+  	And there is a "Delete" button for each added content group 
   	And there is an information how many items the content group has 
 
 
@@ -213,7 +213,7 @@ Scenario: Adding a video item to the content group
 		Given the query group was saved
 		And the query group was assigned to a participant 
 		Then the query group can not be edited anymore 
-		And there is a warning sign informing the user
+		And there is a warning sign informing the user "This query group can no longer be edited."
 
 
 

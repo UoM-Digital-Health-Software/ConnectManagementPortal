@@ -40,7 +40,7 @@ Scenario: Viewing the archived query group list
 
 Scenario: Unarchiving already archived query group 
 	Given the user is on the archived query group list
-	And the user clicks the unarchive button 
+	And the user clicks the "Unarchive" button 
 	Then the query group is unarchived 
 	And the query group disappears from the list of archived query groups 
 
