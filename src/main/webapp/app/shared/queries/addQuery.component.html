@@ -174,7 +174,7 @@
             <label>Please fill in all fields.</label>
         </div>
 
-        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn" *ngIf="query.canEdit">
+        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn" [disabled]="isSaveButtonDisabled">
             Save
         </button>
     </div>
