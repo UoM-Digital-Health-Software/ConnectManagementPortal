@@ -45,13 +45,39 @@
                 *ngFor="let group of contentGroups; let i = index"
             >
                 <div class="card position-relative cursor-pointer h-100">
-                    <button
-                        class="btn btn-sm btn-danger position-absolute content-del-btn"
-                        queryGroupId
-                        (click)="deleteContentGroup(group.id)"
+                    <div
+                        class="position-absolute d-flex flex-column align-items-end m-2"
+                        style="top: 0; right: 0"
                     >
-                        delete
-                    </button>
+                        <div class="d-flex align-items-center" style="paddingBottom:15px;">
+                            <small
+                                [ngClass]="{
+                                    'text-success': group.status === 'ACTIVE',
+                                    'text-muted': group.status !== 'ACTIVE'
+                                }"
+                            >
+                                {{
+                                    group.status === "ACTIVE"
+                                        ? "active"
+                                        : "inactive"
+                                }}
+                            </small>
+                            <div
+                                class="custom-toggle me-2"
+                                [class.active]="group.status === 'ACTIVE'"
+                                (click)="onToggleStatus(group)"
+                            >
+                                <div class="toggle-circle"></div>
+                            </div>
+                        </div>
+
+                        <button
+                            class="btn btn-sm btn-danger mb-2"
+                            (click)="deleteContentGroup(group.id)"
+                        >
+                            Delete
+                        </button>
+                    </div>
 
                     <div class="card-body" (click)="selectGroup(i)">
                         <h5 class="card-title">

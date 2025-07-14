@@ -2,6 +2,7 @@ package org.radarbase.management.service
 
 
 import org.radarbase.management.domain.*
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.repository.*
 import org.radarbase.management.service.dto.QueryContentDTO
@@ -59,8 +60,20 @@ class QueryContentService(
             val existingGroup = queryContentGroupRepository.findById(contentGroupDTO.id)
                 .orElseThrow { Exception("Content group with id ${contentGroupDTO.id} does not exist") }
 
+            var updated = false
+
             if (existingGroup.contentGroupName != contentGroupDTO.contentGroupName) {
                 existingGroup.contentGroupName = contentGroupDTO.contentGroupName
+                updated = true
+            }
+
+            if (contentGroupDTO.status != null && existingGroup.status != contentGroupDTO.status) {
+                existingGroup.status = contentGroupDTO.status!!
+                updateContentGroupStatus(contentGroupDTO.id!!, contentGroupDTO.status!!)
+                updated = true
+            }
+
+            if (updated) {
                 existingGroup.updatedDate = ZonedDateTime.now()
                 queryContentGroupRepository.save(existingGroup)
             }
@@ -74,29 +87,32 @@ class QueryContentService(
                 QueryContentGroup().apply {
                     this.queryGroup = queryGroup
                     this.contentGroupName = contentGroupDTO.contentGroupName
+                    this.status = contentGroupDTO.status ?: ContentGroupStatus.INACTIVE // default if not provided
                     this.createdDate = ZonedDateTime.now()
                     this.updatedDate = ZonedDateTime.now()
                 }
             )
         }
 
-
         contentGroupDTO.queryContentDTOList?.forEach { dto ->
             val queryContent = QueryContent().apply {
                 this.queryGroup = queryGroup
                 this.queryContentGroup = contentGroup
                 this.type = dto.type
+
                 if (this.type == ContentType.IMAGE) {
                     this.imageBlob = decoder.decode(dto.imageBlob)
                 } else {
                     this.value = dto.value
                     this.heading = dto.heading
                 }
-               this.resourceId = dto.resourceId
+                this.resourceId = dto.resourceId
             }
+
             queryContentRepository.save(queryContent)
         }
     }
+
 
     fun findAllContentsByQueryGroupId(queryGroupId: Long): List<QueryContentDTO> {
         val queryContentList = queryContentRepository.findAllByQueryGroupId(queryGroupId)
@@ -116,6 +132,7 @@ class QueryContentService(
                 this.queryGroupId = queryGroupId
                 queryContentDTOList = contentDTOs
                 id = group.id
+                status = group.status
             }
         }
     }
@@ -279,6 +296,16 @@ class QueryContentService(
         return true;
 
 
+    }
+
+    fun updateContentGroupStatus(id: Long, status: ContentGroupStatus){
+        val contentGroup = queryContentGroupRepository.findById(id).orElseThrow { RuntimeException("Content Group not found") }
+        contentGroup.status = status
+        queryContentGroupRepository.save(contentGroup)
+
+        if (status == ContentGroupStatus.INACTIVE) {
+            queryParticipantContentRepository.deleteAllByQueryContentGroupId(id)
+        }
     }
 
     fun getAllModules() : List<Module> {
