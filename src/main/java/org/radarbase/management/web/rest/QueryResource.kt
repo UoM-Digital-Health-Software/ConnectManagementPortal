@@ -232,16 +232,6 @@ class QueryResource(
         return ResponseEntity.ok(result)
     }
 
-    @PutMapping("querycontentgroup/{queryContentGroupId}/status")
-    fun updateStatus(
-        @PathVariable queryContentGroupId: Long,
-        @RequestParam status: ContentGroupStatus
-    ): ResponseEntity<Void> {
-
-
-        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
-        return ResponseEntity.ok().build()
-    }
     @PatchMapping("/querygroups/{id}/archive")
     fun archiveQueryGroup(@PathVariable id: Long): ResponseEntity<Void> {
 

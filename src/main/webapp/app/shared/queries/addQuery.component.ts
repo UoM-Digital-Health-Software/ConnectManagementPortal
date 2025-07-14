@@ -24,7 +24,6 @@ const sliderOptions = Array.from({ length: 7 }, (_, i) => {
     return { name: val, value: val };
 });
 
-
 @Component({
     selector: 'jhi-queries',
     templateUrl: './addQuery.component.html',
@@ -118,6 +117,8 @@ export class AddQueryComponent {
     public queryRulesError = false;
     public contentParagraphError = false;
     public contentModuleLinkError = false;
+
+    private deletedContentGroupIds: number[] = [];
 
     constructor(
         private queryService: QueriesService,
@@ -233,7 +234,7 @@ export class AddQueryComponent {
                     items: group.queryContentDTOList || [],
                     queryGroupId: group.queryGroupId,
                     id: group.id,
-                    status: group.status|| "INACTIVE"
+                    status: group.status || 'INACTIVE',
                 }));
 
                 if (this.contentGroups.length > 0) {
@@ -400,6 +401,8 @@ export class AddQueryComponent {
             }
 
             await this.saveContent().toPromise();
+            this.deletedContentGroupIds = [];
+
 
             this.router.navigate(['querygroups']);
         } catch (err: any) {
@@ -418,17 +421,22 @@ export class AddQueryComponent {
     }
 
     saveContent(): Observable<any> {
-        const requests = this.contentGroups.map((group) => {
+        const saveRequests = this.contentGroups.map((group) => {
             const payload = {
                 id: group.id,
                 queryGroupId: this.queryGroupId,
                 contentGroupName: group.name,
                 queryContentDTOList: group.items,
+                status: group.status
             };
             return this.queryService.saveContentGroup(payload);
         });
-
-        return forkJoin(requests);
+    
+        const deleteRequests = this.deletedContentGroupIds.map(id =>
+            this.queryService.deleteContentGroupByID(id)
+        );
+    
+        return forkJoin([...saveRequests, ...deleteRequests]);
     }
 
     addContentGroup() {
@@ -443,7 +451,7 @@ export class AddQueryComponent {
             ],
             queryGroupId: null,
             id: null,
-            status: ContentGroupStatus.ACTIVE
+            status: ContentGroupStatus.INACTIVE,
         };
         this.isEditingContent = true;
     }
@@ -452,14 +460,12 @@ export class AddQueryComponent {
         const confirmDelete = confirm(
             "Are you sure you want to delete this? This will also delete the content from the participants' phones."
         );
-        if (!confirmDelete) {
-            return;
-        }
-        this.queryService
-            .deleteContentGroupByID(id)
-            .subscribe((result: any) => {
-                this.refreshContentGroups();
-            });
+        if (!confirmDelete) return;
+
+        this.deletedContentGroupIds.push(id);
+        this.contentGroups = this.contentGroups.filter(
+            (group) => group.id !== id
+        );
     }
 
     selectGroup(index: number) {
@@ -472,7 +478,7 @@ export class AddQueryComponent {
             items: original.items.map((item) => ({ ...item })),
             queryGroupId: original.queryGroupId,
             id: original.id,
-            status: original.status
+            status: original.status,
         };
         this.isEditingContent = true;
     }
@@ -572,30 +578,17 @@ export class AddQueryComponent {
     }
 
     onToggleStatus(contentGroup: any) {
-        if (contentGroup.status === 'ACTIVE') {
-            if (
-                confirm(
-                    "Are you sure? This will prevent it from displaying on participants' phones"
-                )
-            ) {
-                this.updateStatus(contentGroup, 'INACTIVE');
-            }
-        } else {
-            this.updateStatus(contentGroup, 'ACTIVE');
+        const newStatus =
+            contentGroup.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        if (
+            newStatus === 'INACTIVE' &&
+            !confirm(
+                "Are you sure? This will prevent it from displaying on participants' phones."
+            )
+        ) {
+            return;
         }
-    }
 
-    updateStatus(contentGroup: any, status: string) {
-        this.queryService
-            .updateContentGroupStatus(contentGroup, status)
-            .subscribe({
-                next: () => {
-                    contentGroup.status = status;
-                    alert('Status updated successfully');
-                },
-                error: () => {
-                    alert('Failed to update status');
-                },
-            });
+        contentGroup.status = newStatus;
     }
 }

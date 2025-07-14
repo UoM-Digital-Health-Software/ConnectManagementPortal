@@ -64,16 +64,6 @@ export class QueriesService {
         );
     }
 
-    updateContentGroupStatus(contentGroup: any, status: string) {
-        return this.http.put(
-            this.baseURL + `/querycontentgroup/${contentGroup.id}/status`,
-            null,
-            {
-                params: { status },
-            }
-        );
-    }
-
     archiveQueryGroup(id: number) {
         return this.http.patch(
             this.baseURL + `/querygroups/${id}/archive`,

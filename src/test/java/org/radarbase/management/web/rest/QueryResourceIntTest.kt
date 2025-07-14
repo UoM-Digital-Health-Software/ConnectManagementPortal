@@ -533,9 +533,10 @@ internal class QueryResourceIntTest(
         }
     }
 
-    fun createQueryContentGroupDTO(queryGroup: QueryGroup, heading: String, paragraph: String,videoLink: String,title: String): QueryContentGroupDTO{
+    fun createQueryContentGroupDTO(queryGroup: QueryGroup, heading: String, paragraph: String,videoLink: String,title: String, status: ContentGroupStatus): QueryContentGroupDTO{
         var blob = imageBlob
         var mockContentGroup = createContentGroup("Test Content Group", queryGroup)
+        mockContentGroup.status = status
         val mockDTO = QueryContentGroupDTO().apply {
             contentGroupName = mockContentGroup.contentGroupName
             queryGroupId = queryGroup.id
@@ -694,6 +695,7 @@ internal class QueryResourceIntTest(
         val paragraph = "this is a paragraph"
         val videoLink = "video-link"
         val title = "this is a title"
+        var status = ContentGroupStatus.ACTIVE
 
         val sizeBefore = queryContentRepository.findAll().size
 
@@ -715,8 +717,12 @@ internal class QueryResourceIntTest(
             .andExpect(status().isOk)
             .andReturn()
 
+        var oldContentGroup = queryContentGroupRepository.findAll().get(0);
+        Assertions.assertThat(oldContentGroup.contentGroupName === "Test Group")
+        Assertions.assertThat(oldContentGroup.status === ContentGroupStatus.INACTIVE)
 
-        var mockQueryContentGroupDTO = createQueryContentGroupDTO(queryGroup, heading, paragraph,videoLink,title);
+
+        var mockQueryContentGroupDTO = createQueryContentGroupDTO(queryGroup, heading, paragraph,videoLink,title,status);
 
 
         mockMvc.perform(
@@ -728,6 +734,9 @@ internal class QueryResourceIntTest(
 
         val sizeAfter = queryContentRepository.findAll().size
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 4)
+
+        var newContentGroup = queryContentGroupRepository.findAll().get(0);
+        Assertions.assertThat(newContentGroup.status === ContentGroupStatus.ACTIVE)
 
         val newContentList = queryContentRepository.findAll()
 
@@ -831,28 +840,5 @@ internal class QueryResourceIntTest(
             .andExpect(status().isOk).andExpect(jsonPath("$.name").value("How to meditate"))
 
     }
-
-    @Test
-    fun updateStatus(){
-        val status = ContentGroupStatus.ACTIVE
-        var mockContentGroup = createContentGroup("test", createAndAddQueryGroupToDB())
-        mockContentGroup.status = status;
-        queryContentGroupRepository.save(mockContentGroup)
-
-        val queryContentGroupId = mockContentGroup.id;
-
-        mockMvc.perform(put(baseURL+ "querycontentgroup/$queryContentGroupId/status")
-            .param("status", "INACTIVE")
-        ).andExpect(status().isOk)
-
-        val updatedContentGroup = queryContentGroupRepository.findById(queryContentGroupId).get()
-        Assertions.assertThat(updatedContentGroup.status).isEqualTo(ContentGroupStatus.INACTIVE)
-
-        var queryParticipantContentList = queryParticipantContentRepository.findByQueryContentGroupId(queryContentGroupId!!)
-        Assertions.assertThat(queryParticipantContentList.size).isEqualTo(0)
-
-    }
-
-
 
 }
