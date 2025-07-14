@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
 import java.time.ZonedDateTime
@@ -27,6 +28,11 @@ class QueryContentGroup : AbstractEntity(), Serializable {
 
     @Column(name = "updated_date")
     var updatedDate: ZonedDateTime? = null
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    var status: ContentGroupStatus = ContentGroupStatus.INACTIVE
+
 
     override fun toString(): String {
         return ("QueryContentGroup{"
