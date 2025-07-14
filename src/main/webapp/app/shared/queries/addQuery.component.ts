@@ -28,7 +28,7 @@ interface ContentGroup {
     name: string;
     items: ContentItem[];
     queryGroupId: number;
-    id: number;
+    id?: number;
 }
 
 @Component({
@@ -438,12 +438,20 @@ export class AddQueryComponent {
 
     saveContent(): Observable<any> {
         const requests = this.contentGroups.map((group) => {
-            const payload = {
-                id: group.id,
-                queryGroupId: this.queryGroupId,
-                contentGroupName: group.name,
-                queryContentDTOList: group.items,
-            };
+            let payload = null;
+            if (this.isDuplicateMode) { // if is dupilicating query, need to create new content groups
+                payload = {
+                    queryGroupId: this.queryGroupId,
+                    contentGroupName: group.name,
+                    queryContentDTOList: group.items,
+                };
+            } else
+                payload = {
+                    id: group.id,
+                    queryGroupId: this.queryGroupId,
+                    contentGroupName: group.name,
+                    queryContentDTOList: group.items,
+                };
             return this.queryService.saveContentGroup(payload);
         });
 
