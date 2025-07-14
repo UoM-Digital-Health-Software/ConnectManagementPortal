@@ -1,8 +1,7 @@
 import { Subject } from '../subject';
 import { User } from '../user/user.model';
 
-
-type optionalString = string | null | undefined
+type optionalString = string | null | undefined;
 
 export interface QueryGroup {
     id?: any;
@@ -20,28 +19,26 @@ export interface QueryParticipant {
     id?: any;
     queryGroupId?: number;
     subjectId?: number;
-    createdBy?: User
+    createdBy?: User;
 }
 
 export type QueryNode =
-  | {
-      query: QueryDTO;
-    }
-  | {
-      logic_operator: string;
-      children: QueryNode[];
-    };
-
+    | {
+          query: QueryDTO;
+      }
+    | {
+          logic_operator: string;
+          children: QueryNode[];
+      };
 
 export interface QueryDTO {
-    field?: optionalString,
-    operator?: optionalString,
-    timeFrame?: optionalString,
-    value?: optionalString,
-    logic_operator?: optionalString,
-    children?: QueryDTO[],
-    entity?: optionalString
-
+    field?: optionalString;
+    operator?: optionalString;
+    timeFrame?: optionalString;
+    value?: optionalString;
+    logic_operator?: optionalString;
+    children?: QueryDTO[];
+    entity?: optionalString;
 }
 
 export interface QueryGroup {
@@ -71,15 +68,13 @@ export interface QueryString {
     entity?: string;
 }
 
-
 export enum ContentType {
-    TITLE = "TITLE",
+    TITLE = 'TITLE',
     PARAGRAPH = 'PARAGRAPH',
     IMAGE = 'IMAGE',
     VIDEO = 'VIDEO',
-    MODULE_LINK = "MODULE_LINK"
+    MODULE_LINK = 'MODULE_LINK',
 }
-
 
 export interface ContentItem {
     id?: number;
@@ -93,6 +88,18 @@ export interface ContentItem {
     resourceId?: number;
 }
 
+export interface ContentGroup {
+    name: string;
+    items: ContentItem[];
+    queryGroupId: number;
+    id: number;
+    status: ContentGroupStatus;
+}
+
+export enum ContentGroupStatus {
+    ACTIVE,
+    INACTIVE,
+}
 
 export interface Module {
     id?: number;

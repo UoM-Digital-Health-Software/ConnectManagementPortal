@@ -57,8 +57,35 @@
                         queryGroupId
                         (click)="deleteContentGroup(group.id)"
                     >
-                        delete
-                    </button>
+                        <div class="d-flex align-items-center" style="paddingBottom:15px;">
+                            <small
+                                [ngClass]="{
+                                    'text-success': group.status === 'ACTIVE',
+                                    'text-muted': group.status !== 'ACTIVE'
+                                }"
+                            >
+                                {{
+                                    group.status === "ACTIVE"
+                                        ? "active"
+                                        : "inactive"
+                                }}
+                            </small>
+                            <div
+                                class="custom-toggle me-2"
+                                [class.active]="group.status === 'ACTIVE'"
+                                (click)="onToggleStatus(group)"
+                            >
+                                <div class="toggle-circle"></div>
+                            </div>
+                        </div>
+
+                        <button
+                            class="btn btn-sm btn-danger mb-2"
+                            (click)="deleteContentGroup(group.id)"
+                        >
+                            Delete
+                        </button>
+                    </div>
 
                     <div class="card-body" (click)="selectGroup(i)">
                         <h5 class="card-title">

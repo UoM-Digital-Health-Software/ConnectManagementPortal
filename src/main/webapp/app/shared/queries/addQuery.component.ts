@@ -16,20 +16,13 @@ import { ContentComponent } from './content/content.component';
 
 import { delusions, questionnaire } from './questionnaire';
 
-import { ContentItem, ContentType } from './queries.model';
+import { ContentType, ContentGroup, ContentGroupStatus } from './queries.model';
 import { Observable, forkJoin } from 'rxjs';
 
 const sliderOptions = Array.from({ length: 7 }, (_, i) => {
     const val = String(i + 1);
     return { name: val, value: val };
 });
-
-interface ContentGroup {
-    name: string;
-    items: ContentItem[];
-    queryGroupId: number;
-    id: number;
-}
 
 @Component({
     selector: 'jhi-queries',
@@ -125,6 +118,8 @@ export class AddQueryComponent {
     public queryRulesError = false;
     public contentParagraphError = false;
     public contentModuleLinkError = false;
+
+    private deletedContentGroupIds: number[] = [];
 
     constructor(
         private queryService: QueriesService,
@@ -243,6 +238,7 @@ export class AddQueryComponent {
                     items: group.queryContentDTOList || [],
                     queryGroupId: group.queryGroupId,
                     id: group.id,
+                    status: group.status || 'INACTIVE',
                 }));
 
                 if (this.contentGroups.length > 0) {
@@ -408,7 +404,9 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
-            await this.saveContent().toPromise();
+            await this.submitContentChanges().toPromise();
+            this.deletedContentGroupIds = [];
+
 
             this.router.navigate(['querygroups']);
         } catch (err: any) {
@@ -426,18 +424,23 @@ export class AddQueryComponent {
         }
     }
 
-    saveContent(): Observable<any> {
-        const requests = this.contentGroups.map((group) => {
+    submitContentChanges(): Observable<any> {
+        const saveRequests = this.contentGroups.map((group) => {
             const payload = {
                 id: group.id,
                 queryGroupId: this.queryGroupId,
                 contentGroupName: group.name,
                 queryContentDTOList: group.items,
+                status: group.status
             };
             return this.queryService.saveContentGroup(payload);
         });
-
-        return forkJoin(requests);
+    
+        const deleteRequests = this.deletedContentGroupIds.map(id =>
+            this.queryService.deleteContentGroupByID(id)
+        );
+    
+        return forkJoin([...saveRequests, ...deleteRequests]);
     }
 
     addContentGroup() {
@@ -452,6 +455,7 @@ export class AddQueryComponent {
             ],
             queryGroupId: null,
             id: null,
+            status: ContentGroupStatus.INACTIVE,
         };
         this.isEditingContent = true;
     }
@@ -460,14 +464,12 @@ export class AddQueryComponent {
         const confirmDelete = confirm(
             "Are you sure you want to delete this? This will also delete the content from the participants' phones."
         );
-        if (!confirmDelete) {
-            return;
-        }
-        this.queryService
-            .deleteContentGroupByID(id)
-            .subscribe((result: any) => {
-                this.refreshContentGroups();
-            });
+        if (!confirmDelete) return;
+
+        this.deletedContentGroupIds.push(id);
+        this.contentGroups = this.contentGroups.filter(
+            (group) => group.id !== id
+        );
     }
 
     selectGroup(index: number) {
@@ -480,6 +482,7 @@ export class AddQueryComponent {
             items: original.items.map((item) => ({ ...item })),
             queryGroupId: original.queryGroupId,
             id: original.id,
+            status: original.status,
         };
         this.isEditingContent = true;
     }
@@ -578,5 +581,20 @@ export class AddQueryComponent {
         const ifAssigned = this.queryId && !this.query.canEdit
 
         return !(hasName && hasDesc && hasQuery) || isEditing || ifAssigned;
+    }
+
+    onToggleStatus(contentGroup: any) {
+        const newStatus =
+            contentGroup.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        if (
+            newStatus === 'INACTIVE' &&
+            !confirm(
+                "Are you sure? This will prevent it from displaying on participants' phones."
+            )
+        ) {
+            return;
+        }
+
+        contentGroup.status = newStatus;
     }
 }

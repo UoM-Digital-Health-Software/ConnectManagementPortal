@@ -258,6 +258,9 @@
 			<column name="updated_date" type="timestamp">
 				<constraints nullable="true"/>
 			</column>
+			<column name="status" type="varchar(50)" defaultValue="INACTIVE">
+            	<constraints nullable="false"/>
+        	</column>
 		</createTable>
 		<addForeignKeyConstraint baseColumnNames="query_group_id"
 								baseTableName="query_content_group"

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.annotation.Timed
 import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.service.*
