@@ -400,7 +400,7 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
-            await this.saveContent().toPromise();
+            await this.submitContentChanges().toPromise();
             this.deletedContentGroupIds = [];
 
 
@@ -420,7 +420,7 @@ export class AddQueryComponent {
         }
     }
 
-    saveContent(): Observable<any> {
+    submitContentChanges(): Observable<any> {
         const saveRequests = this.contentGroups.map((group) => {
             const payload = {
                 id: group.id,
