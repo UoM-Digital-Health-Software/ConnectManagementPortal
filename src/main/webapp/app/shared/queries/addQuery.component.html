@@ -54,6 +54,7 @@
                     <div
                         class="position-absolute d-flex flex-column align-items-end m-2"
                         style="top: 0; right: 0"
+                        *ngIf="!readonlyMode"
                     >
                         <div class="d-flex align-items-center" style="paddingBottom:15px;">
                             <small
@@ -174,7 +175,7 @@
             <label>Please fill in all fields.</label>
         </div>
 
-        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn" [disabled]="isSaveButtonDisabled">
+        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn" [disabled]="readonlyMode">
             Save
         </button>
     </div>

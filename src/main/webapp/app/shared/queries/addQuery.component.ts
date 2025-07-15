@@ -568,13 +568,6 @@ export class AddQueryComponent {
         return this.queryService.updateQueryLogic(query_logic);
     }
 
-    get isSaveButtonDisabled(): boolean {
-
-        const ifAssigned = this.queryId && !this.query.canEdit;
-
-        return ifAssigned;
-    }
-
     onToggleStatus(contentGroup: any) {
         const newStatus =
             contentGroup.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
