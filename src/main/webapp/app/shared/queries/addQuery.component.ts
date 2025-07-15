@@ -6,17 +6,22 @@ import {
 } from '@uom-digital-health-software/ngx-angular-query-builder';
 import { FormBuilder, FormControl, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { QueryDTO, QueryNode, QueryString } from './queries.model';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { QueryGroup } from './queries.model';
 import { QueriesService } from './queries.service';
 import { ContentComponent } from './content/content.component';
 
 import { delusions, questionnaire } from './questionnaire';
 
-import { ContentType, ContentGroup, ContentGroupStatus } from './queries.model';
+import {
+    QueryDTO,
+    QueryNode,
+    QueryString,
+    ContentType,
+    ContentGroup,
+    ContentGroupStatus,
+} from './queries.model';
 import { Observable, forkJoin } from 'rxjs';
 
 const sliderOptions = Array.from({ length: 7 }, (_, i) => {
@@ -119,6 +124,9 @@ export class AddQueryComponent {
     public contentParagraphError = false;
     public contentModuleLinkError = false;
 
+    public isDuplicateMode = false;
+
+    public isEditingMode = false;
     private deletedContentGroupIds: number[] = [];
 
     constructor(
@@ -208,6 +216,12 @@ export class AddQueryComponent {
     }
 
     async ngOnInit() {
+        this.route.url.subscribe((urlSegments) => {
+            this.isDuplicateMode = urlSegments.some(
+                (seg) => seg.path === 'duplicateQuery'
+            );
+        });
+
         this.route.params.subscribe((params) => {
             this.queryId = params['query-id'];
             this.queryGroupId = this.queryId;
@@ -219,6 +233,11 @@ export class AddQueryComponent {
                         this.query = response;
                         this.queryGrouName = response.queryGroupName;
                         this.queryGroupDesc = response.queryGroupDescription;
+
+                        if (this.isDuplicateMode) {
+                            this.queryGrouName += '_duplicate';
+                            this.query.canEdit = true;
+                        }
                         if (!this.query.canEdit) this.readonlyMode = true;
                     });
 
@@ -350,6 +369,8 @@ export class AddQueryComponent {
 
         let hasError = false;
 
+        this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
+
         if (!this.queryGrouName?.trim()) {
             this.groupNameError = true;
             hasError = true;
@@ -376,10 +397,8 @@ export class AddQueryComponent {
 
         if (hasError) return;
 
-        const isEditMode = !!this.queryGroupId;
-
         try {
-            if (isEditMode) {
+            if (this.isEditingMode) {
                 await this.queryService
                     .updateQueryGroup(
                         {
@@ -389,7 +408,6 @@ export class AddQueryComponent {
                         this.queryGroupId
                     )
                     .toPromise();
-
                 await this.updateIndividualQueries().toPromise();
             } else {
                 this.queryGroupId = await this.queryService
@@ -398,7 +416,6 @@ export class AddQueryComponent {
                         description: this.queryGroupDesc,
                     })
                     .toPromise();
-
                 await this.saveIndividualQueries().toPromise();
             }
 
@@ -407,10 +424,12 @@ export class AddQueryComponent {
 
             this.router.navigate(['querygroups']);
         } catch (err: any) {
-            if (err.status === 409 || err.message?.includes('already exists')) {
+            if (
+                err?.status === 409 ||
+                err?.message?.includes('already exists')
+            ) {
                 this.groupNameDuplicateError = true;
-
-                if (!isEditMode) {
+                if (!this.isEditingMode) {
                     this.queryGroupId = null;
                 }
             } else {
@@ -423,13 +442,24 @@ export class AddQueryComponent {
 
     submitContentChanges(): Observable<any> {
         const saveRequests = this.contentGroups.map((group) => {
-            const payload = {
-                id: group.id,
-                queryGroupId: this.queryGroupId,
-                contentGroupName: group.name,
-                queryContentDTOList: group.items,
-                status: group.status,
-            };
+            let payload = null;
+            if (this.isDuplicateMode) {
+                // if is dupilicating query, need to create new content groups
+                payload = {
+                    queryGroupId: this.queryGroupId,
+                    contentGroupName: group.name,
+                    queryContentDTOList: group.items,
+                    status: group.status,
+                };
+            } else {
+                payload = {
+                    id: group.id,
+                    queryGroupId: this.queryGroupId,
+                    contentGroupName: group.name,
+                    queryContentDTOList: group.items,
+                    status: group.status,
+                };
+            }
             return this.queryService.saveContentGroup(payload);
         });
 

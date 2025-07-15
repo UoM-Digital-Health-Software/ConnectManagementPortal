@@ -31,6 +31,14 @@ export const queriesRoute: Routes = [
         },
     },
     {
+        path: 'duplicateQuery/:query-id',
+        component: AddQueryComponent,
+        data: {
+            authorities: [],
+            pageTitle: 'global.menu.queries',
+        },
+    },
+    {
         path: 'archivedQueryGroups',
         component: ArchivedQueryGroupListComponent,
         data: {
