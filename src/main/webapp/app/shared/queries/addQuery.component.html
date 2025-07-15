@@ -2,6 +2,12 @@
     <div class="page">
         <div class="block" style="align-items: center">
             <h1>Query Builder</h1>
+            <div *ngIf="!query.canEdit&&queryId" class="warning-box">
+                ⚠️ This query group can no longer be edited.
+            </div>
+            <div *ngIf="query.canEdit" class="warning-box warning-box1">
+                ⚠️ Once this query group has been assigned to a participant, it cannot longer be edited. Please make sure everything is correct before assigning this query gorup
+            </div>
             <div class="inputs">
                 <div class="query_group">
                     <mat-label>Query Group Name</mat-label>
@@ -48,6 +54,7 @@
                     <div
                         class="position-absolute d-flex flex-column align-items-end m-2"
                         style="top: 0; right: 0"
+                        *ngIf="!readonlyMode"
                     >
                         <div class="d-flex align-items-center" style="paddingBottom:15px;">
                             <small
@@ -92,7 +99,7 @@
         </div>
 
         <!-- Add Content Group Button -->
-        <div class="block" *ngIf="!isEditingContent">
+        <div class="block" *ngIf="(!isEditingContent)&&(!readonlyMode)">
             <button class="btn btn-outline-primary" (click)="addContentGroup()">
                 Add Content Group
             </button>
@@ -110,9 +117,10 @@
 
                 <query-content
                     [(items)]="currentEditingCopy.items"
+                    [isReadOnlyMode]="readonlyMode"
                 ></query-content>
 
-                <div class="mt-3 d-flex">
+                <div class="mt-3 d-flex" *ngIf="!readonlyMode">
                     <button
                         class="btn btn-primary mr-2"
                         (click)="saveCurrentEditingGroup()"
@@ -167,7 +175,7 @@
             <label>Please fill in all fields.</label>
         </div>
 
-        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn">
+        <button (click)="saveQueryGroupToDB()" class="btn btn-primary saveBtn" [disabled]="readonlyMode">
             Save
         </button>
     </div>

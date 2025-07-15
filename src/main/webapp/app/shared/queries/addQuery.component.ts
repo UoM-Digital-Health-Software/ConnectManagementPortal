@@ -113,6 +113,7 @@ export class AddQueryComponent {
 
     queryId = null;
 
+    public readonlyMode = false;
     public groupNameError = false;
     public groupDescError = false;
     public queryBuilderError = false;
@@ -236,6 +237,7 @@ export class AddQueryComponent {
                         if (this.isDuplicateMode) {
                             this.queryGrouName += '_duplicate';
                         }
+                        if (!this.query.canEdit) this.readonlyMode = true;
                     });
 
                 this.refreshContentGroups();
@@ -593,16 +595,6 @@ export class AddQueryComponent {
             ...this.convertQuery(this.query),
         };
         return this.queryService.updateQueryLogic(query_logic);
-    }
-
-    get isSaveButtonDisabled(): boolean {
-        const hasName = !!this.queryGrouName;
-        const hasDesc = !!this.queryGroupDesc;
-        const hasQuery = this.query && this.query.rules.length > 0;
-
-        const isEditing = this.isEditingContent;
-
-        return !(hasName && hasDesc && hasQuery) || isEditing;
     }
 
     onToggleStatus(contentGroup: any) {

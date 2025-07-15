@@ -42,6 +42,10 @@ class QueryGroup : AbstractEntity(), Serializable {
     @Column(name = "is_archived")
     var isArchived: Boolean? = false
 
+    @Column(name = "can_edit")
+    var canEdit: Boolean? = true
+
+
     @OneToMany(mappedBy = "queryGroup", cascade = [CascadeType.ALL], orphanRemoval = true)
     var queries: MutableList<Query> = mutableListOf()
 

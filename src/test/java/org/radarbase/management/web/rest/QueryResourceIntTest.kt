@@ -407,6 +407,7 @@ internal class QueryResourceIntTest(
         Assertions.assertThat(allQueryParticipantRows.size).isEqualTo(1)
         Assertions.assertThat(queryParticipantRow.queryGroup?.id).isEqualTo(queryGroup.id)
         Assertions.assertThat(queryParticipantRow.subject?.id).isEqualTo(subject.id)
+        Assertions.assertThat(queryGroup.canEdit).isEqualTo(false)
 }
 //
 @Test
