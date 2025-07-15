@@ -11,7 +11,8 @@ export interface QueryGroup {
     updatedDate?: Date;
     createdBy?: Subject;
     updatedBy?: Subject;
-    isArchived?: Boolean;
+    isArchived?: boolean;
+    canEdit? : boolean;
 }
 
 export interface QueryParticipant {
@@ -79,10 +80,10 @@ export interface ContentItem {
     id?: number;
     heading?: string;
     type: ContentType;
-    value?: string | number;
+    value?: string | Number;
     imageValue?: string;
     imageBlob?: string;
-    isValidImage?: Boolean;
+    isValidImage?: boolean;
     queryGroupId?: number;
     resourceId?: number;
 }

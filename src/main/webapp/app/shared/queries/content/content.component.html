@@ -1,40 +1,60 @@
 <div class="content-block">
     <h1>Content</h1>
 
-
-
     <div class="flex-column">
         <label>Title</label>
-        <input type="text" class="form-control" [(ngModel)]="getTitleItem().value"  />
-
+        <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="getTitleItem().value"
+        />
 
         <div class="button-row">
-            <button type="button" class="btn btn-primary" (click)="addContent(ContentType.PARAGRAPH)">
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addContent(ContentType.PARAGRAPH)"
+                [disabled]="isReadOnlyMode"
+            >
                 <span class="">Add Text</span>
             </button>
 
-            <button type="button" class="btn btn-primary" (click)="addContent(ContentType.VIDEO)"
-                [disabled]="isMultimediaDisabled()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addContent(ContentType.VIDEO)"
+                [disabled]="isMultimediaDisabled() || isReadOnlyMode"
+            >
                 <span class="">Add Video</span>
             </button>
 
-            <button type="button" class="btn btn-primary" (click)="addContent(ContentType.IMAGE)"
-                [disabled]="isMultimediaDisabled()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addContent(ContentType.IMAGE)"
+                [disabled]="isMultimediaDisabled() || isReadOnlyMode"
+            >
                 <span class="">Add Image</span>
             </button>
 
-            <button type="button" class="btn btn-primary" (click)="addContent(ContentType.MODULE_LINK)"
-                [disabled]="isMultimediaDisabled()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addContent(ContentType.MODULE_LINK)"
+                [disabled]="isMultimediaDisabled() || isReadOnlyMode"
+            >
                 <span class="">Add module link</span>
             </button>
         </div>
 
-
         <div class="content-column">
             <div *ngFor="let item of items; index as i">
-                <app-content-item (triggerDeleteItemFunction)="deleteContent($event)" [item]="item" [index]="i"></app-content-item>
+                <app-content-item
+                    (triggerDeleteItemFunction)="deleteContent($event)"
+                    [item]="item"
+                    [index]="i"
+                ></app-content-item>
             </div>
         </div>
-
     </div>
 </div>

@@ -21,6 +21,8 @@ export class ContentComponent implements OnInit {
     @Input() public items: ContentItem[] = [];
     @Output() public itemsChange = new EventEmitter<ContentItem[]>();
 
+    @Input() public isReadOnlyMode: boolean;
+
     title: String = '';
 
     private differ: any;

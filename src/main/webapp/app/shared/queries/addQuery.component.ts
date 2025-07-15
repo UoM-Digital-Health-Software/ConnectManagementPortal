@@ -108,6 +108,7 @@ export class AddQueryComponent {
 
     queryId = null;
 
+    public readonlyMode = false;
     public groupNameError = false;
     public groupDescError = false;
     public queryBuilderError = false;
@@ -218,6 +219,7 @@ export class AddQueryComponent {
                         this.query = response;
                         this.queryGrouName = response.queryGroupName;
                         this.queryGroupDesc = response.queryGroupDescription;
+                        if (!this.query.canEdit) this.readonlyMode = true;
                     });
 
                 this.refreshContentGroups();
@@ -403,7 +405,6 @@ export class AddQueryComponent {
             await this.submitContentChanges().toPromise();
             this.deletedContentGroupIds = [];
 
-
             this.router.navigate(['querygroups']);
         } catch (err: any) {
             if (err.status === 409 || err.message?.includes('already exists')) {
@@ -427,15 +428,15 @@ export class AddQueryComponent {
                 queryGroupId: this.queryGroupId,
                 contentGroupName: group.name,
                 queryContentDTOList: group.items,
-                status: group.status
+                status: group.status,
             };
             return this.queryService.saveContentGroup(payload);
         });
-    
-        const deleteRequests = this.deletedContentGroupIds.map(id =>
+
+        const deleteRequests = this.deletedContentGroupIds.map((id) =>
             this.queryService.deleteContentGroupByID(id)
         );
-    
+
         return forkJoin([...saveRequests, ...deleteRequests]);
     }
 
@@ -565,16 +566,6 @@ export class AddQueryComponent {
             ...this.convertQuery(this.query),
         };
         return this.queryService.updateQueryLogic(query_logic);
-    }
-
-    get isSaveButtonDisabled(): boolean {
-        const hasName = !!this.queryGrouName;
-        const hasDesc = !!this.queryGroupDesc;
-        const hasQuery = this.query && this.query.rules.length > 0;
-
-        const isEditing = this.isEditingContent;
-
-        return !(hasName && hasDesc && hasQuery) || isEditing;
     }
 
     onToggleStatus(contentGroup: any) {
