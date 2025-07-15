@@ -236,6 +236,7 @@ export class AddQueryComponent {
 
                         if (this.isDuplicateMode) {
                             this.queryGrouName += '_duplicate';
+                            this.query.canEdit = true;
                         }
                         if (!this.query.canEdit) this.readonlyMode = true;
                     });
