@@ -6,7 +6,6 @@ import {
 } from '@uom-digital-health-software/ngx-angular-query-builder';
 import { FormBuilder, FormControl, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { QueryDTO, QueryNode, QueryString, Question } from './queries.model';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -16,6 +15,7 @@ import { ContentComponent } from './content/content.component';
 
 
 import {
+    Question,
     QueryDTO,
     QueryNode,
     QueryString,
