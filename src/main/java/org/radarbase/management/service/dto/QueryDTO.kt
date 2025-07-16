@@ -2,15 +2,18 @@ package org.radarbase.management.service.dto
 
 import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.enumeration.ComparisonOperator
+import org.radarbase.management.domain.enumeration.QueryBuilderEntities
 import org.radarbase.management.domain.enumeration.QueryTimeFrame
 
 class QueryDTO {
     constructor(query: Query?) {
-        this.field = query?.field;
+        this.field = query?.field
         this.operator = query?.operator
         this.value = query?.value
         this.timeFrame = query?.timeFrame
-        this.entity = query?.entity
+
+       this.entity = query?.entity?.let { enumValueOf<QueryBuilderEntities>(it) } ?: throw IllegalArgumentException("Query Entity is null or invalid")
+
     }
 
     constructor(metric: String?, operator: ComparisonOperator?, value: String?, timeFrame: QueryTimeFrame?, entity: String? ) {
@@ -18,12 +21,13 @@ class QueryDTO {
         this.operator = operator
         this.value = value
         this.timeFrame = timeFrame
-        this.entity = entity
+        this.entity = entity?.let { enumValueOf<QueryBuilderEntities>(it) } ?: throw IllegalArgumentException("Query Entity is null or invalid")
+
     }
 
 
 
-    var entity: String? = null
+    var entity: QueryBuilderEntities? = null
     var field: String? = null
     var operator: ComparisonOperator? = null
     var value: String? = null

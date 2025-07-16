@@ -64,6 +64,10 @@ export class QueriesService {
         );
     }
 
+    checkDuplicateQueryGroupName(name: string, currentId: number | null) {
+        return this.http.get<boolean>(this.baseURL+ `/querygroups/check-name?name=${encodeURIComponent(name)}&excludeId=${currentId || ''}`);
+    }
+
     archiveQueryGroup(id: number) {
         return this.http.patch(
             this.baseURL + `/querygroups/${id}/archive`,
@@ -80,5 +84,20 @@ export class QueriesService {
 
     getModules() {
         return this.http.get(this.baseURL + '/modules');
+    }
+
+    gellAllPhysicalTypes() {
+        return this.http.get(this.baseURL + '/querybuilder/physical-types');
+    }
+
+    getQuestionnaireItems() {
+         return this.http.get(this.baseURL + '/querybuilder/questionnaire-types');
+    }
+
+    getEntities() {
+         return this.http.get(this.baseURL + '/querybuilder/entities-types');
+
+
+
     }
 }

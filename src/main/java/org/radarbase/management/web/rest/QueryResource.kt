@@ -4,8 +4,12 @@ package org.radarbase.management.web.rest
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.micrometer.core.annotation.Timed
+import org.radarbase.management.config.QuestionanireField
+import org.radarbase.management.config.QuestionnaireItemsLoader
 import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
+import org.radarbase.management.domain.enumeration.PhysicalMetric
+import org.radarbase.management.domain.enumeration.QueryBuilderEntities
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.repository.UserRepository
@@ -32,15 +36,21 @@ class QueryResource(
     @Autowired private val userService: UserService,
     @Autowired private val queryEValuationService: QueryEValuationService,
     @Autowired private val queryContentService: QueryContentService,
-    @Autowired private val subjectRepository: SubjectRepository
+    @Autowired private val subjectRepository: SubjectRepository,
+    @Autowired private val questionnaireItemsLoader: QuestionnaireItemsLoader
 
 ) {
     @PostMapping("querylogic")
     fun saveQueryLogic(@RequestBody queryJson: String?): ResponseEntity<*> {
         if(queryJson.isNullOrEmpty() == false) {
                 val objectMapper = jacksonObjectMapper()
-                val queryLogicDTO: QueryLogicDTO = objectMapper.readValue(queryJson)
-                queryBuilderService.processQueryLogicJson(queryLogicDTO);
+                return try {
+                    val queryLogicDTO: QueryLogicDTO = objectMapper.readValue(queryJson)
+                    queryBuilderService.processQueryLogicJson(queryLogicDTO)
+                    ResponseEntity.ok().build<Any>()
+                } catch (e: Exception) {
+                    ResponseEntity.badRequest().body(e.message ?: "Invalid query")
+                }
             }
             return ResponseEntity.ok(null);
     }
@@ -49,12 +59,17 @@ class QueryResource(
     fun updateQueryLogic(@RequestBody queryJson: String?): ResponseEntity<*> {
         if(queryJson.isNullOrEmpty() == false) {
             val objectMapper = jacksonObjectMapper()
-            val queryLogicDTO: QueryLogicDTO = objectMapper.readValue(queryJson)
-            if(queryLogicDTO.queryGroupId != null) {
-                queryBuilderService.deleteAllQueryLogic(queryLogicDTO.queryGroupId!!);
-                queryBuilderService.processQueryLogicJson(queryLogicDTO);
-            }
+            return try {
+                val queryLogicDTO: QueryLogicDTO = objectMapper.readValue(queryJson)
+                if(queryLogicDTO.queryGroupId != null) {
+                    queryBuilderService.deleteAllQueryLogic(queryLogicDTO.queryGroupId!!);
+                    queryBuilderService.processQueryLogicJson(queryLogicDTO);
+                }
+                ResponseEntity.ok().build<Any>()
+            } catch (e: Exception) {
+                ResponseEntity.badRequest().body(e.message ?: "Invalid query")
 
+            }
         }
         return ResponseEntity.ok(null);
     }
@@ -272,6 +287,44 @@ class QueryResource(
         return ResponseEntity.ok(result)
     }
 
+    @GetMapping("querybuilder/physical-types")
+    fun getStatusTypes(): Map<String, Map<String, String>> {
+       val result = PhysicalMetric.values().associate { metric ->
+           metric.toString().lowercase() to buildMap {
+               put("name", metric.displayName)
+               put("type", metric.type)
+               put("entity", QueryBuilderEntities.PHYSICAL.toString())
+               metric.unit?.let { put("unit", it)
+               }
+           }
+       }
+
+
+        return result
+    }
+
+    @GetMapping("querybuilder/questionnaire-types")
+    fun getFormFields(): Map<String, List<QuestionanireField>> {
+        val result : Map<String, List<QuestionanireField>> = mapOf(
+            "questionnaire" to questionnaireItemsLoader.questionnaireItems,
+            "delusions" to questionnaireItemsLoader.delusionsItems
+        )
+
+        return result;
+
+    }
+
+
+    @GetMapping("querybuilder/entities-types")
+    fun getQueryBuilderEntities():  Map<String, Map<String, String>> {
+        val result = QueryBuilderEntities.values().associate { metric ->
+            metric.toString() to buildMap {
+                put("name", metric.displayName)
+            }
+        }
+
+        return result;
+    }
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)

@@ -77,6 +77,7 @@ internal class QueryResourceIntTest(
 
     @BeforeEach
     @Throws(ServletException::class)
+
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
@@ -118,7 +119,7 @@ internal class QueryResourceIntTest(
 
     private fun createQuery(queryGroup: QueryGroup) : Query {
         val query = Query()
-        query.field = QueryMetric.SLEEP_LENGTH.toString()
+        query.field = PhysicalMetric.SLEEP_LENGTH.toString()
         query.queryGroup = queryGroup
         query.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
         query.timeFrame = QueryTimeFrame.LAST_7_DAYS
@@ -206,7 +207,7 @@ internal class QueryResourceIntTest(
         val queryGroup = createAndAddQueryGroupToDB()
         val queryLogicParentDTO = QueryLogicDTO()
 
-        val queryDTO = QueryDTO(QueryMetric.SLEEP_LENGTH.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "domain")
+        val queryDTO = QueryDTO(PhysicalMetric.SLEEP_LENGTH.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "PHYSICAL")
         queryDTO.value = "80"
         queryDTO.timeFrame = QueryTimeFrame.LAST_7_DAYS
         queryDTO.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
@@ -233,6 +234,35 @@ internal class QueryResourceIntTest(
 
         Assertions.assertThat(queryLogicSizeAfter).isEqualTo(2)
         Assertions.assertThat(querySizeAfter).isEqualTo(1)
+    }
+
+    @Test
+    @Transactional
+    @Throws(Exception::class)
+    fun saveQueryLogicShouldThrowWhenIncorrectMetric() {
+        val queryGroup = createAndAddQueryGroupToDB()
+        val queryLogicParentDTO = QueryLogicDTO()
+
+        val queryDTO = QueryDTO("test", ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "PHYSICAL")
+
+        queryDTO.value = "80"
+        queryDTO.timeFrame = QueryTimeFrame.LAST_7_DAYS
+        queryDTO.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
+
+        queryLogicParentDTO.queryGroupId = queryGroup.id
+        queryLogicParentDTO.logic_operator = QueryLogicOperator.AND
+
+        val queryLogicChild = QueryLogicDTO();
+        queryLogicChild.query = queryDTO
+
+        queryLogicParentDTO.children = mutableListOf(queryLogicChild)
+
+        val json = objectMapper.writeValueAsString(queryLogicParentDTO)
+
+        mockMvc.perform(post(baseURL + "querylogic")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(json)))
+            .andExpect(status().isBadRequest)
     }
 
     @Test
@@ -435,6 +465,8 @@ internal class QueryResourceIntTest(
     fun shouldDeleteAssignedQueryGroup() {
         val queryParticipant = createAndAddQueryParticipantToDB();
 
+        val originalParticipantRepositorySize = queryParticipantRepository.findAll().size
+
         val queryGroupId = queryParticipant.queryGroup?.id
         val subjectId = queryParticipant.subject?.id
 
@@ -442,7 +474,10 @@ internal class QueryResourceIntTest(
         mockMvc.perform(delete(baseURL + "querygroups/" + queryGroupId + "/subject/" + subjectId))
             .andExpect(status().isOk)
 
-        Assertions.assertThat(queryParticipantRepository.findAll().size).isEqualTo(0)
+
+        val afterSize = queryParticipantRepository.findAll().size
+
+        Assertions.assertThat(originalParticipantRepositorySize - 1).isEqualTo(afterSize)
     }
 
     @Test
@@ -815,6 +850,7 @@ internal class QueryResourceIntTest(
 
     @Transactional
     @Throws(Exception::class)
+    @Test
     fun getAllModules() {
         val queryParticipant = createAndAddQueryParticipantToDB();
 
@@ -828,6 +864,28 @@ internal class QueryResourceIntTest(
                     )
                 )
             )
+    }
+
+
+    @Transactional
+    @Throws(Exception::class)
+    @Test
+    fun getQueryBuilderTypes() {
+
+        mockMvc.perform(get(baseURL + "querybuilder/physical-types"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(8))
+
+
+        mockMvc.perform(get(baseURL + "querybuilder/questionnaire-types"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$.questionnaire.length()").value(72))
+            .andExpect(jsonPath("$.delusions.length()").value(60))
+
+        mockMvc.perform(get(baseURL + "querybuilder/entities-types"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.length()").value(5))
     }
 
 

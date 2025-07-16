@@ -115,11 +115,11 @@ class ContentServiceTest(
         return queryGroup
     }
 
-    fun createQuery(queryGroup: QueryGroup?, queryMetric: QueryMetric, queryOperator: ComparisonOperator, timeframe: QueryTimeFrame, value: String)  : Query {
+    fun createQuery(queryGroup: QueryGroup?, physicalMetric: PhysicalMetric, queryOperator: ComparisonOperator, timeframe: QueryTimeFrame, value: String)  : Query {
         var query = Query();
 
         query.queryGroup = queryGroup
-        query.field = queryMetric.toString()
+        query.field = physicalMetric.toString()
         query.operator = queryOperator
         query.value = value
         query.timeFrame = timeframe
