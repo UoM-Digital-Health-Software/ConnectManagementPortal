@@ -3,7 +3,6 @@ import org.radarbase.management.domain.*
 import org.radarbase.management.domain.enumeration.QueryLogicType
 import org.radarbase.management.domain.enumeration.QueryTimeFrame
 import org.radarbase.management.repository.*
-import org.radarbase.management.service.dto.QueryContentDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,6 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import org.springframework.beans.factory.annotation.Value
+import java.time.temporal.ChronoUnit
 
 data class DataPoint(
     val month: String,
@@ -98,8 +98,6 @@ public class QueryEValuationService(
         val physicalData = summary.physical
         val sliderData = summary.questionnaire_slider
 
-        log.info("[EVAL] physical data {}", physicalData)
-
         val value = when (entity.lowercase()) {
             "physical" -> physicalData[metric.lowercase()]
             "questionnaire_slider" -> sliderData[metric.lowercase()]
@@ -122,21 +120,27 @@ public class QueryEValuationService(
         val metric = query.field ?: throw IllegalArgumentException("Metric field is missing.")
         val expectedValue = query.value ?: throw IllegalArgumentException("Expected value is missing")
         val timeFrame = query.timeFrame ?: throw IllegalArgumentException("Timeframe is missing")
-        val timeframeMonths = extractTimeframeMonths(timeFrame, currentMonth)
+        val datesToQuery = extractDatesToQuery(timeFrame, currentMonth)
 
 
         var avgEvalData = mutableListOf<Double>()
         var histogramEvalData = mutableMapOf<String, Int>()
 
-        for (month in timeframeMonths) {
-            val summary = userData[month] ?: continue
+        for (date in datesToQuery) {
+            val summary = userData[date] ?: continue
             if (comparisonOperator == "IS") {
-                histogramEvalData = aggregateDataForHistogramEvaluation(metric, month, userData)
+                histogramEvalData = aggregateDataForHistogramEvaluation(metric, date, userData)
             } else {
                 avgEvalData += getRelevantDataForAveragedEvaluation(entity, metric, summary) ?: continue
 
             }
         }
+
+//        if(avgEvalData.size < 7) {
+//            return false
+//        }
+
+        log.info("[QUERY] histogramEvalData {}", histogramEvalData)
 
         return if (comparisonOperator == "IS") {
             evaluateAgainstHistogramData(histogramEvalData, expectedValue)
@@ -159,30 +163,26 @@ public class QueryEValuationService(
         }
     }
 
-    fun extractTimeframeMonths(timeframe: QueryTimeFrame, currentMonth: String): List<String> {
-        val testYear = fixedYearStr.toIntOrNull()
-        val month = if (fixedMonthStr.isEmpty()) currentMonth else fixedMonthStr
+    fun extractDatesToQuery(timeframe: QueryTimeFrame, currentMonth: String): List<String> {
+//        val testYear = fixedYearStr.toIntOrNull()
+//        val month = if (fixedMonthStr.isEmpty()) currentMonth else fixedMonthStr
+//        val currentYear = testYear ?: LocalDate.now().year
 
-        val currentDateFormatter = DateTimeFormatter.ofPattern("MMMM-yyyy-dd")
-        val currentYear = testYear ?: LocalDate.now().year
-        val currentDate = LocalDate.parse("$month-$currentYear-01", currentDateFormatter)
+        val today = LocalDate.now()
+        var startDate = today;
 
-        var monthsBack = 0;
         when (timeframe.name) {
-            "PAST_MONTH" -> monthsBack = 1
-            "PAST_6_MONTH" -> monthsBack = 6
-            "PAST_YEAR" -> monthsBack = 12
-            else -> monthsBack = 1;
+            "PAST_WEEK" -> startDate = startDate.minusWeeks(1)
+            "PAST_MONTH" -> startDate = startDate.minusMonths(1)
+            "PAST_6_MONTH" -> startDate = startDate.minusMonths(6)
+            "PAST_YEAR" -> startDate = startDate.minusYears(1)
+            else -> throw Exception("No timeframe provided")
         }
+        val dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM")
+        val daysBetween = ChronoUnit.DAYS.between(startDate, today)
 
-
-        var result =  (1 until   monthsBack + 1).map {
-            currentDate.minusMonths(it.toLong()).format(outputFormatter)
-        }
-
-        return result;
+        return (0..daysBetween).map { startDate.plusDays(it).format(dayFormatter) }
     }
 
     //TODO: delete later, only added  for Sandra evaluation purposes
@@ -231,12 +231,11 @@ public class QueryEValuationService(
         val subjectLogin = subject.user?.login!!
         val subjectId = subject.id!!;
 
-        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.CLASSPATH)?.data ?: throw IllegalArgumentException("There is no data for the user")
+        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.CLASSPATH, AggregationLevel.DAY)?.data ?: throw IllegalArgumentException("There is no data for the user")
 
         val subjectOpt = subjectRepository.findById(subjectId)
         val queryParticipant = queryParticipantRepository.findBySubjectId(subjectId);
         val results: MutableMap<String, Boolean> = mutableMapOf()
-
 
         if(subjectOpt.isPresent && queryParticipant.isNotEmpty()) {
             val subject = subjectOpt.get();

@@ -40,10 +40,11 @@ public class QueryBuilderService(
 
 
     private fun validateQuery(entity: QueryBuilderEntities?, fieldName: String?) : Boolean {
+
+
        val result = when (entity) {
             QueryBuilderEntities.PHYSICAL -> physicalMetricExists(fieldName)
             QueryBuilderEntities.QUESTIONNAIRE_SLIDER,
-            QueryBuilderEntities.QUESTIONNAIRE_HISTOGRAM-> questionnaireItemsLoader.questionnaireItems.any { it.field_name == fieldName }
             QueryBuilderEntities.QUESTIONNAIRE_DELUSIONS -> questionnaireItemsLoader.delusionsItems.any { it.field_name == fieldName }
             else -> true
         }
