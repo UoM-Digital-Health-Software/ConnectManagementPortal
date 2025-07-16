@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { QueriesService } from './queries.service';
 import { QueryGroup } from './queries.model';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'jhi-queries',
@@ -10,7 +11,10 @@ import { QueryGroup } from './queries.model';
 export class QueryGroupListComponent implements OnInit, OnDestroy {
     public queryGroupList: any[] = [];
 
-    constructor(private queriesService: QueriesService) {}
+    constructor(
+        private queriesService: QueriesService,
+        private router: Router
+    ) {}
 
     getQueryGroupList() {
         this.queriesService
@@ -38,6 +42,10 @@ export class QueryGroupListComponent implements OnInit, OnDestroy {
                 },
             });
         }
+    }
+
+    async duplicateQueryGroup(id: number) {
+        this.router.navigate(['duplicateQuery', id]);
     }
 
     ngOnDestroy() {}

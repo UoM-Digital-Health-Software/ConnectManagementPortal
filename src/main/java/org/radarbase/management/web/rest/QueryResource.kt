@@ -10,6 +10,7 @@ import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
 import org.radarbase.management.domain.enumeration.PhysicalMetric
 import org.radarbase.management.domain.enumeration.QueryBuilderEntities
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.service.*
@@ -82,12 +83,20 @@ class QueryResource(
         }
     }
 
+
     @PostMapping("querygroups")
-    fun createQueryGroup(@RequestBody queryJson: String?): ResponseEntity<Long?> {
+    fun createQueryGroup(@RequestBody queryJson: String?): ResponseEntity<*> {
         var queryGroupId: Long? = null
         if(queryJson.isNullOrEmpty() == false) {
             val objectMapper = jacksonObjectMapper()
             val queryGroupDTO: QueryGroupDTO = objectMapper.readValue(queryJson)
+
+            val exists = queryBuilderService.checkQueryGroupName(queryGroupDTO.name,null);
+            if(exists) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Query group name already exists.")
+            }
+
             val user = userService.getUserWithAuthorities()
             if(user != null) {
                 queryGroupId = queryBuilderService.createQueryGroup(queryGroupDTO, user!!);
@@ -102,6 +111,13 @@ class QueryResource(
         if(!queryJson.isNullOrEmpty()) {
             val objectMapper = jacksonObjectMapper()
             val queryGroupDTO: QueryGroupDTO = objectMapper.readValue(queryJson)
+
+            val exists = queryBuilderService.checkQueryGroupName(queryGroupDTO.name,id);
+            if(exists) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Query group name already exists.")
+            }
+
             val user = userService.getUserWithAuthorities()
             if(user != null) {
                 queryBuilderService.updateQueryGroup(id, queryGroupDTO, user!!);
@@ -270,15 +286,6 @@ class QueryResource(
         val result =  queryContentService.getModuleById(moduleId)
         return ResponseEntity.ok(result)
     }
-    @GetMapping("querygroups/check-name")
-    fun checkQueryGroupNameUnique(
-        @RequestParam name: String,
-        @RequestParam(required = false) excludeId: Long?
-    ): ResponseEntity<Boolean> {
-        val exists = queryBuilderService.checkQueryGroupName(name, excludeId)
-        return ResponseEntity.ok(exists)
-    }
-
 
     @GetMapping("querybuilder/physical-types")
     fun getStatusTypes(): Map<String, Map<String, String>> {

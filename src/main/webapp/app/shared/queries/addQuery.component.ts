@@ -10,25 +10,25 @@ import { QueryDTO, QueryNode, QueryString, Question } from './queries.model';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { QueryGroup } from './queries.model';
 import { QueriesService } from './queries.service';
 import { ContentComponent } from './content/content.component';
 
 
 
-import { ContentItem, ContentType } from './queries.model';
+import {
+    QueryDTO,
+    QueryNode,
+    QueryString,
+    ContentType,
+    ContentGroup,
+    ContentGroupStatus,
+} from './queries.model';
+import { Observable, forkJoin } from 'rxjs';
 
 const sliderOptions = Array.from({ length: 7 }, (_, i) => {
     const val = String(i + 1);
     return { name: val, value: val };
 });
-
-interface ContentGroup {
-    name: string;
-    items: ContentItem[];
-    queryGroupId: number;
-    id: number;
-}
 
 @Component({
     selector: 'jhi-queries',
@@ -106,6 +106,7 @@ export class AddQueryComponent {
 
     queryId = null;
 
+    public readonlyMode = false;
     public groupNameError = false;
     public groupDescError = false;
     public queryBuilderError = false;
@@ -114,6 +115,12 @@ export class AddQueryComponent {
     public contentGroupItemsError = false;
     public queryRulesError = false;
     public contentParagraphError = false;
+    public contentModuleLinkError = false;
+
+    public isDuplicateMode = false;
+
+    public isEditingMode = false;
+    private deletedContentGroupIds: number[] = [];
 
     constructor(
         private queryService: QueriesService,
@@ -217,6 +224,12 @@ export class AddQueryComponent {
     }
 
     async ngOnInit() {
+        this.route.url.subscribe((urlSegments) => {
+            this.isDuplicateMode = urlSegments.some(
+                (seg) => seg.path === 'duplicateQuery'
+            );
+        });
+
         this.route.params.subscribe((params) => {
             this.queryId = params['query-id'];
             this.queryGroupId = this.queryId;
@@ -228,6 +241,12 @@ export class AddQueryComponent {
                         this.query = response;
                         this.queryGrouName = response.queryGroupName;
                         this.queryGroupDesc = response.queryGroupDescription;
+
+                        if (this.isDuplicateMode) {
+                            this.queryGrouName += '_duplicate';
+                            this.query.canEdit = true;
+                        }
+                        if (!this.query.canEdit) this.readonlyMode = true;
                     });
 
                 this.refreshContentGroups();
@@ -244,6 +263,7 @@ export class AddQueryComponent {
                     items: group.queryContentDTOList || [],
                     queryGroupId: group.queryGroupId,
                     id: group.id,
+                    status: group.status || 'INACTIVE',
                 }));
 
                 if (this.contentGroups.length > 0) {
@@ -337,7 +357,9 @@ export class AddQueryComponent {
                 if (
                     rule.value === undefined ||
                     rule.value === null ||
-                    rule.value.toString().trim() === ''
+                    rule.value.toString().trim() === '' ||
+                    rule.timeFame === undefined ||
+                    rule.timeFame === null
                 ) {
                     return false;
                 }
@@ -355,29 +377,23 @@ export class AddQueryComponent {
 
         let hasError = false;
 
-        if (!this.queryGrouName || !this.queryGrouName.trim()) {
+        this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
+
+        if (!this.queryGrouName?.trim()) {
             this.groupNameError = true;
             hasError = true;
         }
 
-        const isDuplicate = await this.queryService
-            .checkDuplicateQueryGroupName(
-                this.queryGrouName.trim(),
-                this.queryGroupId
-            )
-            .toPromise();
-
-        if (isDuplicate) {
-            this.groupNameDuplicateError = true;
-            hasError = true;
-        }
-
-        if (!this.queryGroupDesc || !this.queryGroupDesc.trim()) {
+        if (!this.queryGroupDesc?.trim()) {
             this.groupDescError = true;
             hasError = true;
         }
 
-        if (!this.query || !this.query.rules || this.query.rules.length === 0) {
+        if (
+            !this.query ||
+            !Array.isArray(this.query.rules) ||
+            this.query.rules.length === 0
+        ) {
             this.queryBuilderError = true;
             hasError = true;
         }
@@ -387,38 +403,79 @@ export class AddQueryComponent {
             hasError = true;
         }
 
-        if (hasError) {
+        if (hasError) return;
+
+        try {
+            if (this.isEditingMode) {
+                await this.queryService
+                    .updateQueryGroup(
+                        {
+                            name: this.queryGrouName,
+                            description: this.queryGroupDesc,
+                        },
+                        this.queryGroupId
+                    )
+                    .toPromise();
+                await this.updateIndividualQueries().toPromise();
+            } else {
+                this.queryGroupId = await this.queryService
+                    .saveNewQueryGroup({
+                        name: this.queryGrouName,
+                        description: this.queryGroupDesc,
+                    })
+                    .toPromise();
+                await this.saveIndividualQueries().toPromise();
+            }
+
+            await this.submitContentChanges().toPromise();
+            this.deletedContentGroupIds = [];
+
+            this.router.navigate(['querygroups']);
+        } catch (err: any) {
+            if (
+                err?.status === 409 ||
+                err?.message?.includes('already exists')
+            ) {
+                this.groupNameDuplicateError = true;
+                if (!this.isEditingMode) {
+                    this.queryGroupId = null;
+                }
+            } else {
+                console.error('Unexpected error saving query group:', err);
+            }
+
             return;
         }
-
-        if (this.queryGroupId) {
-            this.queryGroupId = await this.updateQueryGroup({
-                name: this.queryGrouName,
-                description: this.queryGroupDesc,
-            });
-            await this.updateIndividualQueries();
-        } else {
-            this.queryGroupId = await this.saveNewQueryGroup({
-                name: this.queryGrouName,
-                description: this.queryGroupDesc,
-            });
-            await this.saveIndividualQueries();
-        }
-
-        await this.saveContent();
-        this.router.navigate(['querygroups']);
     }
 
-    async saveContent() {
-        for (const group of this.contentGroups) {
-            const payload = {
-                id: group.id,
-                queryGroupId: this.queryGroupId,
-                contentGroupName: group.name,
-                queryContentDTOList: group.items,
-            };
-            await this.queryService.saveContentGroup(payload);
-        }
+    submitContentChanges(): Observable<any> {
+        const saveRequests = this.contentGroups.map((group) => {
+            let payload = null;
+            if (this.isDuplicateMode) {
+                // if is dupilicating query, need to create new content groups
+                payload = {
+                    queryGroupId: this.queryGroupId,
+                    contentGroupName: group.name,
+                    queryContentDTOList: group.items,
+                    status: group.status,
+                };
+            } else {
+                payload = {
+                    id: group.id,
+                    queryGroupId: this.queryGroupId,
+                    contentGroupName: group.name,
+                    queryContentDTOList: group.items,
+                    status: group.status,
+                };
+            }
+            return this.queryService.saveContentGroup(payload);
+        });
+
+        const deleteRequests = this.deletedContentGroupIds.map((id) =>
+            this.queryService.deleteContentGroupByID(id)
+        );
+
+        return forkJoin([...saveRequests, ...deleteRequests]);
     }
 
     addContentGroup() {
@@ -433,6 +490,7 @@ export class AddQueryComponent {
             ],
             queryGroupId: null,
             id: null,
+            status: ContentGroupStatus.INACTIVE,
         };
         this.isEditingContent = true;
     }
@@ -441,14 +499,12 @@ export class AddQueryComponent {
         const confirmDelete = confirm(
             "Are you sure you want to delete this? This will also delete the content from the participants' phones."
         );
-        if (!confirmDelete) {
-            return;
-        }
-        this.queryService
-            .deleteContentGroupByID(id)
-            .subscribe((result: any) => {
-                this.refreshContentGroups();
-            });
+        if (!confirmDelete) return;
+
+        this.deletedContentGroupIds.push(id);
+        this.contentGroups = this.contentGroups.filter(
+            (group) => group.id !== id
+        );
     }
 
     selectGroup(index: number) {
@@ -461,6 +517,7 @@ export class AddQueryComponent {
             items: original.items.map((item) => ({ ...item })),
             queryGroupId: original.queryGroupId,
             id: original.id,
+            status: original.status,
         };
         this.isEditingContent = true;
     }
@@ -470,6 +527,7 @@ export class AddQueryComponent {
         this.contentGroupNameError = false;
         this.contentGroupItemsError = false;
         this.contentParagraphError = false;
+        this.contentModuleLinkError = false;
 
         if (
             !this.currentEditingCopy?.name ||
@@ -504,6 +562,13 @@ export class AddQueryComponent {
                     break;
                 }
             }
+            if (item.type === 'MODULE_LINK') {
+                if (item.resourceId === null || item.resourceId === undefined) {
+                    this.contentModuleLinkError = true;
+                    hasError = true;
+                    break;
+                }
+            }
         }
 
         if (hasError) {
@@ -525,15 +590,6 @@ export class AddQueryComponent {
         this.currentEditingCopy = null;
     }
 
-    saveNewQueryGroup(queryGroup: QueryGroup) {
-        return this.queryService.saveNewQueryGroup(queryGroup);
-    }
-    updateQueryGroup(queryGroup: QueryGroup) {
-        return this.queryService.updateQueryGroup(
-            queryGroup,
-            this.queryGroupId
-        );
-    }
     saveIndividualQueries() {
         const query_logic = {
             queryGroupId: this.queryGroupId,
@@ -550,13 +606,18 @@ export class AddQueryComponent {
         return this.queryService.updateQueryLogic(query_logic);
     }
 
-    get isSaveButtonDisabled(): boolean {
-        const hasName = !!this.queryGrouName;
-        const hasDesc = !!this.queryGroupDesc;
-        const hasQuery = this.query && this.query.rules.length > 0;
+    onToggleStatus(contentGroup: any) {
+        const newStatus =
+            contentGroup.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        if (
+            newStatus === 'INACTIVE' &&
+            !confirm(
+                "Are you sure? This will prevent it from displaying on participants' phones."
+            )
+        ) {
+            return;
+        }
 
-        const isEditing = this.isEditingContent;
-
-        return !(hasName && hasDesc && hasQuery) || isEditing;
+        contentGroup.status = newStatus;
     }
 }
