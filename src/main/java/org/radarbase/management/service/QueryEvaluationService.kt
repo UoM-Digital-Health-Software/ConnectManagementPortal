@@ -39,26 +39,29 @@ public class QueryEValuationService(
 
 
 ) {
-    fun evaluteQueryCondition(queryLogic: QueryLogic, userData: MutableMap<String, DataSummaryCategory>, currentMonth: String) : Boolean {
+    fun evaluteQueryCondition(queryLogic: QueryLogic, userData: MutableMap<String, DataSummaryCategory>) : Boolean {
         return when(queryLogic.type) {
-               QueryLogicType.CONDITION -> evaluateSingleCondition(queryLogic, userData, currentMonth)
-               QueryLogicType.LOGIC -> evaluateLogicalCondition(queryLogic, userData, currentMonth)
+               QueryLogicType.CONDITION -> evaluateSingleCondition(queryLogic, userData)
+               QueryLogicType.LOGIC -> evaluateLogicalCondition(queryLogic, userData)
             else -> false;
         }
     }
 
     private fun evaluateAgainstHistogramData(aggregatedData: MutableMap<String, Int>, expectedValue: String) : Boolean {
-        if(aggregatedData.isEmpty()) {
+        val numberOfAnswers = aggregatedData.values.sum();
+
+        if(aggregatedData.isEmpty() || numberOfAnswers < 7) {
             return false
         }
         val maxRange = aggregatedData.maxByOrNull { it.value }
+
         val result = maxRange != null && maxRange.key == expectedValue
         return result
     }
 
 
     private fun evaluateAgainstAveragedData(relevantData: List<Double>, expectedValue: String, comparsionOperator: String ): Boolean {
-        if(relevantData.isEmpty()) {
+        if(relevantData.isEmpty() || relevantData.size < 7) {
             return false
         }
 
@@ -75,9 +78,8 @@ public class QueryEValuationService(
         }
     }
 
-    private fun aggregateDataForHistogramEvaluation(metric: String, currentTimeFrame: String, userData: MutableMap<String, DataSummaryCategory>) : MutableMap<String, Int>  {
+    fun aggregateDataForHistogramEvaluation(metric: String, currentTimeFrame: String, userData: MutableMap<String, DataSummaryCategory>, aggregatedData:  MutableMap<String, Int>)   {
         var questionnaireHistogramData :  MutableMap<String, Int>?  = mutableMapOf()
-         val aggregatedData = mutableMapOf<String, Int>()
 
         when(metric.lowercase()) {
             "social" -> questionnaireHistogramData = userData[currentTimeFrame]?.questionnaire_histogram?.social
@@ -91,7 +93,6 @@ public class QueryEValuationService(
             }
         }
 
-        return aggregatedData
     }
 
     private fun getRelevantDataForAveragedEvaluation(entity: String, metric:String, summary: DataSummaryCategory ) : Double? {
@@ -110,8 +111,7 @@ public class QueryEValuationService(
 
     fun evaluateSingleCondition(
         queryLogic: QueryLogic,
-        userData: MutableMap<String, DataSummaryCategory>,
-        currentMonth: String
+        userData: MutableMap<String, DataSummaryCategory>
     ): Boolean {
         val query = queryLogic.query ?: return false
 
@@ -120,8 +120,7 @@ public class QueryEValuationService(
         val metric = query.field ?: throw IllegalArgumentException("Metric field is missing.")
         val expectedValue = query.value ?: throw IllegalArgumentException("Expected value is missing")
         val timeFrame = query.timeFrame ?: throw IllegalArgumentException("Timeframe is missing")
-        val datesToQuery = extractDatesToQuery(timeFrame, currentMonth)
-
+        val datesToQuery = extractDatesToQuery(timeFrame)
 
         var avgEvalData = mutableListOf<Double>()
         var histogramEvalData = mutableMapOf<String, Int>()
@@ -129,31 +128,24 @@ public class QueryEValuationService(
         for (date in datesToQuery) {
             val summary = userData[date] ?: continue
             if (comparisonOperator == "IS") {
-                histogramEvalData = aggregateDataForHistogramEvaluation(metric, date, userData)
+                aggregateDataForHistogramEvaluation(metric, date, userData, histogramEvalData)
             } else {
                 avgEvalData += getRelevantDataForAveragedEvaluation(entity, metric, summary) ?: continue
 
             }
         }
 
-//        if(avgEvalData.size < 7) {
-//            return false
-//        }
-
-        log.info("[QUERY] histogramEvalData {}", histogramEvalData)
-
         return if (comparisonOperator == "IS") {
             evaluateAgainstHistogramData(histogramEvalData, expectedValue)
         } else {
-            log.info("[EVAL] avgEvalData {}", avgEvalData)
             evaluateAgainstAveragedData(avgEvalData, expectedValue, comparisonOperator)
         }
     }
-    fun evaluateLogicalCondition(queryLogic: QueryLogic, userData:  MutableMap<String, DataSummaryCategory>, currentMonth: String) : Boolean {
+    fun evaluateLogicalCondition(queryLogic: QueryLogic, userData:  MutableMap<String, DataSummaryCategory>) : Boolean {
         val children = queryLogic.children ?: return false;
 
         val results = children.map {
-            evaluteQueryCondition(it, userData, currentMonth)
+            evaluteQueryCondition(it, userData)
         }
 
         return when (queryLogic.logicOperator.toString()) {
@@ -163,11 +155,7 @@ public class QueryEValuationService(
         }
     }
 
-    fun extractDatesToQuery(timeframe: QueryTimeFrame, currentMonth: String): List<String> {
-//        val testYear = fixedYearStr.toIntOrNull()
-//        val month = if (fixedMonthStr.isEmpty()) currentMonth else fixedMonthStr
-//        val currentYear = testYear ?: LocalDate.now().year
-
+    fun extractDatesToQuery(timeframe: QueryTimeFrame): List<String> {
         val today = LocalDate.now()
         var startDate = today;
 
@@ -178,6 +166,7 @@ public class QueryEValuationService(
             "PAST_YEAR" -> startDate = startDate.minusYears(1)
             else -> throw Exception("No timeframe provided")
         }
+
         val dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         val daysBetween = ChronoUnit.DAYS.between(startDate, today)
@@ -252,7 +241,7 @@ public class QueryEValuationService(
                 val month = currentDate.month
                 val monthName = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
 
-                val result =  evaluteQueryCondition(root, processedData, monthName);
+                val result =  evaluteQueryCondition(root, processedData)
 
                 saveQueryEvaluationResult(result, subject, queryGroup)
 
