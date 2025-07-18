@@ -145,24 +145,47 @@ class ContentServiceTest(
     @Transactional
     fun testShouldSendNotification() {
 
-        val evaluation1 = QueryEvaluation()
-        evaluation1.result = true;
-        var result = queryContentService.shouldSendNotification(listOf(evaluation1));
-        Assertions.assertEquals(result,true)
+
+        val lastSendNotification = ZonedDateTime.now()
+
+        val trueEval = QueryEvaluation()
+        trueEval.result = true
+        var result = queryContentService.shouldSendNotification(listOf(trueEval), null);
+        Assertions.assertEquals(true,result)
 
 
-        val evaluation2 = QueryEvaluation()
-        evaluation2. result = false
-        result = queryContentService.shouldSendNotification(listOf(evaluation2))
-        Assertions.assertEquals(result, false )
+        val falseEval = QueryEvaluation()
+        falseEval. result = false
+        result = queryContentService.shouldSendNotification(listOf(falseEval), null)
+        Assertions.assertEquals(false, result )
 
 
-        result = queryContentService.shouldSendNotification(listOf(evaluation1, evaluation2))
-        Assertions.assertEquals(result, true )
+        result = queryContentService.shouldSendNotification(listOf(trueEval, falseEval), null)
+        Assertions.assertEquals(true, result )
+
+        result = queryContentService.shouldSendNotification(listOf(trueEval, falseEval, trueEval), null)
+        Assertions.assertEquals(false, result )
+
+        result = queryContentService.shouldSendNotification(listOf(trueEval, falseEval, falseEval, trueEval), null)
+        Assertions.assertEquals(true, result )
 
 
-        result = queryContentService.shouldSendNotification(listOf(evaluation1, evaluation1))
-        Assertions.assertEquals(result, false)
+        val trueEvalWithNotif = QueryEvaluation()
+        trueEvalWithNotif.result = true
+        trueEvalWithNotif.notificationSent = true
+
+        val sixDaysAgo = ZonedDateTime.now().minusDays(6)
+
+        result = queryContentService.shouldSendNotification(listOf(trueEval, trueEval, trueEval, trueEvalWithNotif), sixDaysAgo)
+        Assertions.assertEquals(false, result)
+
+        val sevenDaysAgo = ZonedDateTime.now().minusDays(7)
+
+        result = queryContentService.shouldSendNotification(listOf(trueEval, falseEval, trueEval, trueEvalWithNotif), sevenDaysAgo)
+        Assertions.assertEquals(true, result)
+
+
+
     }
 
     @Test

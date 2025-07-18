@@ -37,7 +37,12 @@ class QueryEvaluation: AbstractEntity(), Serializable {
 
     @JvmField
     @Column(name = "result")
-    var result: Boolean? = null;
+    var result: Boolean? = null
+
+    @JvmField
+    @Column(name = "notification_sent")
+    var notificationSent: Boolean? = false
+
 
     override fun toString(): String {
         return ("QueryEvaluation{"

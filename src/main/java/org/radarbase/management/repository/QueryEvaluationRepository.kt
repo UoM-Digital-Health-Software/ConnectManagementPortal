@@ -16,4 +16,11 @@ interface QueryEvaluationRepository : JpaRepository<QueryEvaluation, Long>  {
     fun deleteByQueryGroupIdAndSubjectId(queryGroupId: Long, subjectId: Long)
 
     fun findTop2BySubjectAndQueryGroupOrderByCreatedDateDesc(subject: Subject, queryGroup: QueryGroup): List<QueryEvaluation>
+
+    fun findFirstBySubjectAndQueryGroupAndNotificationSentIsTrueOrderByCreatedDateDesc(
+        subject: Subject,
+        queryGroup: QueryGroup
+    ): QueryEvaluation?
+
+
 }

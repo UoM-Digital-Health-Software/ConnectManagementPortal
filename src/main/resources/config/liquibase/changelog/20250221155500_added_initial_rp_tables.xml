@@ -218,6 +218,9 @@
 			<column name="subject_id" type="bigint">
 				<constraints nullable="false"/>
 			</column>
+            <column name="notification_sent" type="boolean">
+                <constraints nullable="false"/>
+            </column>
 			<column name="result" type="boolean" >
 				<constraints nullable="false"/>
 			</column>

@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 
@@ -145,19 +147,66 @@ class QueryContentService(
     }
 
 
-    fun sendNotification(contentGroup: QueryContentGroup?) {
+    fun sendNotification(contentGroup: QueryContentGroup?, latestEvaluation: QueryEvaluation) {
+
+
+
         //TODO: implement this once the notification capability was added
+        latestEvaluation.notificationSent = true
+        queryEvaluationRepository.save(latestEvaluation)
     }
 
-     fun shouldSendNotification(evaluations : List<QueryEvaluation>): Boolean {
-        return when(evaluations.size) {
-            1 -> evaluations[0].result ?: false
-            2 -> {
-                val (latestEvaluation, previousEvaluations) = evaluations
-                latestEvaluation.result == true && previousEvaluations.result == false
-            }
-            else -> false
-        }
+     fun shouldSendNotification(evaluations : List<QueryEvaluation>, latestNotificationDate: ZonedDateTime?): Boolean {
+         log.info("[QUERY] in should send notification ")
+         val resetThresholdDays = 2
+         val minNotificationIntervalDays = 7
+
+         if(evaluations.isEmpty()) return false
+
+         if(evaluations.first().result != true) return false
+
+         val hasPreviousTrue = evaluations.drop(1).any { it.result == true }
+
+         log.info("[QUERY] has previous true {} ", hasPreviousTrue)
+
+         if (evaluations.first().result == true && !hasPreviousTrue) return true // first threshold pass ever
+         log.info("[QUERY] before consecutive failed ")
+
+
+
+         var consecutiveFailed = 0
+
+         for(i in 1 until evaluations.size) {
+
+             if(evaluations[i].result == false) {
+                 consecutiveFailed++
+             } else {
+                break
+             }
+         }
+
+         log.info("[QUERY] consecutive failed {}", consecutiveFailed)
+
+         if(consecutiveFailed >= resetThresholdDays) {
+            return true
+         }
+
+
+         log.info("[QUERY] before latestNotification date ")
+
+         if (latestNotificationDate != null) {
+             val today = ZonedDateTime.now()
+            val daysSinceLast = ChronoUnit.DAYS.between(latestNotificationDate, today)
+
+             log.info("[QUERY] days since lats {} ", daysSinceLast)
+
+
+             if (daysSinceLast >= minNotificationIntervalDays) {
+                return true
+             }
+         }
+
+         return false
     }
 
     private fun saveParticipantContentGroup(queryGroup: QueryGroup, queryContentGroup: QueryContentGroup, subject: Subject) {
@@ -280,7 +329,10 @@ class QueryContentService(
 
                 val latestEvaluation = evaluations[0]
                 val queryGroup = latestEvaluation.queryGroup ?: continue
-                if(shouldSendNotification(evaluations)) {
+
+                val latestNotificationDate = queryEvaluationRepository.findFirstBySubjectAndQueryGroupAndNotificationSentIsTrueOrderByCreatedDateDesc(subject, queryGroup)?.createdDate
+
+                if(shouldSendNotification(evaluations, latestNotificationDate)) {
                     var content = tryAssignNewContent(queryGroup, subject)
 
                     if(content == null) {
@@ -288,7 +340,7 @@ class QueryContentService(
                     }
 
                     log.info("content {}", content)
-                    sendNotification(content)
+                    sendNotification(content, latestEvaluation)
                 }
             }
         }
