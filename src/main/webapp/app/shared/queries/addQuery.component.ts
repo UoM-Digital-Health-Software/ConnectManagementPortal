@@ -314,7 +314,7 @@ export class AddQueryComponent {
     }
 
     convertTimeFrame(value: string) {
-        console.log("value", value)
+   
         switch (value) {
             case '6_months':
                 return 'PAST_6_MONTH';
