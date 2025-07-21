@@ -157,7 +157,6 @@ class QueryContentService(
     }
 
      fun shouldSendNotification(evaluations : List<QueryEvaluation>, latestNotificationDate: ZonedDateTime?): Boolean {
-         log.info("[QUERY] in should send notification ")
          val resetThresholdDays = 2
          val minNotificationIntervalDays = 7
 
@@ -167,12 +166,7 @@ class QueryContentService(
 
          val hasPreviousTrue = evaluations.drop(1).any { it.result == true }
 
-         log.info("[QUERY] has previous true {} ", hasPreviousTrue)
-
          if (evaluations.first().result == true && !hasPreviousTrue) return true // first threshold pass ever
-         log.info("[QUERY] before consecutive failed ")
-
-
 
          var consecutiveFailed = 0
 
@@ -185,21 +179,16 @@ class QueryContentService(
              }
          }
 
-         log.info("[QUERY] consecutive failed {}", consecutiveFailed)
 
          if(consecutiveFailed >= resetThresholdDays) {
             return true
          }
 
 
-         log.info("[QUERY] before latestNotification date ")
 
          if (latestNotificationDate != null) {
              val today = ZonedDateTime.now()
             val daysSinceLast = ChronoUnit.DAYS.between(latestNotificationDate, today)
-
-             log.info("[QUERY] days since lats {} ", daysSinceLast)
-
 
              if (daysSinceLast >= minNotificationIntervalDays) {
                 return true
@@ -339,7 +328,7 @@ class QueryContentService(
                         content = getRandomAlreadyAssignedContent(queryGroup, subject)
                     }
 
-                    log.info("content {}", content)
+
                     sendNotification(content, latestEvaluation)
                 }
             }

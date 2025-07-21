@@ -230,7 +230,7 @@ class ContentServiceTest(
         var result = queryContentService.processCompletedQueriesForParticipant(subject.id!!)
         Assertions.assertEquals(result, false)
 
-        val queryEvaluation = QueryEvaluation()
+        var queryEvaluation = QueryEvaluation()
         queryEvaluation.queryGroup = queryGroup
         queryEvaluation.subject = subject
         queryEvaluation.createdDate = ZonedDateTime.now()
@@ -243,14 +243,20 @@ class ContentServiceTest(
         queryParticipant.createdBy = user
 
         queryParticipantRepository.saveAndFlush(queryParticipant)
-        queryEvaluationRepository.saveAndFlush(queryEvaluation)
+        queryEvaluation = queryEvaluationRepository.saveAndFlush(queryEvaluation)
 
         result = queryContentService.processCompletedQueriesForParticipant(subject.id!!)
+
+
 
         val sizeAfter =   participantContentRepository.findAll().size
 
         Assertions.assertEquals(result, true)
         Assertions.assertEquals(sizeAfter , sizeBefore + 1)
+
+
+        val queryEvaluationAfter = queryEvaluationRepository.findById(queryEvaluation.id).get()
+        Assertions.assertEquals(true,queryEvaluationAfter.notificationSent)
     }
 
     private fun getRoot(listQueries:  Map<String, Query>, rootLogic: QueryLogicOperator, innerRootLogic: QueryLogicOperator): QueryLogic? {
