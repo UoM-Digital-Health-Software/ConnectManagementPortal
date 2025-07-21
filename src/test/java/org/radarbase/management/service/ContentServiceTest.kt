@@ -184,6 +184,9 @@ class ContentServiceTest(
         result = queryContentService.shouldSendNotification(listOf(trueEval, falseEval, trueEval, trueEvalWithNotif), sevenDaysAgo)
         Assertions.assertEquals(true, result)
 
+        result = queryContentService.shouldSendNotification(listOf(trueEval, trueEval, falseEval, falseEval, trueEval), null)
+        Assertions.assertEquals(false, result )
+
 
 
     }
