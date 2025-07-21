@@ -118,7 +118,7 @@ class AWSService(
 
 //Map<String, Map<String, Double>>
     fun startProcessing(projectName: String, login: String, dataSource: DataSource, aggregationLevel: AggregationLevel = AggregationLevel.MONTH) : DataSummaryResult? {
-         log.info("[PDF-EXPORT] start processing")
+
 
         val dataSource = dataSource  // Change this to DataSource.CLASSPATH to load from resources
 
