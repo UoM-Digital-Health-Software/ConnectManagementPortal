@@ -400,6 +400,29 @@ class QueryEvaluationServiceTest(
     }
 
 
+    @Test
+    @Transactional
+    fun testExtractDatesToQuery() {
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+        val dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        var result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_WEEK)
+
+        Assertions.assertEquals(7, result.size)
+        Assertions.assertEquals(yesterday.format(dayFormatter), result.last())
+
+        result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_MONTH)
+        Assertions.assertEquals(today.minusMonths(1).format(dayFormatter), result.first())
+
+        result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_6_MONTH)
+        Assertions.assertEquals(today.minusMonths(6).format(dayFormatter), result.first())
+
+        result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_YEAR)
+        Assertions.assertEquals(today.minusYears(1).format(dayFormatter), result.first())
+    }
+
+
 
 
 

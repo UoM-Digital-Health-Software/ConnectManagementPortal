@@ -171,7 +171,7 @@ public class QueryEValuationService(
 
         val daysBetween = ChronoUnit.DAYS.between(startDate, today)
 
-        return (0..daysBetween).map { startDate.plusDays(it).format(dayFormatter) }
+        return (0 until daysBetween).map { startDate.plusDays(it).format(dayFormatter) }
     }
 
     //TODO: delete later, only added  for Sandra evaluation purposes
