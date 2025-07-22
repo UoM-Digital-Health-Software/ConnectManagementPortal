@@ -183,8 +183,30 @@ class ContentServiceTest(
         val finalSizeAfter =  participantContentRepository.findAll().size
 
         Assertions.assertEquals(finalSize,finalSizeAfter)
+
+        Assertions.assertEquals(3, finalSize)
         Assertions.assertEquals(result, null)
     }
+
+
+
+    @Test
+    @Transactional
+    fun testTryAssignInactiveContentGroup() {
+
+        val queryGroup1 = queryGroupRepository.saveAndFlush(createQueryGroup());
+        val inactiveContentGroup = contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupNameInactive", queryGroup1, ContentGroupStatus.INACTIVE))
+
+        val sizeBefore =  participantContentRepository.findAll().size
+        var result = queryContentService.tryAssignNewContent(queryGroup1, subject)
+        val finalSizeAfter =  participantContentRepository.findAll().size
+
+
+        Assertions.assertEquals(sizeBefore,finalSizeAfter)
+
+
+    }
+
 
 
     @Test

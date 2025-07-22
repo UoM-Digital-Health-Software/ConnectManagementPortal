@@ -1,19 +1,22 @@
 package org.radarbase.management.config
 
 import org.radarbase.management.domain.*
+import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import java.time.ZonedDateTime
 
 object ContentTestUtil {
 
 
-    fun addContentGroup(groupName: String, queryGroup: QueryGroup) : QueryContentGroup  {
+    fun addContentGroup(groupName: String, queryGroup: QueryGroup, status: ContentGroupStatus = ContentGroupStatus.ACTIVE) : QueryContentGroup  {
         val contentGroup = QueryContentGroup()
 
         contentGroup.queryGroup = queryGroup
         contentGroup.contentGroupName = "Content Group Name"
         contentGroup.createdDate = ZonedDateTime.now()
         contentGroup.updatedDate = ZonedDateTime.now()
+
+        contentGroup.status = status
 
         return contentGroup
     }

@@ -179,6 +179,8 @@ class QueryContentService(
 
         val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroup(subject, queryGroup).map { it.queryContentGroup }
 
+
+
         return assignedContentGroups.randomOrNull()
     }
 
@@ -187,7 +189,7 @@ class QueryContentService(
         val queryGroupId = queryGroup.id ?: return null
 
 
-        val allContentGroups = queryContentGroupRepository.findAllByQueryGroupId(queryGroupId);
+        val allContentGroups = queryContentGroupRepository.findAllByQueryGroupIdAndStatus(queryGroupId);
         val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroup(subject, queryGroup).map { it.queryContentGroup }
         val assignedContentGroupIds = assignedContentGroups.map { it?.id }.toSet()
 

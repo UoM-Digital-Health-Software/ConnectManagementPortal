@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional
 interface QueryContentGroupRepository: JpaRepository<QueryContentGroup, Long> {
     fun findAllByQueryGroupId(queryGroupId: Long): List<QueryContentGroup>
 
+
+    fun findAllByQueryGroupIdAndStatus(queryGroupId: Long, status: ContentGroupStatus = ContentGroupStatus.ACTIVE): List<QueryContentGroup>
+
+
     @Transactional
     @Modifying
     @Query("DELETE FROM QueryContentGroup q WHERE q.queryGroup.id = :queryGroupId")
