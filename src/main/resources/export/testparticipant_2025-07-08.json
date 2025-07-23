@@ -3,41 +3,53 @@
     "site": "unknown",
     "data_summary":
     {
-        "start_date": "2025-05-01",
-        "end_date": "2025-05-31",
-        "total_days_with_data": 31,
+        "start_date": "2024-11-01",
+        "end_date": "2024-11-30",
+        "total_days_with_data": 30,
         "missing_days": null,
         "features_available":
         [
+            "heart_rate",
             "steps"
         ]
     },
     "feature_statistics":
     {
+        "heart_rate":
+        {
+            "total_entries": 1327472,
+            "days_with_data": 28,
+            "mean": 85.4305736272232,
+            "median": 84.08689432916765,
+            "std_dev": 9.140309141916905,
+            "min": 64.67932905772076,
+            "max": 124.73333333333333,
+            "unit": "BPM"
+        },
         "steps":
         {
-            "total_entries": 50120,
-            "days_with_data": 31,
-            "mean": 3353.7639741017097,
-            "median": 3940.819870508549,
-            "std_dev": 1675.5072832955723,
-            "min": 715.0,
-            "max": 5421.0,
+            "total_entries": 86410,
+            "days_with_data": 30,
+            "mean": 10445.966666666667,
+            "median": 8515.0,
+            "std_dev": 7761.175218068172,
+            "min": 143.0,
+            "max": 30291.0,
             "unit": "count"
         }
     },
     "questionnaire_responses":
     {
-        "total_responses": 2,
+        "total_responses": 3,
         "slider":
         {
             "negative_emotions":
             {
                 "total_entries": 10,
                 "days_with_data": 2,
-                "mean": 2.5,
-                "median": 2.5,
-                "std_dev": 1.5,
+                "mean": 3.1,
+                "median": 4.0,
+                "std_dev": 1.374772708486752,
                 "min": 1.0,
                 "max": 4.0
             },
@@ -45,11 +57,11 @@
             {
                 "total_entries": 10,
                 "days_with_data": 2,
-                "mean": 3.5,
+                "mean": 4.1,
                 "median": 4.0,
-                "std_dev": 1.02469507659596,
+                "std_dev": 1.1357816691600546,
                 "min": 1.0,
-                "max": 4.0
+                "max": 5.0
             },
             "stress":
             {
@@ -75,9 +87,9 @@
             {
                 "total_entries": 6,
                 "days_with_data": 2,
-                "mean": 1.6666666666666667,
+                "mean": 1.5,
                 "median": 1.0,
-                "std_dev": 1.1055415967851332,
+                "std_dev": 1.118033988749895,
                 "min": 1.0,
                 "max": 4.0
             },
@@ -85,31 +97,31 @@
             {
                 "total_entries": 8,
                 "days_with_data": 2,
-                "mean": 3.5,
-                "median": 3.5,
-                "std_dev": 2.345207879911715,
-                "min": 1.0,
-                "max": 7.0
+                "mean": 3.75,
+                "median": 4.0,
+                "std_dev": 0.6614378277661477,
+                "min": 2.0,
+                "max": 4.0
             },
             "anxiety":
             {
                 "total_entries": 5,
                 "days_with_data": 2,
-                "mean": 1.6,
-                "median": 1.0,
-                "std_dev": 1.2000000000000002,
+                "mean": 3.2,
+                "median": 4.0,
+                "std_dev": 1.16619037896906,
                 "min": 1.0,
                 "max": 4.0
             },
             "self_esteem":
             {
-                "total_entries": 4,
-                "days_with_data": 2,
-                "mean": 1.75,
-                "median": 1.0,
-                "std_dev": 1.299038105676658,
-                "min": 1.0,
-                "max": 4.0
+                "total_entries": 2,
+                "days_with_data": 1,
+                "mean": 3.0,
+                "median": 3.0,
+                "std_dev": 0.0,
+                "min": 3.0,
+                "max": 3.0
             },
             "connectedness":
             {
@@ -123,13 +135,13 @@
             },
             "coping":
             {
-                "total_entries": 8,
-                "days_with_data": 2,
-                "mean": 5.125,
+                "total_entries": 10,
+                "days_with_data": 3,
+                "mean": 3.7,
                 "median": 4.0,
-                "std_dev": 1.4523687548277813,
-                "min": 4.0,
-                "max": 7.0
+                "std_dev": 0.9,
+                "min": 1.0,
+                "max": 4.0
             },
             "fear":
             {
@@ -143,11 +155,11 @@
             },
             "hallucination_hear":
             {
-                "total_entries": 10,
+                "total_entries": 7,
                 "days_with_data": 2,
-                "mean": 2.6,
+                "mean": 3.142857142857143,
                 "median": 1.0,
-                "std_dev": 2.3748684174075834,
+                "std_dev": 2.641891715558133,
                 "min": 1.0,
                 "max": 7.0
             },
@@ -155,29 +167,29 @@
             {
                 "total_entries": 10,
                 "days_with_data": 2,
-                "mean": 2.2,
-                "median": 1.0,
-                "std_dev": 1.9899748742132397,
+                "mean": 2.8,
+                "median": 3.0,
+                "std_dev": 1.8330302779823362,
                 "min": 1.0,
                 "max": 7.0
             },
             "threat":
             {
-                "total_entries": 4,
-                "days_with_data": 2,
-                "mean": 1.0,
-                "median": 1.0,
+                "total_entries": 6,
+                "days_with_data": 1,
+                "mean": 4.0,
+                "median": 4.0,
                 "std_dev": 0.0,
-                "min": 1.0,
-                "max": 1.0
+                "min": 4.0,
+                "max": 4.0
             },
             "delusion_3":
             {
                 "total_entries": 10,
                 "days_with_data": 2,
-                "mean": 2.4,
+                "mean": 1.9,
                 "median": 1.0,
-                "std_dev": 2.3748684174075834,
+                "std_dev": 1.9209372712298547,
                 "min": 1.0,
                 "max": 7.0
             }
@@ -188,14 +200,13 @@
             {
                 "social_1":
                 {
-                    "1.0": 2
+                    "1.0": 1
                 }
             },
             "whereabouts":
             {
                 "whereabouts_1":
                 {
-                    "11.0": 1,
                     "11": 1
                 }
             },
@@ -203,15 +214,16 @@
             {
                 "sleep_5":
                 {
-                    "6-8": 2
+                    "2-4": 1
                 }
             }
         },
-        "days_with_responses": 2,
+        "days_with_responses": 3,
         "days":
         [
-            "2025-05-06",
-            "2025-05-23"
+            "2024-11-06",
+            "2024-11-26",
+            "2024-11-28"
         ]
     }
 }

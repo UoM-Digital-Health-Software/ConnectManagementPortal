@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -32,38 +33,34 @@ import kotlin.random.Random
 class QueryEvaluationServiceTest(
     @Autowired private val queryEValuationService: QueryEValuationService,
     @Autowired private val userRepository: UserRepository,
-    @Autowired private val subjectRepository: SubjectRepository,
-    @Autowired private val queryGroupRepository: QueryGroupRepository,
-    @Autowired private val queryParticipantRepository: QueryParticipantRepository,
-    @Autowired private val queryEvaluationRepository: QueryEvaluationRepository,
-    @Autowired private val queryRepository: QueryRepository
+
 
 ) : BasePostgresIntegrationTest() {
       lateinit var userData: UserData
 
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
-        val currentMonth = YearMonth.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
+        val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         val heartRateData =
-            (1L until 8L).map { monthsAgo ->
-                val month = currentMonth.minusMonths(monthsAgo).format(formatter)
+            (1L until 8L).map { daysAgo ->
+                val day = today.minusDays(daysAgo).format(formatter)
                 val value = valueHeartRate
-                DataPoint(month, value.toDouble())
+                DataPoint(day, value.toDouble())
             }.reversed()
 
 
-        val sleepData =   (1L until 8L).map { monthsAgo ->
-            val month = currentMonth.minusMonths(monthsAgo).format(formatter)
+        val sleepData =   (1L until 8L).map { daysAgo ->
+            val day = today.minusDays(daysAgo).format(formatter)
             val value = valueSleep
-            DataPoint(month, value.toDouble())
+            DataPoint(day, value.toDouble())
         }.reversed()
 
 
-        val HRV =   (1L until 8L ).map { monthsAgo ->
-            val month = currentMonth.minusMonths(monthsAgo).format(formatter)
+        val HRV =   (1L until 8L ).map { daysAgo ->
+            val day = today.minusDays(daysAgo).format(formatter)
             val value = valueSleep
-            DataPoint(month, value.toDouble())
+            DataPoint(day, value.toDouble())
         }.reversed()
 
         return UserData(
@@ -76,31 +73,6 @@ class QueryEvaluationServiceTest(
     @BeforeEach
     fun initTest() {
         userData = generateUserData(64.2,8, 50)
-//         userData = UserData(
-//            metrics = mapOf(
-//                "HEART_RATE" to listOf(
-//                    DataPoint("2024-01", 56.0),
-//                    DataPoint("2024-02", 60.0),
-//                    DataPoint("2024-03", 65.0),
-//                    DataPoint("2024-04", 70.0),
-//                    DataPoint("2024-05", 70.0)
-//                ),
-//                "SLEEP_LENGTH" to listOf(
-//                    DataPoint("2024-01", 8.0),
-//                    DataPoint("2024-02", 8.0),
-//                    DataPoint("2024-03", 8.0),
-//                    DataPoint("2024-04", 8.0),
-//                    DataPoint("2024-05", 8.0)
-//                ),
-//                "HRV" to listOf(
-//                    DataPoint("2024-01", 50.0),
-//                    DataPoint("2024-02", 45.0),
-//                    DataPoint("2024-03", 47.0),
-//                    DataPoint("2024-04", 45.0),
-//                    DataPoint("2024-05", 42.0)
-//                )
-//            )
-//        )
     }
     fun createQueryGroup(): QueryGroup {
         val user = userRepository.findAll()[0];
@@ -127,6 +99,19 @@ class QueryEvaluationServiceTest(
         return query
     }
 
+    fun createQuery(queryGroup: QueryGroup?, metric: String, queryOperator: ComparisonOperator, timeframe: QueryTimeFrame, value: String)  : Query {
+        var query = Query();
+
+        query.queryGroup = queryGroup
+        query.field = metric
+        query.operator = queryOperator
+        query.value = value
+        query.timeFrame = timeframe
+        query.entity = "QUESTIONNAIRE_HISTOGRAM"
+
+        return query
+    }
+
     fun createQueryLogic(queryGroup: QueryGroup?, type: QueryLogicType, logicOperator: QueryLogicOperator?, query: Query?, parentQueryLogic : QueryLogic? ) : QueryLogic {
         val queryLogic = QueryLogic() ;
         queryLogic.id =  Random.nextLong()
@@ -146,24 +131,44 @@ class QueryEvaluationServiceTest(
 //    GREATER_THAN_OR_EQUALS(">="),
 
 
-    fun createUserData() : MutableMap<String, DataSummaryCategory> {
+    fun createUserData(numberOfDays: Int = 7) : MutableMap<String, DataSummaryCategory> {
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val today = LocalDate.now()
+
         var userData  : MutableMap<String, DataSummaryCategory> = mutableMapOf()
 
-
-        userData["2025-03"] =
-            DataSummaryCategory(
-            physical = mutableMapOf(
-                "sleep_length" to 8.0,
-                "heart_rate" to 64.2,
-                "hrv" to 50.0),
-            questionnaire_total = 0.0,
-            questionnaire_slider = mutableMapOf(),
-            questionnaire_histogram = HistogramResponse(
-                social = mutableMapOf(),
-                whereabouts = mutableMapOf(),
-                sleep = mutableMapOf()
+        val histograms = arrayOf(
+            mutableMapOf("4-6" to 1),
+            mutableMapOf("2-4" to 1),
+            mutableMapOf("4-6" to 1),
+            mutableMapOf("0-2" to 1),
+            mutableMapOf("0-2" to 1),
+            mutableMapOf("0-2" to 1),
+            mutableMapOf("0-2" to 1)
             )
-        )
+
+        for(i in 1 until  numberOfDays + 1 ) {
+            val date = today.minusDays(i.toLong()).format(formatter)
+
+
+            userData[date] =
+                DataSummaryCategory(
+                    physical = mutableMapOf(
+                        "sleep_length" to 8.0,
+                        "heart_rate" to 64.2,
+                        "hrv" to 50.0),
+                    questionnaire_total = 0.0,
+                    questionnaire_slider = mutableMapOf(),
+                    questionnaire_histogram = HistogramResponse(
+                        sleep = histograms[i-1],
+                        whereabouts = mutableMapOf(),
+                        social = mutableMapOf()
+                    )
+                )
+
+        }
+
 
 
         return userData
@@ -175,9 +180,9 @@ class QueryEvaluationServiceTest(
 
         val userData = createUserData()
 
-        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN, QueryTimeFrame.PAST_6_MONTH, "60");
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN, QueryTimeFrame.PAST_WEEK, "60");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
-        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData, "April") ;
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
         Assertions.assertTrue(result);
 
@@ -189,7 +194,7 @@ class QueryEvaluationServiceTest(
 
         val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN_OR_EQUALS, QueryTimeFrame.PAST_6_MONTH, "64.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
-        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData, "April") ;
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
         Assertions.assertTrue(result);
 
@@ -202,7 +207,7 @@ class QueryEvaluationServiceTest(
 
         val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_6_MONTH, "64.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
-        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData, "April") ;
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
         Assertions.assertTrue(result);
 
@@ -215,7 +220,7 @@ class QueryEvaluationServiceTest(
 
         val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.NOT_EQUALS, QueryTimeFrame.PAST_6_MONTH, "65.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
-        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData, "April") ;
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
         Assertions.assertTrue(result);
 
@@ -228,7 +233,7 @@ class QueryEvaluationServiceTest(
 
         val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.LESS_THAN, QueryTimeFrame.PAST_6_MONTH, "64.3");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
-        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData, "April") ;
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
         Assertions.assertTrue(result);
     }
@@ -240,10 +245,11 @@ class QueryEvaluationServiceTest(
 
         val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.LESS_THAN_OR_EQUALS, QueryTimeFrame.PAST_6_MONTH, "64.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
-        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData, "April") ;
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
         Assertions.assertTrue(result);
     }
+
 
     @Test
     @Transactional
@@ -291,7 +297,7 @@ class QueryEvaluationServiceTest(
         var root =  getRoot(queryList, QueryLogicOperator.AND, QueryLogicOperator.AND)
 
 
-        var result = queryEValuationService.evaluteQueryCondition(root!!, userData, "April");
+        var result = queryEValuationService.evaluteQueryCondition(root!!, userData);
 
         // should be true
         Assertions.assertFalse(result);
@@ -303,7 +309,7 @@ class QueryEvaluationServiceTest(
         )
 
          root =  getRoot(queryList, QueryLogicOperator.AND, QueryLogicOperator.AND)
-         result = queryEValuationService.evaluteQueryCondition(root!!, userData, "April");
+         result = queryEValuationService.evaluteQueryCondition(root!!, userData);
 
         // should be false
          Assertions.assertFalse(result);
@@ -316,11 +322,104 @@ class QueryEvaluationServiceTest(
         )
 
         root =  getRoot(queryList, QueryLogicOperator.AND, QueryLogicOperator.OR)
-        result = queryEValuationService.evaluteQueryCondition(root!!, userData, "April");
+        result = queryEValuationService.evaluteQueryCondition(root!!, userData);
 
         // should be false
         Assertions.assertTrue(result);
 
+    }
+
+
+
+    @Test
+    @Transactional
+    fun testHistogramEvaluationAsTrue() {
+        val userData = createUserData()
+
+        val hrQueyr  = createQuery(null,"SLEEP", ComparisonOperator.IS, QueryTimeFrame.PAST_WEEK, "0-2");
+        val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
+
+        Assertions.assertTrue(result)
+    }
+
+    @Test
+    @Transactional
+    fun testHistogramEvaluationAsFalse() {
+        val userData = createUserData()
+
+        val hrQueyr  = createQuery(null,"SLEEP", ComparisonOperator.IS, QueryTimeFrame.PAST_WEEK, "4-6");
+        val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
+
+        Assertions.assertFalse(result)
+    }
+
+    @Test
+    @Transactional
+    fun testHistogramEvaluationLessThan7DaysOfData() {
+        val userData = createUserData(6)
+
+        val hrQueyr  = createQuery(null,"SLEEP", ComparisonOperator.IS, QueryTimeFrame.PAST_WEEK, "0-2");
+        val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
+
+        Assertions.assertFalse(result)
+    }
+
+
+    @Test
+    @Transactional
+    fun testHistogramAggregation() {
+        var histogramEvalData = mutableMapOf<String, Int>()
+        val userData = createUserData()
+
+        for (data in userData) {
+            val date = data.key
+            queryEValuationService.aggregateDataForHistogramEvaluation("sleep",date, userData,  histogramEvalData)
+        }
+
+
+        Assertions.assertEquals(histogramEvalData["4-6"], 2)
+        Assertions.assertEquals(histogramEvalData["2-4"], 1)
+        Assertions.assertEquals(histogramEvalData["0-2"], 4)
+
+    }
+
+    @Test
+    @Transactional
+    fun testEvaluateSingleConditionWithLessThan7DaysOfData() {
+        val userData = createUserData(6)
+
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.NOT_EQUALS, QueryTimeFrame.PAST_6_MONTH, "65.2");
+        val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
+        val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
+
+        Assertions.assertFalse(result);
+
+    }
+
+
+    @Test
+    @Transactional
+    fun testExtractDatesToQuery() {
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+        val dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        var result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_WEEK)
+
+        Assertions.assertEquals(7, result.size)
+        Assertions.assertEquals(yesterday.format(dayFormatter), result.last())
+
+        result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_MONTH)
+        Assertions.assertEquals(today.minusMonths(1).format(dayFormatter), result.first())
+
+        result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_6_MONTH)
+        Assertions.assertEquals(today.minusMonths(6).format(dayFormatter), result.first())
+
+        result = queryEValuationService.extractDatesToQuery(QueryTimeFrame.PAST_YEAR)
+        Assertions.assertEquals(today.minusYears(1).format(dayFormatter), result.first())
     }
 
 

@@ -35,6 +35,11 @@ import java.time.ZonedDateTime
 enum class DataSource {
     S3, CLASSPATH
 }
+
+
+enum class AggregationLevel {
+    DAY, MONTH
+}
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class S3JsonData(
     val patient_id: String,
@@ -112,8 +117,8 @@ class AWSService(
 
 
 //Map<String, Map<String, Double>>
-    fun startProcessing(projectName: String, login: String, dataSource: DataSource) : DataSummaryResult? {
-         log.info("[PDF-EXPORT] start processing")
+    fun startProcessing(projectName: String, login: String, dataSource: DataSource, aggregationLevel: AggregationLevel = AggregationLevel.MONTH) : DataSummaryResult? {
+
 
         val dataSource = dataSource  // Change this to DataSource.CLASSPATH to load from resources
 
@@ -143,9 +148,9 @@ class AWSService(
                 return null;
             }
 
-        val monthlyFeatureStats = processJsonFiles(s3Client, bucketName, files, dataSource)
+        val aggregatedFeatureStats = processJsonFiles(s3Client, bucketName, files, dataSource, aggregationLevel)
 
-        return monthlyFeatureStats;
+        return aggregatedFeatureStats;
 
     }
 
@@ -175,6 +180,14 @@ class AWSService(
         return regex.find(filename)?.groupValues?.get(1) ?: "unknown"
     }
 
+    fun extractDayFromFilename(filename: String) : String {
+
+        val regex = Regex("""\d{4}-\d{2}-\d{2}""")
+        val date = regex.find(filename)?.value
+
+        return date ?: "unknown"
+    }
+
     fun downloadS3Json(s3Client: S3Client, bucket: String, key: String): String {
         val request = GetObjectRequest.builder().bucket(bucket).key(key).build()
         s3Client.getObject(request).use { objStream ->
@@ -196,7 +209,8 @@ class AWSService(
         client: S3Client,
         bucket: String,
         fileKeys: List<String>,
-        dataSource: DataSource
+        dataSource: DataSource,
+        aggregationLevel: AggregationLevel
     ): DataSummaryResult {
         val jsonMapper = jacksonObjectMapper()
         val dataSummaryResult = DataSummaryResult(
@@ -215,9 +229,11 @@ class AWSService(
             }
 
             val jsonData: S3JsonData = jsonMapper.readValue(jsonString)
-            val month = extractMonthFromFilename(key)
 
-            val dataSummaryCategory = dataSummaryResult.data.getOrPut(month) {
+
+            val key = if (aggregationLevel == AggregationLevel.MONTH) extractMonthFromFilename(key) else extractDayFromFilename(key)
+
+            val dataSummaryCategory = dataSummaryResult.data.getOrPut(key) {
                 DataSummaryCategory(
                     physical = mutableMapOf(),
                     questionnaire_total = 0.0,

@@ -2445,15 +2445,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uom-digital-health-software/ngx-angular-query-builder@npm:0.0.5":
-  version: 0.0.5
-  resolution: "@uom-digital-health-software/ngx-angular-query-builder@npm:0.0.5::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40uom-digital-health-software%2Fngx-angular-query-builder%2F0.0.5%2Ffcb0a7a1e29adee7773592ed40bc9e2995d2b8a6"
+"@uom-digital-health-software/ngx-angular-query-builder@npm:0.0.6":
+  version: 0.0.6
+  resolution: "@uom-digital-health-software/ngx-angular-query-builder@npm:0.0.6::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40uom-digital-health-software%2Fngx-angular-query-builder%2F0.0.6%2F1000f2fedbc037acda7ea38cdb3a9c6fec30bfb5"
   dependencies:
     tslib: ^2.3.0
   peerDependencies:
     "@angular/common": ^12.2.0
     "@angular/core": ^12.2.0
-  checksum: 865d06ae65e9b6fe15b8a1a54713f4b16dc3f4afdda27ebfc51b33cd26861251124037626f0f6b0208acb841da8d6029393beaf0fd7717ec5bdab113aeafc494
+  checksum: 13848d8e7172141bb0b9db5aacdbce0668a7959c61011d687dfb68fb7aef5db91499791f1ca802787fe9a6f7a0c05427ec3daed3f4e209dc11a2b0443a4a9207
   languageName: node
   linkType: hard
 
@@ -7597,7 +7597,7 @@ __metadata:
     "@tinymce/tinymce-angular": ^6
     "@types/jasmine": ~3.8.0
     "@types/node": ^12.11.1
-    "@uom-digital-health-software/ngx-angular-query-builder": 0.0.5
+    "@uom-digital-health-software/ngx-angular-query-builder": 0.0.6
     bootstrap: ^4.6.1
     chart.js: ^4.4.7
     chartjs-plugin-datalabels: ^2.2.0

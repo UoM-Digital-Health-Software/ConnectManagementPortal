@@ -122,7 +122,7 @@ internal class QueryResourceIntTest(
         query.field = PhysicalMetric.SLEEP_LENGTH.toString()
         query.queryGroup = queryGroup
         query.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
-        query.timeFrame = QueryTimeFrame.LAST_7_DAYS
+        query.timeFrame = QueryTimeFrame.PAST_WEEK
         query.entity = "physical"
         query.value = "80"
 
@@ -207,9 +207,9 @@ internal class QueryResourceIntTest(
         val queryGroup = createAndAddQueryGroupToDB()
         val queryLogicParentDTO = QueryLogicDTO()
 
-        val queryDTO = QueryDTO(PhysicalMetric.SLEEP_LENGTH.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "PHYSICAL")
+        val queryDTO = QueryDTO(PhysicalMetric.SLEEP_LENGTH.toString(), ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.PAST_WEEK, "PHYSICAL")
         queryDTO.value = "80"
-        queryDTO.timeFrame = QueryTimeFrame.LAST_7_DAYS
+        queryDTO.timeFrame = QueryTimeFrame.PAST_WEEK
         queryDTO.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
 
         queryLogicParentDTO.queryGroupId = queryGroup.id
@@ -243,10 +243,10 @@ internal class QueryResourceIntTest(
         val queryGroup = createAndAddQueryGroupToDB()
         val queryLogicParentDTO = QueryLogicDTO()
 
-        val queryDTO = QueryDTO("test", ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.LAST_7_DAYS, "PHYSICAL")
+        val queryDTO = QueryDTO("test", ComparisonOperator.LESS_THAN_OR_EQUALS, "80", QueryTimeFrame.PAST_WEEK, "PHYSICAL")
 
         queryDTO.value = "80"
-        queryDTO.timeFrame = QueryTimeFrame.LAST_7_DAYS
+        queryDTO.timeFrame = QueryTimeFrame.PAST_WEEK
         queryDTO.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
 
         queryLogicParentDTO.queryGroupId = queryGroup.id
@@ -369,7 +369,7 @@ internal class QueryResourceIntTest(
 
         Assertions.assertThat(query.field).isEqualTo("SLEEP_LENGTH")
         Assertions.assertThat(query.value).isEqualTo("80")
-        Assertions.assertThat(query.timeFrame).isEqualTo(QueryTimeFrame.LAST_7_DAYS)
+        Assertions.assertThat(query.timeFrame).isEqualTo(QueryTimeFrame.PAST_WEEK)
         Assertions.assertThat(query.operator).isEqualTo(ComparisonOperator.LESS_THAN_OR_EQUALS)
 
     }
