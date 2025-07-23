@@ -258,6 +258,7 @@ public class QueryEValuationService(
         newQueryEvaluation.subject = subject
         newQueryEvaluation.createdDate = ZonedDateTime.now()
         newQueryEvaluation.result = result
+        newQueryEvaluation.notificationSent = false
 
         queryEvaluationRepository.save(newQueryEvaluation);
 
