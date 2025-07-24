@@ -44,8 +44,8 @@ public class QueryBuilderService(
 
        val result = when (entity) {
             QueryBuilderEntities.PHYSICAL -> physicalMetricExists(fieldName)
-            QueryBuilderEntities.QUESTIONNAIRE_SLIDER,
-            QueryBuilderEntities.QUESTIONNAIRE_DELUSIONS -> questionnaireItemsLoader.delusionsItems.any { it.field_name == fieldName }
+            QueryBuilderEntities.QUESTIONNAIRE_SLIDER  -> questionnaireItemsLoader.questionnaireItems.any { it.field_name.lowercase() == fieldName?.lowercase() }
+            QueryBuilderEntities.QUESTIONNAIRE_DELUSIONS -> questionnaireItemsLoader.delusionsItems.any { it.field_name.lowercase() == fieldName?.lowercase() }
             else -> true
         }
 

@@ -13,6 +13,7 @@ export interface Alert {
     position?: string;
     scoped?: boolean;
     close?: (alerts: Alert[]) => void;
+    category?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -38,13 +39,14 @@ export class AlertService {
         return this.alerts;
     }
 
-    success(msg: string, params?: any, position?: string): Alert {
+    success(msg: string, params?: any, position?: string, category?: string): Alert {
         return this.addAlert({
             type: 'success',
             msg,
             params,
             timeout: this.timeout,
-            position
+            position,
+            category
         }, []);
     }
 
@@ -89,7 +91,8 @@ export class AlertService {
             scoped: alertOptions.scoped,
             close: (alerts: Alert[]) => {
                 return this.closeAlert(alertOptions.id, alerts);
-            }
+            },
+            category: alertOptions.category
         };
         if (!alert.scoped) {
             this.alerts.push(alert);

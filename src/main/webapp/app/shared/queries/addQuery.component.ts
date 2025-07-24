@@ -379,7 +379,7 @@ export class AddQueryComponent {
         await this.submitContentChanges().toPromise();
         this.deletedContentGroupIds = [];
 
-          this.alertService.success("Content succesfully saved!");
+          this.alertService.success("Content successfully saved!", null, null, "content");
     }
 
 
@@ -444,7 +444,7 @@ export class AddQueryComponent {
 
 
 
-            this.alertService.success("Query Group succesfully saved! ");
+            this.alertService.success("Query Group successfully saved!", null, null, "query-group");
 
             this.isEditingMode = !!this.queryGroupId && !this.isDuplicateMode;
         } catch (err: any) {
