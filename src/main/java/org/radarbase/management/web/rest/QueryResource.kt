@@ -269,7 +269,7 @@ class QueryResource(
 
     @GetMapping("modules")
     fun getAllModules(): ResponseEntity<*> {
-        val result =  queryContentService.getAllModules()
+        val result =  queryContentService.getModulesGroupedByGroupName()
         return ResponseEntity.ok(result)
     }
 

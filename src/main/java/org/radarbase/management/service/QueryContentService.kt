@@ -5,6 +5,7 @@ import org.radarbase.management.domain.*
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.repository.*
+import org.radarbase.management.service.dto.ModuleGroupDTO
 import org.radarbase.management.service.dto.QueryContentDTO
 import org.radarbase.management.service.dto.QueryContentGroupDTO
 
@@ -319,6 +320,19 @@ class QueryContentService(
             return moduleOpt.get()
         }
         return null;
+    }
+
+
+    fun getModulesGroupedByGroupName(): List<ModuleGroupDTO> {
+        val groupNames = moduleRepository.findDistinctGroupNames()
+
+        return groupNames.map { groupName ->
+            val modules = moduleRepository.findAllByGroupName(groupName)
+            ModuleGroupDTO(
+                groupName = groupName,
+                modules = modules
+            )
+        }
     }
 
     companion object {

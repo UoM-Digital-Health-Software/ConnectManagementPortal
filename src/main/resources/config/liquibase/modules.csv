@@ -1,3 +1,25 @@
-id;name
-1;How to meditate
-2;How to sleep better
+id;name;group_name;link
+1;Making sense of my situation;Fact Sheets;/factsheet0
+2;Self-Esteem;Fact Sheets;/factsheet1
+3;Feeling low;Fact Sheets;/factsheet2
+4;Feeling anxious;Fact Sheets;/factsheet3
+5;Things I do to protect myself;Fact Sheets;/factsheet4
+6;Sleeping well;Fact Sheets;/factsheet5
+7;Antipsychotic medication: Common concernsn;Fact Sheets;/factsheet6
+8;Antipsychotic medication: FAQ;Fact Sheets;/factsheet7
+9;Making friend;Fact Sheets;/factsheet8
+10;Confronting problems;Fact Sheets;/factsheet9
+11;Setting Goal;Fact Sheets;/factsheet10
+12;Making Changes;Fact Sheets;/factsheet11
+13;Watching my thoughts;Fact Sheets;/factsheet12
+14;Testing out thoughts;Fact Sheets;/factsheet13
+15;Cannabis;Fact Sheets;/factsheet14
+16;SPICE;Fact Sheets;/factsheet15
+17;ICE (Methamphetamine);Fact Sheets;/factsheet16
+18;Chill out area;Chill out area;/chill-out-area
+19;Connect with others;Coping Strategies;/connect_with_others
+20;Get physical;Coping Strategies;/get_physical
+21;Be mentally active;Coping Strategies;/be_mentally_active
+22;Do Something Soothing;Coping Strategies;/do_something_soothing
+23;Other strategies;Coping Strategies;/other_strategies
+24;Recovery Journeys;Recovery Journeys;/recovery-journeys

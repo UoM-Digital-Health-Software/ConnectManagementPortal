@@ -18,4 +18,10 @@ class Module : AbstractEntity(), Serializable {
     @Column(name = "name")
     var name: String? = null
 
+    @Column(name = "group_name")
+    var groupName: String? = null
+
+    @Column(name = "link")
+    var link: String? = null
+
 }
