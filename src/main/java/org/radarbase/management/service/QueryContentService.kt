@@ -309,10 +309,6 @@ class QueryContentService(
         }
     }
 
-    fun getAllModules() : List<Module> {
-        return moduleRepository.findAll()
-    }
-
     fun getModuleById(moduleId: Long) : Module? {
         val moduleOpt = moduleRepository.findById(moduleId)
 

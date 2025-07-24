@@ -1,20 +1,21 @@
 <div class="padding-topbottom item">
-
     <div class="flex">
         <div>
             <label class="form-control-label bold" for="field_clientApp">Link a module</label>
-
         </div>
-
         <div>
             <button class="btn btn-danger saveBtn" (click)="onDeleteItem()">Delete</button>
         </div>
     </div>
-    <select class="form-control" name="client" [(ngModel)]="selectedModule" (change)="changeModule()" required>
+    <select class="form-control" name="client" [(ngModel)]="selectedModuleId" (change)="changeModule()" required>
         <option [ngValue]="null" selected></option>
-        <option [ngValue]="module" *ngFor="let module of modules">{{module.name}}</option>
+        <ng-container *ngFor="let group of moduleGroups">
+            <optgroup [label]="group.name">
+                <option *ngFor="let module of group.modules" [ngValue]="module.id">
+                    {{ module.name }}
+                </option>
+            </optgroup>
+        </ng-container>
     </select>
-
-
-
+    
 </div>

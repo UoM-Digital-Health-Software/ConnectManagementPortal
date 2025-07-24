@@ -267,7 +267,7 @@ class QueryResource(
         return ResponseEntity.ok().build()
     }
 
-    @GetMapping("modules")
+    @GetMapping("groupedmodules")
     fun getAllModules(): ResponseEntity<*> {
         val result =  queryContentService.getModulesGroupedByGroupName()
         return ResponseEntity.ok(result)

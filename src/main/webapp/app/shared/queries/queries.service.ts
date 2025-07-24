@@ -83,7 +83,7 @@ export class QueriesService {
     }
 
     getModules() {
-        return this.http.get(this.baseURL + '/modules');
+        return this.http.get(this.baseURL + '/groupedmodules');
     }
 
     gellAllPhysicalTypes() {

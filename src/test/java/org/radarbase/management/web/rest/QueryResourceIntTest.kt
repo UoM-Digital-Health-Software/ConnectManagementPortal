@@ -852,15 +852,14 @@ internal class QueryResourceIntTest(
     @Throws(Exception::class)
     @Test
     fun getAllModules() {
-        val queryParticipant = createAndAddQueryParticipantToDB();
 
-        mockMvc.perform(get(baseURL + "modules"))
+        mockMvc.perform(get(baseURL + "groupedmodules"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.length()").value(2))
+            .andExpect(jsonPath("$.length()").value(4))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.[*].name").value<Iterable<String?>>(
+                MockMvcResultMatchers.jsonPath("$.[*].groupName").value<Iterable<String?>>(
                     Matchers.hasItem(
-                        "How to meditate"
+                        "Fact Sheets"
                     )
                 )
             )
