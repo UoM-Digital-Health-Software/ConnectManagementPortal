@@ -10,7 +10,7 @@
     <select class="form-control" name="client" [(ngModel)]="selectedModuleId" (change)="changeModule()" required>
         <option [ngValue]="null" selected></option>
         <ng-container *ngFor="let group of moduleGroups">
-            <optgroup [label]="group.name">
+            <optgroup [label]="group.groupName">
                 <option *ngFor="let module of group.modules" [ngValue]="module.id">
                     {{ module.name }}
                 </option>

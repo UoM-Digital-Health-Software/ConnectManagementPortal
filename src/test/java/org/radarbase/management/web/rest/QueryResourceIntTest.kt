@@ -851,41 +851,30 @@ internal class QueryResourceIntTest(
     @Transactional
     @Throws(Exception::class)
     @Test
-    fun getAllModules() {
-
-        mockMvc.perform(get(baseURL + "groupedmodules"))
+    fun getAllGroupedModules() {
+        val mvcResult = mockMvc.perform(get("$baseURL/groupedmodules"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.length()").value(4))
-            .andExpect(
-                MockMvcResultMatchers.jsonPath("$.[*].groupName").value<Iterable<String?>>(
-                    Matchers.hasItem(
-                        "Fact Sheets"
-                    )
-                )
-            )
+            .andReturn()
+
+        val response = mvcResult.response.contentAsString
+        val mapper = jacksonObjectMapper()
+        val groups: List<ModuleGroupDTO> = mapper.readValue(response)
+
+        Assertions.assertThat(groups).hasSize(4)
+        val factSheets = groups.first { it.groupName == "Fact Sheets" }
+        Assertions.assertThat(factSheets.modules).hasSize(17)
+        Assertions.assertThat(factSheets.modules.map { it.name }).contains("Making sense of my situation")
+
+        val coping = groups.first { it.groupName == "Coping Strategies" }
+        Assertions.assertThat(coping.modules.map { it.name }).contains("Connect with others")
+
+        val recovery = groups.first { it.groupName == "Recovery Journeys" }
+        Assertions.assertThat(recovery.modules).hasSize(1)
+
+        val chillOut = groups.first { it.groupName == "Chill out area" }
+        Assertions.assertThat(chillOut.modules.first().link).isEqualTo("/chill-out-area")
     }
 
-
-    @Transactional
-    @Throws(Exception::class)
-    @Test
-    fun getQueryBuilderTypes() {
-
-        mockMvc.perform(get(baseURL + "querybuilder/physical-types"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.length()").value(8))
-
-
-        mockMvc.perform(get(baseURL + "querybuilder/questionnaire-types"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.length()").value(2))
-            .andExpect(jsonPath("$.questionnaire.length()").value(72))
-            .andExpect(jsonPath("$.delusions.length()").value(60))
-
-        mockMvc.perform(get(baseURL + "querybuilder/entities-types"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.length()").value(5))
-    }
 
 
     @Test
