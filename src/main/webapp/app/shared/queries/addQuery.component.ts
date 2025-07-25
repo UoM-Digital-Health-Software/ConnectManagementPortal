@@ -218,6 +218,7 @@ export class AddQueryComponent {
                     }`,
                 type: 'category',
                 entity: 'QUESTIONNAIRE_DELUSIONS',
+                operators: ['=', '!=', '<', '>', '<=', '>='],
                 options: sliderOptions,
             };
 
