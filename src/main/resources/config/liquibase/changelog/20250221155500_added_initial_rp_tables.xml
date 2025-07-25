@@ -437,6 +437,12 @@
             <column name="name" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+			<column name="group_name" type="varchar(255)">
+			    <constraints nullable="false" />
+			</column>
+			<column name="link" type="varchar(255)">
+			    <constraints nullable="false" />
+			</column>
         </createTable>
 
 

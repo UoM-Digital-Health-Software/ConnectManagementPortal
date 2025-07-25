@@ -106,6 +106,11 @@ export interface Module {
     name?: string
 }
 
+export interface ModuleGroup {
+    groupName: string,
+    modules: Module[]
+}
+
 export interface RadioQuestionType {
     code: string
     label: string
