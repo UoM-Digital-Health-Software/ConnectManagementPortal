@@ -11,6 +11,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { QueriesService } from './queries.service';
 import { ContentComponent } from './content/content.component';
+import { AlertService } from '../../shared/util/alert.service';
 
 
 
@@ -123,6 +124,7 @@ export class AddQueryComponent {
     private deletedContentGroupIds: number[] = [];
 
     constructor(
+         private alertService: AlertService,
         private queryService: QueriesService,
         private formBuilder: FormBuilder,
         private http: HttpClient,
@@ -151,7 +153,7 @@ export class AddQueryComponent {
             this.config.fields = { ...this.config.fields, ...physicalTypes }
 
             this.isLoaded = true
-
+        this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
         })
     }
 
@@ -216,6 +218,7 @@ export class AddQueryComponent {
                     }`,
                 type: 'category',
                 entity: 'QUESTIONNAIRE_DELUSIONS',
+                operators: ['=', '!=', '<', '>', '<=', '>='],
                 options: sliderOptions,
             };
 
@@ -314,7 +317,7 @@ export class AddQueryComponent {
     }
 
     convertTimeFrame(value: string) {
-   
+
         switch (value) {
             case '6_months':
                 return 'PAST_6_MONTH';
@@ -370,6 +373,16 @@ export class AddQueryComponent {
         }
         return true;
     }
+
+
+
+    async saveContentGroups() {
+        await this.submitContentChanges().toPromise();
+        this.deletedContentGroupIds = [];
+
+          this.alertService.success("Content successfully saved!", null, null, "content");
+    }
+
 
     async saveQueryGroupToDB() {
         this.groupNameError = false;
@@ -430,10 +443,11 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
-            await this.submitContentChanges().toPromise();
-            this.deletedContentGroupIds = [];
 
-            this.router.navigate(['querygroups']);
+
+            this.alertService.success("Query Group successfully saved!", null, null, "query-group");
+
+            this.isEditingMode = !!this.queryGroupId && !this.isDuplicateMode;
         } catch (err: any) {
             if (
                 err?.status === 409 ||

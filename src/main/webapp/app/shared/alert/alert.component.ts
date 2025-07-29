@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { AlertService } from '../util/alert.service';
 
 @Component({
@@ -6,7 +6,8 @@ import { AlertService } from '../util/alert.service';
     template: `
         <div class="alerts" role="alert">
             <div *ngFor="let alert of alerts" [ngClass]="{\'alert.position\': true, \'toast\': alert.toast}">
-                <ngb-alert [type]="alert.type" (close)="alert.close(alerts)">
+
+                <ngb-alert [type]="alert.type" (close)="alert.close(alerts)" *ngIf="category ? alert.category == category : true">
                     <pre [innerHTML]="alert.msg | translate:alert.params"></pre>
                 </ngb-alert>
             </div>
@@ -14,6 +15,8 @@ import { AlertService } from '../util/alert.service';
 })
 export class JhiAlertComponent implements OnInit, OnDestroy {
     alerts: any[];
+
+    @Input() category?: string
 
     constructor(private alertService: AlertService) {
     }
