@@ -101,7 +101,7 @@ public class QueryEValuationService(
 
         val value = when (entity.lowercase()) {
             "physical" -> physicalData[metric.lowercase()]
-            "questionnaire_slider" -> sliderData[metric.lowercase()]
+            "questionnaire_group" -> sliderData[metric.lowercase()]
             else -> null
         }
 
