@@ -102,7 +102,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
                     .deleteAssignedQueryGroup(queryGroup.id, this.subject.id)
                     .subscribe(() => {
                         this.queryParticipantService
-                            .deleteQueryEvaluationContent(
+                            .deleteQueryParticipantContent(
                                 queryGroup.id,
                                 this.subject.id
                             )

@@ -697,23 +697,33 @@ internal class QueryResourceIntTest(
     }
     @Test
     @Transactional
-    fun shouldDeleteQueryEvaluationContent() {
+    fun shouldDeleteQueryParticipantContent() {
         val queryParticipant = createAndAddQueryParticipantToDB()
         val queryGroup = queryParticipant.queryGroup!!
         val subject = queryParticipant.subject!!
 
-        val evaluation = QueryEvaluation().apply {
+        var contentGroup = QueryContentGroup()
+
+        contentGroup.queryGroup = queryGroup
+        contentGroup.contentGroupName = "Content Group Name"
+        contentGroup.createdDate = ZonedDateTime.now()
+        contentGroup.updatedDate = ZonedDateTime.now()
+
+        contentGroup = queryContentGroupRepository.saveAndFlush(contentGroup)
+
+        val queryParticipantContent = QueryParticipantContent().apply {
             this.queryGroup = queryGroup
             this.subject = subject
-            this.result = true
+            this.queryContentGroup= contentGroup
+            this.isArchived = false
             this.createdDate = ZonedDateTime.now()
         }
-        queryEvaluationRepository.saveAndFlush(evaluation)
+        queryParticipantContentRepository.saveAndFlush(queryParticipantContent)
 
-        Assertions.assertThat(queryEvaluationRepository.findAll().size).isEqualTo(1)
+        Assertions.assertThat(queryParticipantContentRepository.findAll().size).isEqualTo(1)
 
         mockMvc.perform(
-            delete(baseURL + "queryevaluation/querygroup/${queryGroup.id}/subject/${subject.id}")
+            delete(baseURL + "queryparticipantcontent/querygroup/${queryGroup.id}/subject/${subject.id}")
         )
             .andExpect(status().isOk)
 

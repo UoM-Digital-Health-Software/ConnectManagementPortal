@@ -33,12 +33,12 @@ export class QueryParticipantService {
         );
     }
 
-    deleteQueryEvaluationContent(
+    deleteQueryParticipantContent(
         queryGroupId: number,
         subjectId: number
     ): Observable<any> {
         return this.http.delete(
-            this.baseURL+`/queryevaluation/querygroup/${queryGroupId}/subject/${subjectId}`
+            this.baseURL+`/queryparticipantcontent/querygroup/${queryGroupId}/subject/${subjectId}`
         );
     }
 }
