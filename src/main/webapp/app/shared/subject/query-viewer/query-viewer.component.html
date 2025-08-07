@@ -57,13 +57,13 @@
         <table class="table">
             <tr>
                 <th>Query Group Name</th>
-                <th>Date Added</th>
+                <th>Date Assigned</th>
                 <th>Researcher</th>
                 <th>Action</th>
             </tr>
             <tr *ngFor="let query of assignedQueryGroups">
                 <td>{{ query.name }}</td>
-                <td>{{ query.createdDate | date : "yyyy-MM-dd" }}</td>
+                <td>{{ query.assignedDate | date : "yyyy-MM-dd" }}</td>
                 <td>
                     {{ query.createdBy.firstName }}
                     {{ query.createdBy.lastName }}

@@ -183,18 +183,22 @@ public class QueryBuilderService(
         return queryParticipant.id;
     }
 
-    fun getAssignedQueryGroups(subjectId: Long): MutableList<QueryGroup> {
+    fun getAssignedQueryGroups(subjectId: Long): MutableList<AssignedQueryGroupDTO> {
         val queryParticipantList =  queryParticipantRepository.findBySubjectId(subjectId)
 
-        val queryGroups = mutableListOf<QueryGroup>()
+        val assignedQueryGroups = mutableListOf<AssignedQueryGroupDTO>()
 
         for(queryParticipant in queryParticipantList ){
-            val group =queryParticipant.queryGroup
+            val group = AssignedQueryGroupDTO();
+            group.assignedDate = queryParticipant.createdDate
+            group.name = queryParticipant.queryGroup?.name.toString()
+            group.createdBy = queryParticipant.queryGroup?.createdBy
+            group.id =  queryParticipant.queryGroup?.id
             if (group != null) {
-                queryGroups.add(group)
+                assignedQueryGroups.add(group)
             }
         }
-        return queryGroups;
+        return assignedQueryGroups;
     }
 
     fun deleteQueryParticipantByQueryGroup(subjectId: Long, queryGroupId: Long) {

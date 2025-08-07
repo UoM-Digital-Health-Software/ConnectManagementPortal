@@ -12,7 +12,7 @@ export interface QueryGroup {
     createdBy?: Subject;
     updatedBy?: Subject;
     isArchived?: boolean;
-    canEdit? : boolean;
+    canEdit?: boolean;
 }
 
 export interface QueryParticipant {
@@ -49,6 +49,13 @@ export interface QueryGroup {
     updatedDate?: Date;
     createdBy?: Subject;
     updatedBy?: Subject;
+}
+
+export interface AssignedQueryGroup {
+    id?: any;
+    name?: string;
+    assignedDate?: Date;
+    createdBy?: Subject;
 }
 
 export interface QueryParticipant {
@@ -103,31 +110,29 @@ export enum ContentGroupStatus {
 
 export interface Module {
     id?: number;
-    name?: string
+    name?: string;
 }
 
 export interface ModuleGroup {
-    groupName: string,
-    modules: Module[]
+    groupName: string;
+    modules: Module[];
 }
 
 export interface RadioQuestionType {
-    code: string
-    label: string
+    code: string;
+    label: string;
 }
 
-
-
 export interface Question {
-    field_name?: string
-    form_name?: string
-    field_type?: "slider" | "radio"
-    field_label?: string
-    field_sublabel?: string
-    identifier?: string
-    group_name?: string
-    branching_logic?: string
-    select_choices_or_calculations?: RadioQuestionType[]
+    field_name?: string;
+    form_name?: string;
+    field_type?: 'slider' | 'radio';
+    field_label?: string;
+    field_sublabel?: string;
+    identifier?: string;
+    group_name?: string;
+    branching_logic?: string;
+    select_choices_or_calculations?: RadioQuestionType[];
     section_header?: string;
     field_note?: string;
     text_validation_type_or_show_slider_number?: string;
