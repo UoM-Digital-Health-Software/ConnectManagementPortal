@@ -278,6 +278,7 @@ public class QueryBuilderService(
     fun archiveQueryGroup(id: Long) {
         val group = queryGroupRepository.findById(id).orElseThrow()
         group.isArchived = true
+        group.updatedDate = ZonedDateTime.now()
         queryGroupRepository.save(group)
     }
 
