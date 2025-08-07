@@ -237,6 +237,9 @@ export class AddQueryComponent {
             this.queryId = params['query-id'];
             this.queryGroupId = this.queryId;
 
+            this.alertService.clear('query-group');
+            this.alertService.clear('content');
+
             if (this.queryId) {
                 this.queryService
                     .getQueryGroup(this.queryId)
