@@ -262,7 +262,7 @@ export class AddQueryComponent {
 
     refreshContentGroups() {
         this.queryService
-            .getAllQueryContentsAndGroups(this.queryId)
+            .getAllQueryContentsAndGroups(this.queryGroupId)
             .subscribe((response: any) => {
                 this.contentGroups = response.map((group: any) => ({
                     name: group.contentGroupName,
@@ -447,10 +447,11 @@ export class AddQueryComponent {
             }
 
 
+            await this.saveContentGroups();
+            this.refreshContentGroups();
+            this.isEditingMode = true; // after save, should all be editing mode
 
             this.alertService.success("Query Group successfully saved!", null, null, "query-group");
-
-            this.isEditingMode = !!this.queryGroupId && !this.isDuplicateMode;
         } catch (err: any) {
             if (
                 err?.status === 409 ||
