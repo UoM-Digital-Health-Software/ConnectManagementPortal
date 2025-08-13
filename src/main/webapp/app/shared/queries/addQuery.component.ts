@@ -446,8 +446,8 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
+            await this.submitContentChanges().toPromise();
 
-            await this.saveContentGroups();
             this.refreshContentGroups();
             this.isEditingMode = true; // after save, should all be editing mode
 
