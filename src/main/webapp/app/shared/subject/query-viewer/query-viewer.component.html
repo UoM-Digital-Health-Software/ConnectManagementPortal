@@ -62,7 +62,7 @@
                 <th>Action</th>
             </tr>
             <tr *ngFor="let query of assignedQueryGroups">
-                <td>{{ query.name }}</td>
+                <td>{{ query.queryGroupName }}</td>
                 <td>{{ query.assignedDate | date : "yyyy-MM-dd" }}</td>
                 <td>
                     {{ query.createdBy.firstName }}

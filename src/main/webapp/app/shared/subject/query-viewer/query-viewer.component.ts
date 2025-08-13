@@ -7,7 +7,7 @@ import { AlertService } from '../../util/alert.service';
 import { Subject } from '../subject.model';
 import { QueryParticipantService } from '../query-participant.service';
 import { SubjectPopupService } from '../subject-popup.service';
-import { QueryGroup, QueryParticipant, AssignedQueryGroup } from 'app/shared/queries/queries.model';
+import { QueryGroup, QueryParticipant } from 'app/shared/queries/queries.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DeleteQueryConfirmDialogComponent } from './delete-query-confirm-dialog.component'; 
 
@@ -25,7 +25,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
 
     queryPriticipant: QueryParticipant = {};
 
-    @Input() assignedQueryGroups: QueryGroup[];
+    @Input() assignedQueryGroups: QueryParticipant[];
 
     ifDisable: boolean = true;
 
@@ -54,7 +54,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
     getAllAssignedGroups() {
         this.queryParticipantService
             .getAllAssignedQueries(this.subject.id)
-            .subscribe((res: AssignedQueryGroup[]) => {
+            .subscribe((res: QueryParticipant[]) => {
                 this.assignedQueryGroups = res;
     
                 let fileteredQueryGroupList = this.queryGroupList.filter(

@@ -51,18 +51,13 @@ export interface QueryGroup {
     updatedBy?: Subject;
 }
 
-export interface AssignedQueryGroup {
-    id?: any;
-    name?: string;
-    assignedDate?: Date;
-    createdBy?: Subject;
-}
-
 export interface QueryParticipant {
     id?: any;
     queryGroupId?: number;
     subjectId?: number;
     createdBy?: User;
+    queryGroupName?: string;
+    assignedDate?: Date;
 }
 
 export interface QueryString {
