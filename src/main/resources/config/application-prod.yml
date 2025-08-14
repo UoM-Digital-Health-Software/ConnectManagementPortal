@@ -104,6 +104,9 @@ managementportal:
     serverUrl: http://127.0.0.1:4433
     serverAdminUrl: http://127.0.0.1:4434
     loginUrl: http://127.0.0.1:3000
+  min-required-version:
+    ios: 1.2.1
+    android: 1.2.1
 
 # ===================================================================
 # JHipster specific properties
