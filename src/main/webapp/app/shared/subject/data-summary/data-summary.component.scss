@@ -4,9 +4,12 @@
 }
 
 .smallsubtitle {
-    font-size: 12px;
+    font-size: 15px;
 }
 
+.margin-left {
+   margin-left: 10px;
+}
 .image-size {
     height: 60px;
     width: 60px;
@@ -312,6 +315,11 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.top-padding {
+    padding-top: 30px;
+}
+
+
 .header {
     display: flex;
     align-items: center;
@@ -510,6 +518,11 @@ label {
     margin-bottom: 0px !important;
 }
 
+
+.no-padding {
+    padding: 0px !important;
+}
+
 .fixed-height {
     height: 95px !important;
 }
@@ -543,4 +556,136 @@ body {
 
 .padding-top {
     padding-top: 20px;
+}
+
+
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+
+}
+
+.custom-table, .hrv-table  {
+border-spacing: 0;
+   border-collapse:separate;
+    border:solid #ccc 1px;
+    border-radius: 10px 10px 0px 0px;
+    -webkit-box-shadow: 7px 7px 5px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    7px 7px 5px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:       1px 5px 5px 1px rgba(50, 50, 50, 0.2);
+    margin-bottom: 10px;
+}
+
+
+
+
+
+.custom-table thead tr,
+.hrv-table thead tr {
+  background: #f9fcff;
+  text-align: left;
+}
+
+.custom-table th,
+.custom-table td {
+
+  padding: 14px 16px;
+  vertical-align: top;
+   border-bottom: 1px solid #ccc;
+}
+
+
+
+.hrv-table tr:last-child td {
+  /* your styles here */
+   border-bottom: 0px solid #ccc;
+
+}
+
+
+.hrv-table th,
+.hrv-table td {
+  padding: 5px 20px;
+  vertical-align: top;
+   border-bottom: 1px solid #ccc;
+}
+
+
+.custom-table th,
+.hrv-table th {
+  font-weight: normal;
+  color: #333;
+  background: rgb(231	,248,	246	);
+
+    border-top: none;
+}
+
+
+
+.hrv-table th:first-child {
+    border-radius: 10px 0px 0px 0px;
+
+}
+
+
+.hrv-table th:last-child {
+    border-radius: 0px 10px 0px 0px;
+
+}
+
+td:first-child, th:first-child {
+     border-left: none;
+}
+.header-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.header-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.header-icon.social {
+  color: #9c27b0; /* purple */
+}
+
+.header-icon.sleep {
+  color: #00bcd4; /* teal/blue */
+}
+
+.header-icon.whereabouts {
+  color: #7e57c2; /* deep purple */
+}
+
+.title {
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #666;
+}
+
+
+.month {
+    font-weight: bold;
+}
+
+
+.total-average-subtext {
+    font-weight: none;
+    font-size: 10px;
+}
+
+
+.single-graph-header  {
+    display:flex;
+    align-items: center;
 }
