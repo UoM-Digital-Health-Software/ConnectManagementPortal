@@ -6,7 +6,7 @@
 
             <span class=" image-size {{ logoClass }}" [style.background-color]="color"></span>
 
-            <p class="bold break-text {{ longHeading ? 'long-text' : '' }} self-centered">
+            <p class="bold break-text {{ longHeading ? 'long-text' : '' }} self-centered graph-header">
                 {{ title }}
             </p>
 
@@ -42,6 +42,6 @@
 
     </div> -->
 
-    <canvas class="chart-width" height="400" [id]="chartId">{{ chartGraph }}</canvas>
+    <canvas class="chart-width" height="400" [id]="chartId" style="flex:1">{{ chartGraph }}</canvas>
 </div>
 <div class="border"></div>

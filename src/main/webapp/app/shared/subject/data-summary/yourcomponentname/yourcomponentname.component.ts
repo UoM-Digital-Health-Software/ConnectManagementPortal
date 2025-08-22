@@ -70,7 +70,6 @@ export class YOURCOMPONENTNAMEComponent implements OnInit {
             ];
         }
 
-        this.chartGraph = new Chart(this.chartId, this.chart);
     }
     chartGraph: any = {};
     @Input() chartId: string = '';

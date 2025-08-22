@@ -1,17 +1,18 @@
-<div class="section  space-between graph  {{ isSingleRow ? 'flex' : '' }}">
+<div class="section  space-between graph  {{ isSingleRow ? 'flex' : '' }} flex-gap">
     <div class="flex-test" style="flex: 1">
         <div class="single-graph-header">
 
 
 
+
             <span class=" image-size {{ logoClass }}" [style.background-color]="color"></span>
 
-            <p class="bold break-text {{ longHeading ? 'long-text' : '' }} self-centered">
+            <p class="bold break-text {{ longHeading ? 'long-text' : '' }} self-centered graph-header">
                 {{ title }}
             </p>
 
 
-            <div *ngIf="showTotalAverage" class="">
+            <div *ngIf="showTotalAverage; else notAverage" class="">
                 <label class="bold sub-label no-bottom-margin"><strong>{{totalAverageText}}</strong></label>
 
                 <div class="flex" style="align-items: center;">
@@ -21,6 +22,14 @@
                 </div>
 
             </div>
+
+        <ng-template #notAverage>
+
+            <div></div>
+
+        </ng-template>
+
+
         </div>
 
         <div>
@@ -41,7 +50,7 @@
         </div>
 
     </div> -->
-<div class="table-container">
+<div class="table-container" style="flex:1">
   <table class="hrv-table">
     <thead>
       <tr>
