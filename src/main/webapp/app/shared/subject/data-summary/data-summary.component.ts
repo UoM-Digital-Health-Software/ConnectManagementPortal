@@ -81,58 +81,16 @@ export class DataSummaryComponent implements OnInit {
 
         questionnaire: barGraph,
         heart_rate: lineGraph("Higher heart rate", "Lower heart rate"),
-        hrv: lineGraph(),
+        hrv: lineGraph("Higher variability", "Low variability"),
 
         steps: barGraph,
-        activity: lineGraph(),
+        activity: lineGraph("Higher activity", "Lower activity"),
         respiratory_rate: lineGraph(),
         screen_usage: lineGraph(),
-
-        // ugly...sorry..no time
-        social: histogramGraph,
-
-        social_1: barGraph,
-        social_2: barGraph,
-        social_3: barGraph,
-        social_4: barGraph,
-        social_5: barGraph,
-
-        sleep: histogramGraph,
-        sleep_1: barGraph,
-        sleep_2: barGraph,
-        sleep_3: barGraph,
-        sleep_4: barGraph,
-        sleep_5: barGraph,
-        sleep_6: barGraph,
-        sleep_7: barGraph,
-        sleep_8: barGraph,
-
-        wherearebout: histogramGraph,
-        wherearebout_1: barGraph,
-        wherearebout_2: barGraph,
-        wherearebout_3: barGraph,
-        wherearebout_4: barGraph,
-        wherearebout_5: barGraph,
-        wherearebout_6: barGraph,
-        wherearebout_7: barGraph,
-        wherearebout_8: barGraph,
-        wherearebout_9: barGraph,
-        wherearebout_10: barGraph,
-        wherearebout_11: barGraph,
-
-        delusion_1: domainGraph,
-        delusion_2: domainGraph,
-        delusion_3: domainGraph,
-        delusion_4: domainGraph,
-        delusion_5: domainGraph,
-        delusion_6: domainGraph,
-        delusion_7: domainGraph,
-        delusion_8: domainGraph,
-        delusion_9: domainGraph,
-        delusion_10: domainGraph,
-        delusion_11: domainGraph,
-        delusion_12: domainGraph,
     };
+
+
+
     isDataSummaryReady = false;
     data: any = {};
     monthLabelsPerGraph: any = {};
@@ -375,7 +333,7 @@ export class DataSummaryComponent implements OnInit {
                 datasets: [
                     {
                         fill: true,
-                        tension: 0.2,
+                        tension: 0.3,
                         data: dataP,
                         borderWidth: 2,
                         borderColor: color,
@@ -456,6 +414,13 @@ export class DataSummaryComponent implements OnInit {
         data: number[],
         barColor: string = 'rgba(191,	236,	235	, 1)'
     ) {
+
+
+
+        const colors = ['rgba(11, 143, 154, 1)', 'rgba(81, 186, 189, 1)'];
+
+
+
         return {
             type: 'bar',
             data: {
@@ -466,7 +431,10 @@ export class DataSummaryComponent implements OnInit {
                         borderWidth: 1,
                         borderRadius: 5,
                         barThickness: 30,
-                        backgroundColor: [barColor],
+      backgroundColor: (context) => {
+        const index = context.dataIndex;
+        return colors[index % colors.length]; // alternate safely
+      },
                     },
                 ],
             },
@@ -560,6 +528,12 @@ export class DataSummaryComponent implements OnInit {
             this.averages['heart_rate'] = (Number(heartRateTotal) / numberOfValues).toFixed(
                 1
             );
+
+
+            //TODO: delete, for testing only
+            this.averages["hrv"] = (Number(heartRateTotal) / numberOfValues).toFixed(
+                1
+            );
         }
     }
 
@@ -627,13 +601,17 @@ export class DataSummaryComponent implements OnInit {
             return false;
         }
 
-        console.log("response data", response)
         const allData = response.body.data;
         const allPhysical = response.body.allPhysical;
         const allSlider = response.body.allSlider;
-        console.log('all data', response.body);
         const months = Object.keys(allData).sort();
         let allMonths = this.generateMonths(months[0]);
+
+
+
+        //TODO: delete, for testing only
+
+
 
         // march , april ... next year
 
@@ -683,6 +661,9 @@ export class DataSummaryComponent implements OnInit {
             // months [Apr, Mar, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec, Jan, Feb]
             // this is then fed to createGraphs and creates an object ready for chart.js
 
+
+
+            console.log("all slider", allSlider)
             allSlider.forEach((sliderKey) => {
                 if (data) {
                     const sliderData = data.questionnaire_slider[sliderKey];
@@ -768,6 +749,14 @@ export class DataSummaryComponent implements OnInit {
             this.addMonthPerKey('social', month);
             this.addMonthPerKey('wherearebout', month);
             this.addMonthPerKey('sleep', month);
+
+
+
+            //TODO: delete for testing only
+            this.addMonthPerKey("hrv", month);
+            this.addMonthPerKey("activity", month);
+
+
         });
 
         // calculates total averages for steps, heart rate, questionniare. Any other similar calculations would go here
@@ -806,20 +795,26 @@ export class DataSummaryComponent implements OnInit {
         }
 
 
+        //TODO: REMOVE ONLY FOR TESTING PURPOSES NOW
+        this.data["hrv"] = [...this.data["heart_rate"] ]
+        this.data["activity"] = [4,5,6,4,6,7,8,5,6,5,6,5,4]
+
+
         for (const [key, value] of Object.entries(this.data)) {
             let values = value as number[];
             let chartType = this.chart_type[key];
 
-            console.log("chart key", key)
-            console.log("chart data", values)
-            console.log("chart type", chartType)
+            if (!chartType) {
+                continue
+            }
 
-
-            if (chartType.type == 'line') {
+            if (chartType && chartType.type == 'line') {
                 let labeles =
                     chartType.timeframe == 'week'
                         ? weekLabels
                         : this.monthLabelsPerGraph[key];
+
+
                 this.charts[key] = this.createLineChart(
                     key,
                     this.monthLabelsPerGraph[key],
@@ -831,7 +826,7 @@ export class DataSummaryComponent implements OnInit {
                     chartType.bottomLabel
 
                 );
-            } else if (chartType.type == 'histogram') {
+            } else if (chartType && chartType.type == 'histogram') {
                 let labels = this.monthLabelsPerGraph[key + '_1'];
                 let binLabels: any = null;
 
@@ -854,6 +849,7 @@ export class DataSummaryComponent implements OnInit {
                 );
             }
         }
+
     }
     loadSubject(id) {
         this.subjectService.find(id).subscribe((subject: Subject) => {

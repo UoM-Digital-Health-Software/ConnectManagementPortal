@@ -46,9 +46,12 @@
         <th>
           <div class="header-cell">
             <!-- Chat bubble icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="header-icon social" viewBox="0 0 24 24" fill="currentColor">
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" class="header-icon social" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20 2H4C2.897 2 2 2.897 2 4v14c0 1.103.897 2 2 2h4v4l5.333-4H20c1.103 0 2-.897 2-2V4C22 2.897 21.103 2 20 2z"/>
-            </svg>
+            </svg> -->
+
+            <span class=" social-logo " style="height: 60px; width: 60px; background-color: rgba(110, 37, 147, 0.9)"></span>
+
             <div>
               <div class="title">Social</div>
               <div class="subtitle">Who you were around the most each month</div>
@@ -58,9 +61,12 @@
         <th>
           <div class="header-cell">
             <!-- Sleep (moon + stars) icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="header-icon sleep" viewBox="0 0 24 24" fill="currentColor">
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" class="header-icon sleep" viewBox="0 0 24 24" fill="currentColor">
               <path d="M21 12.79A9 9 0 0111.21 3a7 7 0 1010.58 9.79z"/>
-            </svg>
+            </svg> -->
+
+            <span class="sleep-logo " style="height: 60px; width: 60px; background-color: rgb(12,132, 143)"></span>
+
             <div>
               <div class="title">Sleep</div>
               <div class="subtitle">Hours you usually slept each night per month</div>
@@ -70,9 +76,12 @@
         <th>
           <div class="header-cell">
             <!-- Location pin icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="header-icon whereabouts" viewBox="0 0 24 24" fill="currentColor">
+            <!-- <svg xmlns="http://www.w3.org/2000/svg" class="header-icon whereabouts" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
-            </svg>
+            </svg> -->
+
+             <span class="whereabouts-logo " style="height: 40px; width: 40px; background-color: rgba(110, 37, 147, 0.9)"></span>
+
             <div>
               <div class="title">Whereabouts</div>
               <div class="subtitle">How you spent your time</div>
@@ -95,46 +104,10 @@
 
     <div class="padding-top"></div>
 
-    <app-single-row-graph
-        [applyCustomColour]="true"
-        *ngIf="charts['heart_rate']"
-        logoClass="heart-rate"
-        chartId="hrv"
-        [chart]="charts['heart_rate']"
-        title="Heart rate variability"
-        [showTotal]="true"
-        color="rgba(110, 37, 147, 0.9)"
-        [totalValue]="averages['heart_rate']"
-        [totalAverage]="averages['heart_rate']"
-        [showTotalAverage]="true"
-        [showMonthlyAverage]="false"
-        [totalAverageText]="'Total average'"
-         description1 = "Heart rate variability is how much the time between each heartbeat changes. It shows how your body can adapt to stress and rest."
-         description2 = "A higher heart rate variability (HRV) is usually a good sign – it means your body is relaxed and handling stress well. A lower HRV can mean your body is tired or stressed. It’s normal for HRV to change day to day, so it’s most helpful to look at patterns over time."
-
-    ></app-single-row-graph>
-
-
-    <app-single-graph         [applyCustomColour]="true"
-        *ngIf="charts['heart_rate']"
-        logoClass="heart-rate"
-        chartId="hrv1"
-        [chart]="charts['heart_rate']"
-        title="Heart rate variability 1"
-        [showTotal]="true"
-        color="rgba(110, 37, 147, 0.9)"
-        [totalValue]="averages['heart_rate']"
-        [totalAverage]="averages['heart_rate']"
-        [showTotalAverage]="true"
-        [showMonthlyAverage]="false"
-        [totalAverageText]="'Total average'"
-         description1 = "Heart rate variability is how much the time between each heartbeat changes. It shows how your body can adapt to stress and rest."
-         description2 = "A higher heart rate variability (HRV) is usually a good sign – it means your body is relaxed and handling stress well. A lower HRV can mean your body is tired or stressed. It’s normal for HRV to change day to day, so it’s most helpful to look at patterns over time."
->
 
 
 
-    </app-single-graph>
+
 
 
 
@@ -317,17 +290,20 @@
          description1 = "Heart rate is how many times your heart beats in one minute."
     ></app-single-row-graph>
 
+
+
     <app-single-row-graph
         [applyCustomColour]="true"
-        *ngIf="charts['heart_rate']"
+        *ngIf="charts['hrv']"
         logoClass="heart-rate"
         chartId="hrv"
-        [chart]="charts['heart_rate']"
+        [chart]="charts['hrv']"
         title="Heart rate variability"
         [showTotal]="true"
-        color="rgba(110, 37, 147, 0.9)"
-        [totalValue]="averages['heart_rate']"
-        [totalAverage]="averages['heart_rate']"
+           color="rgb(12,132, 143, 0.9)"
+
+        [totalValue]="averages['hrv']"
+        [totalAverage]="averages['hrv']"
         [showTotalAverage]="true"
         [showMonthlyAverage]="false"
         [totalAverageText]="'Total average'"
@@ -337,38 +313,60 @@
     ></app-single-row-graph>
 
 
-
     <app-single-row-graph
         [applyCustomColour]="true"
+        *ngIf="charts['activity']"
+        logoClass="activity-img"
+        chartId="activity"
+        [chart]="charts['activity']"
+        title="Activity"
+        [showTotal]="false"
+        color="rgba(110, 37, 147, 0.9)"
+        [totalValue]="averages['heart_rate']"
+        [totalAverage]="averages['heart_rate']"
+        [showTotalAverage]="false"
+        [showMonthlyAverage]="false"
+        [totalAverageText]="'Total average'"
+         description1 = "This graph shows the number of activties (running, walking etc) your wearable has recorded each month."
+
+    ></app-single-row-graph>
+
+
+
+    <app-single-row-graph
+        [applyCustomColour]="false"
         *ngIf="charts['steps']"
         logoClass="steps-img"
         chartId="steps"
         [chart]="charts['steps']"
         title="Steps"
-        [showTotal]="true"
-        color="rgba(110, 37, 147, 0.9)"
+        [showTotal]="false"
+ color="rgb(12,132, 143, 0.9)"
         [totalValue]="stepsAverage"
         [totalAverage]="stepsAverage"
-        [showTotalAverage]="true"
+        [showTotalAverage]="false"
         [showMonthlyAverage]="false"
         [totalAverageText]="'Total average'"
+        description1 = "This table shows how many steps you typically walked each day per month."
+
     ></app-single-row-graph>
 
-    <app-double-row-graph
-        [bothGraphsActive]="charts['respiratory_rate'] && charts['activity']"
-        *ngIf="charts['respiratory_rate'] || charts['activity']"
-        title1="Activity"
-        title2="Respiratory Rate"
-        chartId1="activity"
-        chartId2="respiratory_rate"
-        [chartGraph1Data]="charts['respiratory_rate']"
-        [chartGraph2Data]="charts['activity']"
+        <app-single-graph
+    [applyCustomColour]="true"
+        *ngIf="charts['heart_rate']"
+        logoClass="respiratory-img"
+        chartId="hrv1"
+        [chart]="charts['heart_rate']"
+        title="Respiratory rate"
+        [showTotal]="false"
         color="rgba(110, 37, 147, 0.9)"
-        dataPoint1Title="Total amount"
-        dataPoint2Title="Total average"
-        dataPoint1SubTitle=""
-        dataPoint2SubTitle="breaths per minute"
-        css1="activity-img"
-        css2="respiratory-img"
-    ></app-double-row-graph>
+        [totalValue]="averages['heart_rate']"
+        [totalAverage]="averages['heart_rate']"
+        [showTotalAverage]="false"
+        [showMonthlyAverage]="false"
+        [totalAverageText]="'Total average'"
+         description1 = "The number of breaths you take in one minute (this is usually slower when you’re relaxed, and faster when you’re active or stressed)."
+         description2 = "A healthy resting respiratory rate is typically between 12 and 20 breaths per minute. A rate consistently higher than 20 may suggest that your body is under stress, not fully recovered, or unwell. Occasional changes are normal, so it’s important to look at patterns over time rather than single readings."
+>
+    </app-single-graph>
 </div>

@@ -474,6 +474,11 @@ label {
     align-items: center;
     gap: 10px;
 }
+
+.flex-gap {
+    gap:10px;
+}
+
 .self-centered {
     align-self: center;
 }
@@ -688,4 +693,10 @@ td:first-child, th:first-child {
 .single-graph-header  {
     display:flex;
     align-items: center;
+}
+
+
+.graph-header {
+    margin: 0px  !important;
+    padding-left: 10px;
 }
