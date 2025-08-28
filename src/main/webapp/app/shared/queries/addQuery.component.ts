@@ -451,6 +451,8 @@ export class AddQueryComponent {
             this.refreshContentGroups();
             this.isEditingMode = true; // after save, should all be editing mode
 
+            this.isDuplicateMode = false; 
+
             this.alertService.success("Query Group successfully saved!", null, null, "query-group");
         } catch (err: any) {
             if (
