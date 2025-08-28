@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-class VersionController(
+class VersionRescource(
     private val managementPortalProperties: ManagementPortalProperties
 ) {
     @GetMapping("/min-required-version")

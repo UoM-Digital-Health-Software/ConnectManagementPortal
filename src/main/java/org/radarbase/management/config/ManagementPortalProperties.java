@@ -63,8 +63,8 @@ public class ManagementPortalProperties {
     }
 
     public static class MinRequiredVersion {
-        private String ios = "1.2.1";
-        private String android = "1.2.1";
+        private String ios = "1.0.0";
+        private String android = "1.0.0";
 
         public String getIos() {
             return ios;
