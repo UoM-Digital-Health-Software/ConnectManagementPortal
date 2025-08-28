@@ -13,8 +13,6 @@ import { QueriesService } from './queries.service';
 import { ContentComponent } from './content/content.component';
 import { AlertService } from '../../shared/util/alert.service';
 
-
-
 import {
     Question,
     QueryDTO,
@@ -86,17 +84,15 @@ export class AddQueryComponent {
     };
 
     public config: QueryBuilderConfig = {
-        entities: {
-        },
-        fields: {
-        },
+        entities: {},
+        fields: {},
     };
 
     public currentConfig: QueryBuilderConfig;
     public allowRuleset: boolean = true;
     public allowCollapse: boolean;
-    public questionnare: Question[]
-    public delusions: Question[]
+    public questionnare: Question[];
+    public delusions: Question[];
     public persistValueOnFieldChange: boolean = true;
 
     selectedGroupIndex: number | null = null;
@@ -107,7 +103,6 @@ export class AddQueryComponent {
 
     queryId = null;
 
-    public readonlyMode = false;
     public groupNameError = false;
     public groupDescError = false;
     public queryBuilderError = false;
@@ -121,10 +116,13 @@ export class AddQueryComponent {
     public isDuplicateMode = false;
 
     public isEditingMode = false;
+
+    public readonlyMode = false;
+
     private deletedContentGroupIds: number[] = [];
 
     constructor(
-         private alertService: AlertService,
+        private alertService: AlertService,
         private queryService: QueriesService,
         private formBuilder: FormBuilder,
         private http: HttpClient,
@@ -135,26 +133,36 @@ export class AddQueryComponent {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
 
-        let physicalTypesPromise = this.queryService.gellAllPhysicalTypes().toPromise()
-        let questionnaireItems = this.queryService.getQuestionnaireItems().toPromise()
-        let entitiesPromise =  this.queryService.getEntities().toPromise()
+        let physicalTypesPromise = this.queryService
+            .gellAllPhysicalTypes()
+            .toPromise();
+        let questionnaireItems = this.queryService
+            .getQuestionnaireItems()
+            .toPromise();
+        let entitiesPromise = this.queryService.getEntities().toPromise();
 
-        Promise.all([physicalTypesPromise, questionnaireItems, entitiesPromise]).then(allTypes => {
-            let physicalTypes = allTypes[0] as any
-            let questionnareTypes = allTypes[1]
-            let entities = allTypes[2]
+        Promise.all([
+            physicalTypesPromise,
+            questionnaireItems,
+            entitiesPromise,
+        ]).then((allTypes) => {
+            let physicalTypes = allTypes[0] as any;
+            let questionnareTypes = allTypes[1];
+            let entities = allTypes[2];
 
-            this.questionnare = questionnareTypes["questionnaire"] as Question[]
-            this.delusions = questionnareTypes["delusions"] as Question[]
+            this.questionnare = questionnareTypes[
+                'questionnaire'
+            ] as Question[];
+            this.delusions = questionnareTypes['delusions'] as Question[];
 
             this.addQuestionnaireItemsToQueryBuilder();
             this.addDelusionsToQueryBuilder();
-            this.config.entities = { ...entities }
-            this.config.fields = { ...this.config.fields, ...physicalTypes }
+            this.config.entities = { ...entities };
+            this.config.fields = { ...this.config.fields, ...physicalTypes };
 
-            this.isLoaded = true
-        this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
-        })
+            this.isLoaded = true;
+            this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
+        });
     }
 
     private async addQuestionnaireItemsToQueryBuilder() {
@@ -169,8 +177,9 @@ export class AddQueryComponent {
             let fieldName = question.field_name;
 
             const field = {
-                name: `${question.field_label} ${question.field_sublabel ? question.field_sublabel : ''
-                    }`,
+                name: `${question.field_label} ${
+                    question.field_sublabel ? question.field_sublabel : ''
+                }`,
                 type: 'category',
                 entity: 'QUESTIONNAIRE_SLIDER',
                 operators: ['=', '!=', '<', '>', '<=', '>='],
@@ -206,16 +215,15 @@ export class AddQueryComponent {
                 this.config.fields[question.group_name] = group;
             }
             this.config.fields[fieldName] = field;
-
-
         }
     }
 
     private addDelusionsToQueryBuilder() {
         for (const delusion of this.delusions) {
             const field = {
-                name: `${delusion.field_label} ${delusion.field_sublabel ? delusion.field_sublabel : ''
-                    }`,
+                name: `${delusion.field_label} ${
+                    delusion.field_sublabel ? delusion.field_sublabel : ''
+                }`,
                 type: 'category',
                 entity: 'QUESTIONNAIRE_DELUSIONS',
                 operators: ['=', '!=', '<', '>', '<=', '>='],
@@ -320,7 +328,6 @@ export class AddQueryComponent {
     }
 
     convertTimeFrame(value: string) {
-
         switch (value) {
             case '6_months':
                 return 'PAST_6_MONTH';
@@ -377,15 +384,17 @@ export class AddQueryComponent {
         return true;
     }
 
-
-
     async saveContentGroups() {
         await this.submitContentChanges().toPromise();
         this.deletedContentGroupIds = [];
 
-          this.alertService.success("Content successfully saved!", null, null, "content");
+        this.alertService.success(
+            'Content successfully saved!',
+            null,
+            null,
+            'content'
+        );
     }
-
 
     async saveQueryGroupToDB() {
         this.groupNameError = false;
@@ -451,9 +460,14 @@ export class AddQueryComponent {
             this.refreshContentGroups();
             this.isEditingMode = true; // after save, should all be editing mode
 
-            this.isDuplicateMode = false; 
+            this.isDuplicateMode = false;
 
-            this.alertService.success("Query Group successfully saved!", null, null, "query-group");
+            this.alertService.success(
+                'Query Group successfully saved!',
+                null,
+                null,
+                'query-group'
+            );
         } catch (err: any) {
             if (
                 err?.status === 409 ||
