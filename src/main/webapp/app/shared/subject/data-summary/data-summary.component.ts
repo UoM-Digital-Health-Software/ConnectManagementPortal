@@ -18,7 +18,7 @@ const domainGraph: Graph = {
 
 const barGraph: Graph = {
     type: 'bar',
-    showScaleY: false,
+    showScaleY: true,
     showDataTables: true,
 };
 
@@ -62,22 +62,22 @@ export class DataSummaryComponent implements OnInit {
     chart_heart_rate_variability: any = [];
     questionnaireDomains: any = [''];
     chart_type: { [id: string]: Graph } = {
-        delusion: domainGraph,
-        negative_emotions: domainGraph,
-        positive_emotions: domainGraph,
-        dissociation: domainGraph,
-        stress: domainGraph,
-        sleep_period: domainGraph,
-        hope: domainGraph,
-        mood: domainGraph,
-        anxiety: domainGraph,
-        self_esteem: domainGraph,
-        connectedness: domainGraph,
-        coping: domainGraph,
-        fear: domainGraph,
-        hallucination_hear: domainGraph,
-        hallucination_vision: domainGraph,
-        threat: domainGraph,
+        delusion: lineGraph("Very much", "Not at all"),
+        negative_emotions: lineGraph("Very much", "Not at all"),
+        positive_emotions: lineGraph("Very much", "Not at all"),
+        dissociation: lineGraph("Very much", "Not at all"),
+        stress: lineGraph("Very much", "Not at all"),
+        sleep_period: lineGraph("Very much", "Not at all"),
+        hope: lineGraph("Very much", "Not at all"),
+        mood: lineGraph("Very much", "Not at all"),
+        anxiety: lineGraph("Very much", "Not at all"),
+        self_esteem: lineGraph("Very much", "Not at all"),
+        connectedness: lineGraph("Very much", "Not at all"),
+        coping: lineGraph("Very much", "Not at all"),
+        fear: lineGraph("Very much", "Not at all"),
+        hallucination_hear: lineGraph("Very much", "Not at all"),
+        hallucination_vision: lineGraph("Very much", "Not at all"),
+        threat: lineGraph("Very much", "Not at all"),
 
         questionnaire: barGraph,
         heart_rate: lineGraph("Higher heart rate", "Lower heart rate"),
@@ -259,44 +259,58 @@ export class DataSummaryComponent implements OnInit {
         };
     }
 
-    customLabels = (topLabel?: String, bottomLabel? : String) => {
+    customLabels = (topLabel?: String, bottomLabel?: String, middle: boolean = false) => {
 
         return {
-        id: 'customLabels',
-        afterDraw(chart) {
-            const { ctx, scales: { y } } = chart;
+            id: 'customLabels',
+            afterDraw(chart) {
+                const { ctx, scales: { y } } = chart;
 
 
-            ctx.save();
-            ctx.fillStyle = 'black';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.font = '10px Arial';   // <— change size here
+                ctx.save();
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '10px Arial';   // <— change size here
 
-            const topText = topLabel ?? 'Very much';
+                if (topLabel) {
+                    const topText = topLabel ?? 'Very much';
 
-            const topTextWidth = ctx.measureText(topText).width;
+                    const topTextWidth = ctx.measureText(topText).width;
 
-            // === Top label ===
-            ctx.save();
-            ctx.translate(y.left - 20, y.top + topTextWidth / 2); // move pivot to position
-            ctx.rotate(-Math.PI / 2); // rotate 90° counter-clockwise
-            ctx.fillText(topText, 0, 0);   // draw at pivot
-            ctx.restore();
+                    // === Top label ===
+                    ctx.save();
+                    if (middle) {
+                        ctx.translate(y.left, y.top * 2); // move pivot to position
 
-            const bottomText = bottomLabel ?? 'Not at all';
+                    } else {
+                        ctx.translate(y.left - 20, y.top + topTextWidth / 2); // move pivot to position
 
-            const bottomTextWidth = ctx.measureText(bottomText).width;
+                    }
+                    ctx.rotate(-Math.PI / 2); // rotate 90° counter-clockwise
+                    ctx.fillText(topText, 0, 0);   // draw at pivot
+                    ctx.restore();
+                }
 
 
-            ctx.save();
-            ctx.translate(y.left - 20, y.bottom - bottomTextWidth / 2); // move pivot to position
-            ctx.rotate(-Math.PI / 2); // rotate 90° counter-clockwise
-            ctx.fillText(bottomText, 0, 0);
-            ctx.restore();
 
-            ctx.restore();
-        }
+
+                if (bottomLabel) {
+                    const bottomText = bottomLabel ?? 'Not at all';
+
+                    const bottomTextWidth = ctx.measureText(bottomText).width;
+
+
+                    ctx.save();
+                    ctx.translate(y.left - 20, y.bottom - bottomTextWidth / 2); // move pivot to position
+                    ctx.rotate(-Math.PI / 2); // rotate 90° counter-clockwise
+                    ctx.fillText(bottomText, 0, 0);
+                    ctx.restore();
+
+                    ctx.restore();
+                }
+
+            }
         }
 
     };
@@ -414,12 +428,7 @@ export class DataSummaryComponent implements OnInit {
         data: number[],
         barColor: string = 'rgba(191,	236,	235	, 1)'
     ) {
-
-
-
         const colors = ['rgba(11, 143, 154, 1)', 'rgba(81, 186, 189, 1)'];
-
-
 
         return {
             type: 'bar',
@@ -431,10 +440,10 @@ export class DataSummaryComponent implements OnInit {
                         borderWidth: 1,
                         borderRadius: 5,
                         barThickness: 30,
-      backgroundColor: (context) => {
-        const index = context.dataIndex;
-        return colors[index % colors.length]; // alternate safely
-      },
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            return colors[index % colors.length]; // alternate safely
+                        },
                     },
                 ],
             },
@@ -445,8 +454,22 @@ export class DataSummaryComponent implements OnInit {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        display: false,
+                        display: true,
                     },
+                    y2: {
+                        position: 'left',
+                        weight: 0,         // 🔑 ensures it doesn’t push out space
+                        grid: {
+                            drawTicks: false,
+                            drawOnChartArea: false
+                        },
+                        ticks: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Steps',
+                            align: 'middle'     // bottom of axis
+                        }
+                    }
                 },
                 plugins: {
                     title: {
@@ -459,7 +482,7 @@ export class DataSummaryComponent implements OnInit {
                     datalabels: {
                         anchor: 'end',
 
-                        formatter: (value) => value,
+                        formatter: (value) => "",
                         color: '#000',
                         font: {
                             weight: 'bold',
@@ -796,8 +819,8 @@ export class DataSummaryComponent implements OnInit {
 
 
         //TODO: REMOVE ONLY FOR TESTING PURPOSES NOW
-        this.data["hrv"] = [...this.data["heart_rate"] ]
-        this.data["activity"] = [4,5,6,4,6,7,8,5,6,5,6,5,4]
+        this.data["hrv"] = [...this.data["heart_rate"]]
+        this.data["activity"] = [4, 5, 6, 4, 6, 7, 8, 5, 6, 5, 6, 5, 4]
 
 
         for (const [key, value] of Object.entries(this.data)) {
