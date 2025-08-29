@@ -694,7 +694,6 @@ export class AddQueryComponent {
             .subscribe({
                 next: () => {
                     contentGroup.status = status;
-                    console.log(1)
                     this.alertService.success(
                         'Status updated successfully',
                         null,
