@@ -320,6 +320,18 @@ class QueryResource(
         return result;
     }
 
+    @PutMapping("querycontentgroup/{queryContentGroupId}/status")
+    fun updateStatus(
+        @PathVariable queryContentGroupId: Long,
+        @RequestParam status: ContentGroupStatus
+    ): ResponseEntity<Void> {
+
+
+        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
+        return ResponseEntity.ok().build()
+    }
+
+
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)
     }

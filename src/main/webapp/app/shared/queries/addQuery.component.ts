@@ -542,13 +542,13 @@ export class AddQueryComponent {
                 'Content group deleted!',
                 null,
                 null,
-                'content'
+                'content-group'
             );
         } catch (e) {
             this.alertService.error(
                 'Failed to delete content group',
                 null,
-                'content'
+                'content-group'
             );
         }
     }
@@ -638,7 +638,7 @@ export class AddQueryComponent {
                 'Content group saved!',
                 null,
                 null,
-                'content'
+                'content group'
             );
 
             this.isEditingContent = false;
@@ -648,7 +648,7 @@ export class AddQueryComponent {
             this.alertService.error(
                 'Failed to save Content group.',
                 null,
-                'content'
+                'content group'
             );
         }
     }
@@ -676,17 +676,39 @@ export class AddQueryComponent {
     }
 
     onToggleStatus(contentGroup: any) {
-        const newStatus =
-            contentGroup.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-        if (
-            newStatus === 'INACTIVE' &&
-            !confirm(
-                "Are you sure? This will prevent it from displaying on participants' phones."
-            )
-        ) {
-            return;
+        if (contentGroup.status === 'ACTIVE') {
+            if (
+                confirm(
+                    "Are you sure? This will prevent it from displaying on participants' phones"
+                )
+            ) {
+                this.updateStatus(contentGroup, 'INACTIVE');
+            }
+        } else {
+            this.updateStatus(contentGroup, 'ACTIVE');
         }
-
-        contentGroup.status = newStatus;
+    }
+    updateStatus(contentGroup: any, status: string) {
+        this.queryService
+            .updateContentGroupStatus(contentGroup, status)
+            .subscribe({
+                next: () => {
+                    contentGroup.status = status;
+                    console.log(1)
+                    this.alertService.success(
+                        'Status updated successfully',
+                        null,
+                        null,
+                        'content-group'
+                    );
+                },
+                error: () => {
+                    this.alertService.error(
+                        'Failed to update status',
+                        null,
+                        'content-group'
+                    );
+                },
+            });
     }
 }

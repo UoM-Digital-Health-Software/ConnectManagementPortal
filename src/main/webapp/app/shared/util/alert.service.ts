@@ -45,6 +45,7 @@ export class AlertService {
     }
 
     success(msg: string, params?: any, position?: string, category?: string): Alert {
+        console.log(2)
         return this.addAlert({
             type: 'success',
             msg,
