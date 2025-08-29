@@ -94,7 +94,7 @@
                         >
                             <div
                                 class="d-flex align-items-center"
-                                style="paddingbottom: 15px"
+                                style="padding-bottom: 15px"
                             >
                                 <small
                                     [ngClass]="{
@@ -120,7 +120,7 @@
 
                             <button
                                 class="btn btn-sm btn-danger mb-2"
-                                (click)="deleteContentGroup(group.id)"
+                                (click)="deleteContentGroup(group)"
                             >
                                 Delete
                             </button>
@@ -165,7 +165,7 @@
                     <div class="mt-3 d-flex">
                         <button
                             class="btn btn-primary mr-2"
-                            (click)="saveCurrentEditingGroup()"
+                            (click)="saveCurrentEditingGroupToDB()"
                         >
                             Save
                         </button>
@@ -199,14 +199,6 @@
                 <label>Please fill in all fields.</label>
             </div>
 
-            <button
-                (click)="saveContentGroups()"
-                [disabled]="!queryGroupId"
-                *ngIf="!isEditingContent"
-                class="btn btn-primary saveBtn"
-            >
-                Save Content
-            </button>
         </div>
 
         <jhi-alert category="content"></jhi-alert>

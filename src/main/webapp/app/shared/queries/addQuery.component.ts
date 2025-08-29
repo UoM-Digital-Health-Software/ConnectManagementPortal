@@ -384,18 +384,6 @@ export class AddQueryComponent {
         return true;
     }
 
-    async saveContentGroups() {
-        await this.submitContentChanges().toPromise();
-        this.deletedContentGroupIds = [];
-
-        this.alertService.success(
-            'Content successfully saved!',
-            null,
-            null,
-            'content'
-        );
-    }
-
     async saveQueryGroupToDB() {
         this.groupNameError = false;
         this.groupDescError = false;
@@ -532,16 +520,37 @@ export class AddQueryComponent {
         this.isEditingContent = true;
     }
 
-    deleteContentGroup(id: number) {
+    async deleteContentGroup(group: ContentGroup) {
         const confirmDelete = confirm(
             "Are you sure you want to delete this? This will also delete the content from the participants' phones."
         );
         if (!confirmDelete) return;
 
-        this.deletedContentGroupIds.push(id);
-        this.contentGroups = this.contentGroups.filter(
-            (group) => group.id !== id
-        );
+        if (!group.id) {
+            this.contentGroups = this.contentGroups.filter((g) => g !== group);
+            return;
+        }
+
+        try {
+            await this.queryService
+                .deleteContentGroupByID(group.id)
+                .toPromise();
+            this.contentGroups = this.contentGroups.filter(
+                (g) => g.id !== group.id
+            );
+            this.alertService.success(
+                'Content group deleted!',
+                null,
+                null,
+                'content'
+            );
+        } catch (e) {
+            this.alertService.error(
+                'Failed to delete content group',
+                null,
+                'content'
+            );
+        }
     }
 
     selectGroup(index: number) {
@@ -559,7 +568,7 @@ export class AddQueryComponent {
         this.isEditingContent = true;
     }
 
-    saveCurrentEditingGroup() {
+    async saveCurrentEditingGroupToDB() {
         let hasError = false;
         this.contentGroupNameError = false;
         this.contentGroupItemsError = false;
@@ -608,16 +617,39 @@ export class AddQueryComponent {
             }
         }
 
-        if (hasError) {
-            return;
-        }
+        if (hasError) return;
 
-        if (this.currentEditingIndex !== null && this.currentEditingCopy) {
-            this.contentGroups[this.currentEditingIndex] =
-                this.currentEditingCopy;
+        const payload = {
+            queryGroupId: this.queryGroupId,
+            contentGroupName: this.currentEditingCopy.name,
+            queryContentDTOList: this.currentEditingCopy.items,
+            id: this.currentEditingCopy.id ? this.currentEditingCopy.id : null,
+        };
+
+        try {
+            await this.queryService.saveContentGroup(payload).toPromise();
+
+            if (this.currentEditingIndex !== null && this.currentEditingCopy) {
+                this.contentGroups[this.currentEditingIndex] =
+                    this.currentEditingCopy;
+            }
+
+            this.alertService.success(
+                'Content group saved!',
+                null,
+                null,
+                'content'
+            );
+
             this.isEditingContent = false;
             this.currentEditingIndex = null;
             this.currentEditingCopy = null;
+        } catch (e) {
+            this.alertService.error(
+                'Failed to save Content group.',
+                null,
+                'content'
+            );
         }
     }
 
