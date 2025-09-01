@@ -22,13 +22,13 @@ const barGraph: Graph = {
     showDataTables: true,
 };
 
-const lineGraph = (topLabel?: String, bottomLabel?: String) => {
+const lineGraph = (topLabel?: String, bottomLabel?: String, showDataLables: Boolean = true) => {
 
     let graphObject = {
 
         type: 'line',
         showScaleY: false,
-        showDataTables: true,
+        showDataTables: showDataLables,
         topLabel: topLabel,
         bottomLabel: bottomLabel
     } as Graph
@@ -62,22 +62,22 @@ export class DataSummaryComponent implements OnInit {
     chart_heart_rate_variability: any = [];
     questionnaireDomains: any = [''];
     chart_type: { [id: string]: Graph } = {
-        delusion: lineGraph("Very much", "Not at all"),
-        negative_emotions: lineGraph("Very much", "Not at all"),
-        positive_emotions: lineGraph("Very much", "Not at all"),
-        dissociation: lineGraph("Very much", "Not at all"),
-        stress: lineGraph("Very much", "Not at all"),
-        sleep_period: lineGraph("Very much", "Not at all"),
-        hope: lineGraph("Very much", "Not at all"),
-        mood: lineGraph("Very much", "Not at all"),
-        anxiety: lineGraph("Very much", "Not at all"),
-        self_esteem: lineGraph("Very much", "Not at all"),
-        connectedness: lineGraph("Very much", "Not at all"),
-        coping: lineGraph("Very much", "Not at all"),
-        fear: lineGraph("Very much", "Not at all"),
-        hallucination_hear: lineGraph("Very much", "Not at all"),
-        hallucination_vision: lineGraph("Very much", "Not at all"),
-        threat: lineGraph("Very much", "Not at all"),
+        delusion: lineGraph("Very much", "Not at all", false),
+        negative_emotions: lineGraph("Very much", "Not at all", false),
+        positive_emotions: lineGraph("Very much", "Not at all", false),
+        dissociation: lineGraph("Very much", "Not at all", false),
+        stress: lineGraph("Very much", "Not at all", false),
+        sleep_period: lineGraph("Very much", "Not at all", false),
+        hope: lineGraph("Very much", "Not at all", false),
+        mood: lineGraph("Very much", "Not at all", false),
+        anxiety: lineGraph("Very much", "Not at all", false),
+        self_esteem: lineGraph("Very much", "Not at all", false),
+        connectedness: lineGraph("Very much", "Not at all", false),
+        coping: lineGraph("Very much", "Not at all", false),
+        fear: lineGraph("Very much", "Not at all", false),
+        hallucination_hear: lineGraph("Very much", "Not at all", false),
+        hallucination_vision: lineGraph("Very much", "Not at all", false),
+        threat: lineGraph("Very much", "Not at all", false),
 
         questionnaire: barGraph,
         heart_rate: lineGraph("Higher heart rate", "Lower heart rate"),
@@ -387,6 +387,7 @@ export class DataSummaryComponent implements OnInit {
                         position: 'top',
                     },
                     datalabels: {
+
                         display: showDataLables,
                         align: 'top',
                         formatter: (value) => value,

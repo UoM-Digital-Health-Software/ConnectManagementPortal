@@ -316,7 +316,7 @@
 }
 
 .top-padding {
-    padding-top: 30px;
+    margin-top: 50px;
 }
 
 
@@ -600,6 +600,12 @@ border-spacing: 0;
   vertical-align: top;
    border-bottom: 1px solid #ccc;
 }
+.custom-table td {
+
+ text-align: center;
+    vertical-align: middle;
+}
+
 
 
 
@@ -609,6 +615,11 @@ border-spacing: 0;
 
 }
 
+
+.hrv-table th {
+     text-align: center;
+    vertical-align: middle;
+}
 
 .hrv-table th,
 .hrv-table td {
