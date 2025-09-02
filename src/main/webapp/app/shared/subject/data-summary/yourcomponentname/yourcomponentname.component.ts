@@ -62,7 +62,7 @@ export class YOURCOMPONENTNAMEComponent implements OnInit {
 
     ngAfterViewInit() {
         //@ts-ignore
-        // const ctx = document.getElementById(this.charxtId).getContext('2d');
+
 
         if (this.applyCustomColour) {
             this.chart.data.datasets[0]['backgroundColor'] = [

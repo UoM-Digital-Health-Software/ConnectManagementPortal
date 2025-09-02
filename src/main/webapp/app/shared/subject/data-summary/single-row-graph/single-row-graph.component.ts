@@ -45,9 +45,6 @@ export class SingleRowGraphComponent implements OnInit {
 
     ngAfterViewInit() {
         //@ts-ignore
-        // const ctx = document.getElementById(this.charxtId).getContext('2d');
-
-
         const ctx = document.getElementById(this.chartId)?.getContext('2d');
 
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
