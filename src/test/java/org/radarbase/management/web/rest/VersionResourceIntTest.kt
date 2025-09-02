@@ -74,7 +74,7 @@ internal class VersionResourceIntTest (
     @Throws(Exception::class)
     fun testGetMinRequiredVersion(): Unit {
 
-        mockMvc.perform(get(baseURL + "min-required-version"))
+        mockMvc.perform(get(baseURL + "versions/min-required-version"))
             .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.ios").value("1.0.0"))
