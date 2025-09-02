@@ -62,6 +62,33 @@ public class ManagementPortalProperties {
         return siteSettings;
     }
 
+    public static class MinRequiredVersion {
+        private String ios = "1.0.0";
+        private String android = "1.0.0";
+
+        public String getIos() {
+            return ios;
+        }
+
+        public void setIos(String ios) {
+            this.ios = ios;
+        }
+
+        public String getAndroid() {
+            return android;
+        }
+
+        public void setAndroid(String android) {
+            this.android = android;
+        }
+    }
+
+    private final MinRequiredVersion minRequiredVersion = new MinRequiredVersion();
+
+    public MinRequiredVersion getMinRequiredVersion() {
+        return minRequiredVersion;
+    }
+
     public static class Account {
         private boolean enableExposeToken = false;
 
