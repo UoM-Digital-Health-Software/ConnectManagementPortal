@@ -9,6 +9,9 @@ import { ChartConfiguration, registerables } from 'chart.js';
 export class SingleRowGraphComponent implements OnInit {
     constructor() {}
 
+
+    @Input() description1: string = ''
+    @Input() description2: string = ''
     @Input() title: string = '';
 
     @Input() chart: any = {};
@@ -42,12 +45,18 @@ export class SingleRowGraphComponent implements OnInit {
 
     ngAfterViewInit() {
         //@ts-ignore
-        // const ctx = document.getElementById(this.charxtId).getContext('2d');
+        const ctx = document.getElementById(this.chartId)?.getContext('2d');
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, this.color);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+
+
+
 
         if (this.applyCustomColour) {
-            this.chart.data.datasets[0]['backgroundColor'] = [
-                this.color.replace('0.9', '0.6'),
-            ];
+            this.chart.data.datasets[0]['borderColor'] =  this.color
+            this.chart.data.datasets[0]['backgroundColor'] = gradient
         }
 
         this.chartGraph = new Chart(this.chartId, this.chart);

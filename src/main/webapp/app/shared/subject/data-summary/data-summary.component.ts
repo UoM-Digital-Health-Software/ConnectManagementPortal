@@ -13,19 +13,28 @@ import { HttpResponse } from '@angular/common/http';
 const domainGraph: Graph = {
     type: 'line',
     showScaleY: true,
-    showDataTables: true,
+    showDataTables: false,
 };
 
 const barGraph: Graph = {
     type: 'bar',
-    showScaleY: false,
+    showScaleY: true,
     showDataTables: true,
 };
 
-const lineGraph: Graph = {
-    type: 'line',
-    showScaleY: false,
-    showDataTables: true,
+const lineGraph = (topLabel?: String, bottomLabel?: String, showDataLables: Boolean = true) => {
+
+    let graphObject = {
+
+        type: 'line',
+        showScaleY: false,
+        showDataTables: showDataLables,
+        topLabel: topLabel,
+        bottomLabel: bottomLabel
+    } as Graph
+
+    return graphObject
+
 };
 
 const histogramGraph: Graph = {
@@ -53,77 +62,35 @@ export class DataSummaryComponent implements OnInit {
     chart_heart_rate_variability: any = [];
     questionnaireDomains: any = [''];
     chart_type: { [id: string]: Graph } = {
-        delusion: domainGraph,
-        negative_emotions: domainGraph,
-        positive_emotions: domainGraph,
-        dissociation: domainGraph,
-        stress: domainGraph,
-        sleep_period: domainGraph,
-        hope: domainGraph,
-        mood: domainGraph,
-        anxiety: domainGraph,
-        self_esteem: domainGraph,
-        connectedness: domainGraph,
-        coping: domainGraph,
-        fear: domainGraph,
-        hallucination_hear: domainGraph,
-        hallucination_vision: domainGraph,
-        threat: domainGraph,
+        delusion: lineGraph("Very much", "Not at all", false),
+        negative_emotions: lineGraph("Very much", "Not at all", false),
+        positive_emotions: lineGraph("Very much", "Not at all", false),
+        dissociation: lineGraph("Very much", "Not at all", false),
+        stress: lineGraph("Very much", "Not at all", false),
+        sleep_period: lineGraph("Very much", "Not at all", false),
+        hope: lineGraph("Very much", "Not at all", false),
+        mood: lineGraph("Very much", "Not at all", false),
+        anxiety: lineGraph("Very much", "Not at all", false),
+        self_esteem: lineGraph("Very much", "Not at all", false),
+        connectedness: lineGraph("Very much", "Not at all", false),
+        coping: lineGraph("Very much", "Not at all", false),
+        fear: lineGraph("Very much", "Not at all", false),
+        hallucination_hear: lineGraph("Very much", "Not at all", false),
+        hallucination_vision: lineGraph("Very much", "Not at all", false),
+        threat: lineGraph("Very much", "Not at all", false),
 
         questionnaire: barGraph,
-        heart_rate: lineGraph,
-        hrv: lineGraph,
+        heart_rate: lineGraph("Higher heart rate", "Lower heart rate"),
+        hrv: lineGraph("Higher variability", "Low variability"),
 
         steps: barGraph,
-        activity: lineGraph,
-        respiratory_rate: lineGraph,
-        screen_usage: lineGraph,
-
-        // ugly...sorry..no time
-        social: histogramGraph,
-
-        social_1: barGraph,
-        social_2: barGraph,
-        social_3: barGraph,
-        social_4: barGraph,
-        social_5: barGraph,
-
-        sleep: histogramGraph,
-        sleep_1: barGraph,
-        sleep_2: barGraph,
-        sleep_3: barGraph,
-        sleep_4: barGraph,
-        sleep_5: barGraph,
-        sleep_6: barGraph,
-        sleep_7: barGraph,
-        sleep_8: barGraph,
-
-        wherearebout: histogramGraph,
-        wherearebout_1: barGraph,
-        wherearebout_2: barGraph,
-        wherearebout_3: barGraph,
-        wherearebout_4: barGraph,
-        wherearebout_5: barGraph,
-        wherearebout_6: barGraph,
-        wherearebout_7: barGraph,
-        wherearebout_8: barGraph,
-        wherearebout_9: barGraph,
-        wherearebout_10: barGraph,
-        wherearebout_11: barGraph,
-
-        delusion_1: domainGraph,
-        delusion_2: domainGraph,
-        delusion_3: domainGraph,
-        delusion_4: domainGraph,
-        delusion_5: domainGraph,
-        delusion_6: domainGraph,
-        delusion_7: domainGraph,
-        delusion_8: domainGraph,
-        delusion_9: domainGraph,
-        delusion_10: domainGraph,
-        delusion_11: domainGraph,
-        delusion_12: domainGraph,
+        activity: lineGraph("Higher activity", "Lower activity"),
+        respiratory_rate: lineGraph(),
+        screen_usage: lineGraph(),
     };
+
+
+
     isDataSummaryReady = false;
     data: any = {};
     monthLabelsPerGraph: any = {};
@@ -133,6 +100,11 @@ export class DataSummaryComponent implements OnInit {
     questionnaireTotal: number = 0;
     questionnaireAverage: number = 0;
     averages = {};
+
+    months = [
+
+
+    ];
 
     stepsTotal: number = 0;
     stepsAverage: number = 0;
@@ -177,7 +149,7 @@ export class DataSummaryComponent implements OnInit {
         '14+',
     ];
 
-    sleepMapKeys = Object.keys(this.sleepMap);
+
 
     whereaboutsMap = {
         '1': 'Relaxing (e.g. watching TV, reading a book, resting, other)',
@@ -228,7 +200,7 @@ export class DataSummaryComponent implements OnInit {
     delusionKeys = Object.keys(this.delusions);
 
     histogramLabels = { social: [], sleep: [], wherearebout: [] };
-    whereaboutsMapKeys = Object.keys(this.whereaboutsMap);
+
 
     subject: Subject;
     private subscription: any;
@@ -236,7 +208,7 @@ export class DataSummaryComponent implements OnInit {
     constructor(
         private subjectService: SubjectService,
         private route: ActivatedRoute
-    ) {}
+    ) { }
 
     createMonthHistogram(key: string, months: string[], binLabels2: string[]) {
         const binColors = [
@@ -256,6 +228,7 @@ export class DataSummaryComponent implements OnInit {
         let activeColors = binColors.slice(0, binLabels2.length);
 
         const data = this.data[key];
+
 
         return {
             type: 'bar',
@@ -286,13 +259,72 @@ export class DataSummaryComponent implements OnInit {
         };
     }
 
+    customLabels = (topLabel?: String, bottomLabel?: String, middle: boolean = false) => {
+
+        return {
+            id: 'customLabels',
+            afterDraw(chart) {
+                const { ctx, scales: { y } } = chart;
+
+
+                ctx.save();
+                ctx.fillStyle = 'black';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '10px Arial';   // <— change size here
+
+                if (topLabel) {
+                    const topText = topLabel ?? 'Very much';
+
+                    const topTextWidth = ctx.measureText(topText).width;
+
+                    // === Top label ===
+                    ctx.save();
+                    if (middle) {
+                        ctx.translate(y.left, y.top * 2); // move pivot to position
+
+                    } else {
+                        ctx.translate(y.left - 20, y.top + topTextWidth / 2); // move pivot to position
+
+                    }
+                    ctx.rotate(-Math.PI / 2); // rotate 90° counter-clockwise
+                    ctx.fillText(topText, 0, 0);   // draw at pivot
+                    ctx.restore();
+                }
+
+
+
+
+                if (bottomLabel) {
+                    const bottomText = bottomLabel ?? 'Not at all';
+
+                    const bottomTextWidth = ctx.measureText(bottomText).width;
+
+
+                    ctx.save();
+                    ctx.translate(y.left - 20, y.bottom - bottomTextWidth / 2); // move pivot to position
+                    ctx.rotate(-Math.PI / 2); // rotate 90° counter-clockwise
+                    ctx.fillText(bottomText, 0, 0);
+                    ctx.restore();
+
+                    ctx.restore();
+                }
+
+            }
+        }
+
+    };
+
+
     createLineChart(
         id: string,
         labelsP: string[],
         dataP: number[],
         showScaleY: boolean,
         showDataLables: boolean,
-        color: string = 'rgba(110, 37, 147, 0.9)'
+        color: string = 'rgba(110, 37, 147, 0.9)',
+        topLabel?: String,
+        bottomLabel?: String
     ) {
         // this is done for graphs which has only one value
         // let labels = labelsP.push('');
@@ -315,7 +347,7 @@ export class DataSummaryComponent implements OnInit {
                 datasets: [
                     {
                         fill: true,
-                        tension: 0.2,
+                        tension: 0.3,
                         data: dataP,
                         borderWidth: 2,
                         borderColor: color,
@@ -338,9 +370,13 @@ export class DataSummaryComponent implements OnInit {
                     y: {
                         type: 'linear',
                         beginAtZero: true,
-                        display: showScaleY,
+                        display: false,
                         ...ticks,
+
+                        position: 'left'
                     },
+
+
                 },
                 plugins: {
                     title: {
@@ -351,6 +387,7 @@ export class DataSummaryComponent implements OnInit {
                         position: 'top',
                     },
                     datalabels: {
+
                         display: showDataLables,
                         align: 'top',
                         formatter: (value) => value,
@@ -362,6 +399,8 @@ export class DataSummaryComponent implements OnInit {
                     },
                 },
             },
+
+            plugins: [this.customLabels(topLabel, bottomLabel)]
         };
 
         if (showDataLables) {
@@ -390,6 +429,8 @@ export class DataSummaryComponent implements OnInit {
         data: number[],
         barColor: string = 'rgba(191,	236,	235	, 1)'
     ) {
+        const colors = ['rgba(11, 143, 154, 1)', 'rgba(81, 186, 189, 1)'];
+
         return {
             type: 'bar',
             data: {
@@ -400,7 +441,10 @@ export class DataSummaryComponent implements OnInit {
                         borderWidth: 1,
                         borderRadius: 5,
                         barThickness: 30,
-                        backgroundColor: [barColor],
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            return colors[index % colors.length]; // alternate safely
+                        },
                     },
                 ],
             },
@@ -411,8 +455,22 @@ export class DataSummaryComponent implements OnInit {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        display: false,
+                        display: true,
                     },
+                    y2: {
+                        position: 'left',
+                        weight: 0,         // 🔑 ensures it doesn’t push out space
+                        grid: {
+                            drawTicks: false,
+                            drawOnChartArea: false
+                        },
+                        ticks: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Steps',
+                            align: 'middle'     // bottom of axis
+                        }
+                    }
                 },
                 plugins: {
                     title: {
@@ -425,7 +483,7 @@ export class DataSummaryComponent implements OnInit {
                     datalabels: {
                         anchor: 'end',
 
-                        formatter: (value) => value,
+                        formatter: (value) => "",
                         color: '#000',
                         font: {
                             weight: 'bold',
@@ -494,6 +552,12 @@ export class DataSummaryComponent implements OnInit {
             this.averages['heart_rate'] = (Number(heartRateTotal) / numberOfValues).toFixed(
                 1
             );
+
+
+            //TODO: delete, for testing only
+            this.averages["hrv"] = (Number(heartRateTotal) / numberOfValues).toFixed(
+                1
+            );
         }
     }
 
@@ -541,16 +605,37 @@ export class DataSummaryComponent implements OnInit {
         return result;
     }
 
+    getMostCommonAnswer(dictionaryWithValues, keyValueMap) {
+        const values = Object.values(dictionaryWithValues) as number[];
+
+        const maxValue = Math.max(...values);
+        const maxKeys = Object.keys(dictionaryWithValues).map(key => {
+
+            if (dictionaryWithValues[key] === maxValue) {
+                return keyValueMap[key]
+            }
+        });
+
+        return maxKeys
+
+    }
+
     loadData(response: HttpResponse<any>) {
         if (!response.body) {
             return false;
         }
+
         const allData = response.body.data;
         const allPhysical = response.body.allPhysical;
         const allSlider = response.body.allSlider;
-        console.log('all data', response.body);
         const months = Object.keys(allData).sort();
         let allMonths = this.generateMonths(months[0]);
+
+
+
+        //TODO: delete, for testing only
+
+
 
         // march , april ... next year
 
@@ -559,11 +644,38 @@ export class DataSummaryComponent implements OnInit {
         // otherwise process the data
         allMonths.forEach((month) => {
             const data = allData[month];
+
+
+
+
+
+
             this.monthLabels.push(this.formatMonth(month));
 
             if (data) {
                 delete data.questionnaire_slider['delusion_1'];
+
+                let socialKeys = this.getMostCommonAnswer(data.histogram.social, this.socialMap)
+                let sleepKeys = this.getMostCommonAnswer(data.histogram.sleep, this.sleepMap)
+                let whereaboutsKeys = this.getMostCommonAnswer(data.histogram.whereabouts, this.whereaboutsMap)
+
+
+                const [yearPart, monthPart] = String(month).split("-");
+                const date = new Date(Number(yearPart), parseInt(monthPart) - 1);
+                let monthString = date.toLocaleString("en-US", { month: "long" });
+
+                this.months.push({ name: monthString, social: socialKeys.join(", "), sleep: sleepKeys, whereabouts: whereaboutsKeys.join(",") })
+
+
             }
+
+
+
+
+
+
+
+            // console.log("social keys", sleepKeys)
 
             // this goes through the slider data (questionnaire_responses/slider in export from James)
             // if there is a data add it to this.data
@@ -573,6 +685,9 @@ export class DataSummaryComponent implements OnInit {
             // months [Apr, Mar, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec, Jan, Feb]
             // this is then fed to createGraphs and creates an object ready for chart.js
 
+
+
+            console.log("all slider", allSlider)
             allSlider.forEach((sliderKey) => {
                 if (data) {
                     const sliderData = data.questionnaire_slider[sliderKey];
@@ -650,26 +765,22 @@ export class DataSummaryComponent implements OnInit {
 
                 this.addMonthPerKey(questionnaireKey, month);
 
-                this.socialKeys.forEach((key) => {
-                    this.pushToData('social_' + key, 0);
-                    this.addMonthPerKey('social_' + key, month);
-                });
 
-                this.whereaboutsMapKeys.forEach((key) => {
-                    this.pushToData('wherearebout_' + key, 0);
-                    this.addMonthPerKey('wherearebout_' + key, month);
-                });
 
-                this.sleepMapKeys.forEach((key, index) => {
-                    let id = index + 1;
-                    this.pushToData('sleep_' + id, 0);
-                    this.addMonthPerKey('sleep_' + id, month);
-                });
+
             }
 
             this.addMonthPerKey('social', month);
             this.addMonthPerKey('wherearebout', month);
             this.addMonthPerKey('sleep', month);
+
+
+
+            //TODO: delete for testing only
+            this.addMonthPerKey("hrv", month);
+            this.addMonthPerKey("activity", month);
+
+
         });
 
         // calculates total averages for steps, heart rate, questionniare. Any other similar calculations would go here
@@ -679,26 +790,7 @@ export class DataSummaryComponent implements OnInit {
         // if all values are 0 we don't want to display an empty graph. This will remove those keys from the data
         this.cleanupEmptyData();
 
-        // if there is less than 4 categories, we will display histogram as just one graph instead of it being split
-        // this would be used to split the histogram into multiple graphs (currently histogram is one graph, but if it is not readbale this can be used)
-        this.createHistogramsIfNecessary(
-            'social',
-            this.socialKeys,
-            this.socialLabels
-        );
-        this.createHistogramsIfNecessary(
-            'sleep',
-            this.sleepMapKeys,
-            this.sleepLabels
-        );
-        this.createHistogramsIfNecessary(
-            'wherearebout',
-            this.whereaboutsMapKeys,
-            this.whereaboutsLabels
-        );
 
-        console.log('this.data', this.data);
-        console.log('this month', this.monthLabelsPerGraph);
     }
 
     processHistogramData(
@@ -717,37 +809,7 @@ export class DataSummaryComponent implements OnInit {
         });
     }
 
-    createHistogramsIfNecessary(
-        dataKey: string,
-        allKeys: string[],
-        labels: string[]
-    ) {
-        let numberOfGraphsWithData = 0;
 
-        let numberOfMonths = this.monthLabelsPerGraph[dataKey].length;
-        allKeys.forEach((key, index) => {
-            let exists = this.data[`${dataKey}_` + (index + 1)];
-            if (exists) {
-                numberOfGraphsWithData++;
-            }
-        });
-
-        this.data[dataKey] = [];
-
-        // if you set this to 4 then if a histogram has more than 4 categories I think it will split the graph)
-        if (numberOfGraphsWithData > 0) {
-            allKeys.forEach((key, index) => {
-                let exists = this.data[`${dataKey}_` + (index + 1)];
-
-                if (exists) {
-                    this.histogramLabels[dataKey].push(labels[index]);
-                    this.data[`${dataKey}`].push([...exists]);
-                }
-
-                delete this.data[`${dataKey}_` + (index + 1)];
-            });
-        }
-    }
 
     // this will just take the stuff in this.data and this.monthLabelsPerGRaph and feed it into functions to create objects compatible with chart.js
     createGraphs() {
@@ -756,34 +818,45 @@ export class DataSummaryComponent implements OnInit {
             weekLabels.push('Week ' + i);
         }
 
+
+        //TODO: REMOVE ONLY FOR TESTING PURPOSES NOW
+        this.data["hrv"] = [...this.data["heart_rate"]]
+        this.data["activity"] = [4, 5, 6, 4, 6, 7, 8, 5, 6, 5, 6, 5, 4]
+
+
         for (const [key, value] of Object.entries(this.data)) {
             let values = value as number[];
             let chartType = this.chart_type[key];
 
-            if (chartType.type == 'line') {
+            if (!chartType) {
+                continue
+            }
+
+            if (chartType && chartType.type == 'line') {
                 let labeles =
                     chartType.timeframe == 'week'
                         ? weekLabels
                         : this.monthLabelsPerGraph[key];
+
+
                 this.charts[key] = this.createLineChart(
                     key,
                     this.monthLabelsPerGraph[key],
                     values,
                     chartType.showScaleY,
                     chartType.showDataTables,
-                    chartType.color
+                    chartType.color,
+                    chartType.topLabel,
+                    chartType.bottomLabel
+
                 );
-            } else if (chartType.type == 'histogram') {
+            } else if (chartType && chartType.type == 'histogram') {
                 let labels = this.monthLabelsPerGraph[key + '_1'];
                 let binLabels: any = null;
 
-                // if (key == 'social') {
-                //     binLabels = this.socialLabels;
-                // } else if (key == 'sleep') {
-                //     binLabels = this.sleepLabels;
-                // } else {
-                //     binLabels = this.whereaboutsLabels;
-                // }
+
+
+                console.log("histogram labels", this.histogramLabels)
                 binLabels = this.histogramLabels[key];
 
                 this.charts[key] = this.createMonthHistogram(
@@ -800,6 +873,7 @@ export class DataSummaryComponent implements OnInit {
                 );
             }
         }
+
     }
     loadSubject(id) {
         this.subjectService.find(id).subscribe((subject: Subject) => {
