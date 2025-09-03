@@ -24,8 +24,8 @@ class QueryParticipant : AbstractEntity(), Serializable {
     @JoinColumn(name = "subject_id")
     var subject: Subject? = null
 
-    @Column(name = "created_date")
-    var createdDate: ZonedDateTime? = null
+    @Column(name = "assigned_date")
+    var assignedDate: ZonedDateTime? = null
 
     @Column(name = "updated_date")
     var updatedDate: ZonedDateTime? = null
@@ -39,7 +39,7 @@ class QueryParticipant : AbstractEntity(), Serializable {
                 + "id='" + id + '\''
                 + "queryGroupId='" + queryGroup + '\''
                 + ", createdBy='" + createdBy + '\''
-                + ", createdDate='" + createdDate + '\''
+                + ", assignedDate='" + assignedDate + '\''
                 + ", updatedDate='" + updatedDate + '\''
                 + "}")
     }

@@ -13,8 +13,6 @@ import { QueriesService } from './queries.service';
 import { ContentComponent } from './content/content.component';
 import { AlertService } from '../../shared/util/alert.service';
 
-
-
 import {
     Question,
     QueryDTO,
@@ -86,17 +84,15 @@ export class AddQueryComponent {
     };
 
     public config: QueryBuilderConfig = {
-        entities: {
-        },
-        fields: {
-        },
+        entities: {},
+        fields: {},
     };
 
     public currentConfig: QueryBuilderConfig;
     public allowRuleset: boolean = true;
     public allowCollapse: boolean;
-    public questionnare: Question[]
-    public delusions: Question[]
+    public questionnare: Question[];
+    public delusions: Question[];
     public persistValueOnFieldChange: boolean = true;
 
     selectedGroupIndex: number | null = null;
@@ -107,7 +103,6 @@ export class AddQueryComponent {
 
     queryId = null;
 
-    public readonlyMode = false;
     public groupNameError = false;
     public groupDescError = false;
     public queryBuilderError = false;
@@ -121,10 +116,13 @@ export class AddQueryComponent {
     public isDuplicateMode = false;
 
     public isEditingMode = false;
+
+    public readonlyMode = false;
+
     private deletedContentGroupIds: number[] = [];
 
     constructor(
-         private alertService: AlertService,
+        private alertService: AlertService,
         private queryService: QueriesService,
         private formBuilder: FormBuilder,
         private http: HttpClient,
@@ -135,26 +133,36 @@ export class AddQueryComponent {
         this.queryCtrl = this.formBuilder.control(this.query);
         this.currentConfig = this.config;
 
-        let physicalTypesPromise = this.queryService.gellAllPhysicalTypes().toPromise()
-        let questionnaireItems = this.queryService.getQuestionnaireItems().toPromise()
-        let entitiesPromise =  this.queryService.getEntities().toPromise()
+        let physicalTypesPromise = this.queryService
+            .gellAllPhysicalTypes()
+            .toPromise();
+        let questionnaireItems = this.queryService
+            .getQuestionnaireItems()
+            .toPromise();
+        let entitiesPromise = this.queryService.getEntities().toPromise();
 
-        Promise.all([physicalTypesPromise, questionnaireItems, entitiesPromise]).then(allTypes => {
-            let physicalTypes = allTypes[0] as any
-            let questionnareTypes = allTypes[1]
-            let entities = allTypes[2]
+        Promise.all([
+            physicalTypesPromise,
+            questionnaireItems,
+            entitiesPromise,
+        ]).then((allTypes) => {
+            let physicalTypes = allTypes[0] as any;
+            let questionnareTypes = allTypes[1];
+            let entities = allTypes[2];
 
-            this.questionnare = questionnareTypes["questionnaire"] as Question[]
-            this.delusions = questionnareTypes["delusions"] as Question[]
+            this.questionnare = questionnareTypes[
+                'questionnaire'
+            ] as Question[];
+            this.delusions = questionnareTypes['delusions'] as Question[];
 
             this.addQuestionnaireItemsToQueryBuilder();
             this.addDelusionsToQueryBuilder();
-            this.config.entities = { ...entities }
-            this.config.fields = { ...this.config.fields, ...physicalTypes }
+            this.config.entities = { ...entities };
+            this.config.fields = { ...this.config.fields, ...physicalTypes };
 
-            this.isLoaded = true
-        this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
-        })
+            this.isLoaded = true;
+            this.isEditingMode = this.queryGroupId && !this.isDuplicateMode;
+        });
     }
 
     private async addQuestionnaireItemsToQueryBuilder() {
@@ -169,8 +177,9 @@ export class AddQueryComponent {
             let fieldName = question.field_name;
 
             const field = {
-                name: `${question.field_label} ${question.field_sublabel ? question.field_sublabel : ''
-                    }`,
+                name: `${question.field_label} ${
+                    question.field_sublabel ? question.field_sublabel : ''
+                }`,
                 type: 'category',
                 entity: 'QUESTIONNAIRE_SLIDER',
                 operators: ['=', '!=', '<', '>', '<=', '>='],
@@ -206,16 +215,15 @@ export class AddQueryComponent {
                 this.config.fields[question.group_name] = group;
             }
             this.config.fields[fieldName] = field;
-
-
         }
     }
 
     private addDelusionsToQueryBuilder() {
         for (const delusion of this.delusions) {
             const field = {
-                name: `${delusion.field_label} ${delusion.field_sublabel ? delusion.field_sublabel : ''
-                    }`,
+                name: `${delusion.field_label} ${
+                    delusion.field_sublabel ? delusion.field_sublabel : ''
+                }`,
                 type: 'category',
                 entity: 'QUESTIONNAIRE_DELUSIONS',
                 operators: ['=', '!=', '<', '>', '<=', '>='],
@@ -236,6 +244,9 @@ export class AddQueryComponent {
         this.route.params.subscribe((params) => {
             this.queryId = params['query-id'];
             this.queryGroupId = this.queryId;
+
+            this.alertService.clear('query-group');
+            this.alertService.clear('content');
 
             if (this.queryId) {
                 this.queryService
@@ -259,7 +270,7 @@ export class AddQueryComponent {
 
     refreshContentGroups() {
         this.queryService
-            .getAllQueryContentsAndGroups(this.queryId)
+            .getAllQueryContentsAndGroups(this.queryGroupId)
             .subscribe((response: any) => {
                 this.contentGroups = response.map((group: any) => ({
                     name: group.contentGroupName,
@@ -317,7 +328,6 @@ export class AddQueryComponent {
     }
 
     convertTimeFrame(value: string) {
-
         switch (value) {
             case '6_months':
                 return 'PAST_6_MONTH';
@@ -373,16 +383,6 @@ export class AddQueryComponent {
         }
         return true;
     }
-
-
-
-    async saveContentGroups() {
-        await this.submitContentChanges().toPromise();
-        this.deletedContentGroupIds = [];
-
-          this.alertService.success("Content successfully saved!", null, null, "content");
-    }
-
 
     async saveQueryGroupToDB() {
         this.groupNameError = false;
@@ -443,11 +443,19 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
+            await this.submitContentChanges().toPromise();
 
+            this.refreshContentGroups();
+            this.isEditingMode = true; // after save, should all be editing mode
 
-            this.alertService.success("Query Group successfully saved!", null, null, "query-group");
+            this.isDuplicateMode = false;
 
-            this.isEditingMode = !!this.queryGroupId && !this.isDuplicateMode;
+            this.alertService.success(
+                'Query Group successfully saved!',
+                null,
+                null,
+                'query-group'
+            );
         } catch (err: any) {
             if (
                 err?.status === 409 ||
@@ -512,16 +520,37 @@ export class AddQueryComponent {
         this.isEditingContent = true;
     }
 
-    deleteContentGroup(id: number) {
+    async deleteContentGroup(group: ContentGroup) {
         const confirmDelete = confirm(
             "Are you sure you want to delete this? This will also delete the content from the participants' phones."
         );
         if (!confirmDelete) return;
 
-        this.deletedContentGroupIds.push(id);
-        this.contentGroups = this.contentGroups.filter(
-            (group) => group.id !== id
-        );
+        if (!group.id) {
+            this.contentGroups = this.contentGroups.filter((g) => g !== group);
+            return;
+        }
+
+        try {
+            await this.queryService
+                .deleteContentGroupByID(group.id)
+                .toPromise();
+            this.contentGroups = this.contentGroups.filter(
+                (g) => g.id !== group.id
+            );
+            this.alertService.success(
+                'Content group deleted!',
+                null,
+                null,
+                'content-group'
+            );
+        } catch (e) {
+            this.alertService.error(
+                'Failed to delete content group',
+                null,
+                'content-group'
+            );
+        }
     }
 
     selectGroup(index: number) {
@@ -539,7 +568,7 @@ export class AddQueryComponent {
         this.isEditingContent = true;
     }
 
-    saveCurrentEditingGroup() {
+    async saveCurrentEditingGroupToDB() {
         let hasError = false;
         this.contentGroupNameError = false;
         this.contentGroupItemsError = false;
@@ -588,16 +617,39 @@ export class AddQueryComponent {
             }
         }
 
-        if (hasError) {
-            return;
-        }
+        if (hasError) return;
 
-        if (this.currentEditingIndex !== null && this.currentEditingCopy) {
-            this.contentGroups[this.currentEditingIndex] =
-                this.currentEditingCopy;
+        const payload = {
+            queryGroupId: this.queryGroupId,
+            contentGroupName: this.currentEditingCopy.name,
+            queryContentDTOList: this.currentEditingCopy.items,
+            id: this.currentEditingCopy.id ? this.currentEditingCopy.id : null,
+        };
+
+        try {
+            await this.queryService.saveContentGroup(payload).toPromise();
+
+            if (this.currentEditingIndex !== null && this.currentEditingCopy) {
+                this.contentGroups[this.currentEditingIndex] =
+                    this.currentEditingCopy;
+            }
+
+            this.alertService.success(
+                'Content group saved!',
+                null,
+                null,
+                'content group'
+            );
+
             this.isEditingContent = false;
             this.currentEditingIndex = null;
             this.currentEditingCopy = null;
+        } catch (e) {
+            this.alertService.error(
+                'Failed to save Content group.',
+                null,
+                'content group'
+            );
         }
     }
 
@@ -624,17 +676,38 @@ export class AddQueryComponent {
     }
 
     onToggleStatus(contentGroup: any) {
-        const newStatus =
-            contentGroup.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-        if (
-            newStatus === 'INACTIVE' &&
-            !confirm(
-                "Are you sure? This will prevent it from displaying on participants' phones."
-            )
-        ) {
-            return;
+        if (contentGroup.status === 'ACTIVE') {
+            if (
+                confirm(
+                    "Are you sure? This will prevent it from displaying on participants' phones"
+                )
+            ) {
+                this.updateStatus(contentGroup, 'INACTIVE');
+            }
+        } else {
+            this.updateStatus(contentGroup, 'ACTIVE');
         }
-
-        contentGroup.status = newStatus;
+    }
+    updateStatus(contentGroup: any, status: string) {
+        this.queryService
+            .updateContentGroupStatus(contentGroup, status)
+            .subscribe({
+                next: () => {
+                    contentGroup.status = status;
+                    this.alertService.success(
+                        'Status updated successfully',
+                        null,
+                        null,
+                        'content-group'
+                    );
+                },
+                error: () => {
+                    this.alertService.error(
+                        'Failed to update status',
+                        null,
+                        'content-group'
+                    );
+                },
+            });
     }
 }

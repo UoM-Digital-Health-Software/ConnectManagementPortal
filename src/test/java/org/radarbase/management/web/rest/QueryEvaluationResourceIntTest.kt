@@ -154,7 +154,7 @@ internal class QueryEvaluationResourceIntTest(
         queryParticipant.queryGroup = queryGroup;
         queryParticipant.createdBy = user;
         queryParticipant.subject = subject;
-        queryParticipant.createdDate = ZonedDateTime.now();
+        queryParticipant.assignedDate = ZonedDateTime.now();
 
         return queryParticipantRepository.saveAndFlush(queryParticipant);
     }

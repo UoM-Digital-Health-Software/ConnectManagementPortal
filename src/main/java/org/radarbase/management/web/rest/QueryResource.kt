@@ -215,15 +215,9 @@ class QueryResource(
     }
 
 
-
-
-
-    @DeleteMapping("queryevaluation/querygroup/{querygroupid}/subject/{subjectid}")
-    fun deleteQueryEvaluationContent(
-        @PathVariable querygroupid: Long,
-        @PathVariable subjectid: Long
-    ): ResponseEntity<Void> {
-        queryEValuationService.removeQueryEvaluationByQueryGroupAndSubject(querygroupid, subjectid)
+    @DeleteMapping("queryparticipantcontent/querygroup/{queryGroupId}/subject/{subjectId}")
+    fun deleteQueryParticipantContent(@PathVariable queryGroupId: Long, @PathVariable subjectId: Long): ResponseEntity<Void>{
+        queryEValuationService.removeQueryParticipantContent(queryGroupId,subjectId)
         return ResponseEntity.ok().build()
     }
 
@@ -325,6 +319,18 @@ class QueryResource(
 
         return result;
     }
+
+    @PutMapping("querycontentgroup/{queryContentGroupId}/status")
+    fun updateStatus(
+        @PathVariable queryContentGroupId: Long,
+        @RequestParam status: ContentGroupStatus
+    ): ResponseEntity<Void> {
+
+
+        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
+        return ResponseEntity.ok().build()
+    }
+
 
     companion object {
         private val log = LoggerFactory.getLogger(QueryResource::class.java)

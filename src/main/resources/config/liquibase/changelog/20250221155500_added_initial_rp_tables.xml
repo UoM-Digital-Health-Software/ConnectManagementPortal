@@ -164,7 +164,7 @@
 			<column name="subject_id" type="bigint">
 				<constraints nullable="false" />
 			</column>
-			<column name="created_date" type="timestamp" defaultValueDate="${now}">
+			<column name="assigned_date" type="timestamp" defaultValueDate="${now}">
 				<constraints nullable="false"/>
 			</column>
 			<column name="updated_date" type="timestamp" defaultValueDate="${now}"/>

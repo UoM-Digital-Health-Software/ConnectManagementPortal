@@ -19,4 +19,6 @@ interface QueryParticipantContentRepository : JpaRepository<QueryParticipantCont
 
     fun deleteAllByQueryContentGroupId(queryContentGroupId: Long)
 
+    fun deleteByQueryGroupIdAndSubjectId(queryGroupId: Long, subjectId: Long)
+
 }

@@ -6,14 +6,12 @@ import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
 import org.radarbase.management.domain.QueryLogic
 import org.radarbase.management.domain.User
-import org.radarbase.management.domain.enumeration.PhysicalMetric
 import org.radarbase.management.domain.enumeration.QueryBuilderEntities
 import org.radarbase.management.domain.enumeration.QueryLogicType
 import org.radarbase.management.domain.enumeration.physicalMetricExists
 import org.radarbase.management.repository.QueryGroupRepository
 import org.radarbase.management.repository.QueryLogicRepository
 import org.radarbase.management.repository.QueryRepository
-import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.repository.*
 import org.radarbase.management.service.dto.*
 import org.slf4j.LoggerFactory
@@ -175,7 +173,7 @@ public class QueryBuilderService(
         queryParticipant.queryGroup= queryGroup
         queryParticipant.createdBy= user
         queryParticipant.subject = subjectRepository.findById(queryParticipantDTO.subjectId!!).get();
-        queryParticipant.createdDate = ZonedDateTime.now();
+        queryParticipant.assignedDate = ZonedDateTime.now();
         queryParticipant = queryParticipantRepository.save(queryParticipant)
         queryGroup.canEdit = false;
         queryGroupRepository.flush()
@@ -183,18 +181,23 @@ public class QueryBuilderService(
         return queryParticipant.id;
     }
 
-    fun getAssignedQueryGroups(subjectId: Long): MutableList<QueryGroup> {
+    fun getAssignedQueryGroups(subjectId: Long): MutableList<QueryParticipantDTO> {
         val queryParticipantList =  queryParticipantRepository.findBySubjectId(subjectId)
 
-        val queryGroups = mutableListOf<QueryGroup>()
+        val assignedQueryGroups = mutableListOf<QueryParticipantDTO>()
 
         for(queryParticipant in queryParticipantList ){
-            val group =queryParticipant.queryGroup
-            if (group != null) {
-                queryGroups.add(group)
+            val qp = QueryParticipantDTO();
+            qp.queryGroupId = queryParticipant.queryGroup?.id
+            qp.queryGroupName = queryParticipant.queryGroup?.name.toString()
+            qp.createdBy = queryParticipant.queryGroup?.createdBy
+            qp.assignedDate = queryParticipant.assignedDate
+
+            if (qp != null) {
+                assignedQueryGroups.add(qp)
             }
         }
-        return queryGroups;
+        return assignedQueryGroups;
     }
 
     fun deleteQueryParticipantByQueryGroup(subjectId: Long, queryGroupId: Long) {
@@ -278,6 +281,7 @@ public class QueryBuilderService(
     fun archiveQueryGroup(id: Long) {
         val group = queryGroupRepository.findById(id).orElseThrow()
         group.isArchived = true
+        group.updatedDate = ZonedDateTime.now()
         queryGroupRepository.save(group)
     }
 

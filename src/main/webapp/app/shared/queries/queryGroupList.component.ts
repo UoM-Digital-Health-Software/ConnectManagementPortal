@@ -20,9 +20,13 @@ export class QueryGroupListComponent implements OnInit, OnDestroy {
         this.queriesService
             .getQueryGroupList()
             .subscribe((result: QueryGroup[]) => {
-                this.queryGroupList = result.filter(
-                    (group) => !group.isArchived
-                );
+                this.queryGroupList = result
+                    .filter((group) => !group.isArchived)
+                    .sort(
+                        (a, b) =>
+                            new Date(a.createdDate).getTime() -
+                            new Date(b.createdDate).getTime()
+                    );
             });
     }
 

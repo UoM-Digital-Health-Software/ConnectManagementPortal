@@ -33,6 +33,7 @@ public class QueryEValuationService(
     private val queryEvaluationRepository: QueryEvaluationRepository,
     private val subjectRepository: SubjectRepository,
     private val queryParticipantRepository: QueryParticipantRepository,
+    private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val awsService: AWSService,
     @Value("\${test.fixedYear:}") private val fixedYearStr: String,
     @Value("\${test.fixedMonth:}") private val fixedMonthStr: String
@@ -285,8 +286,8 @@ public class QueryEValuationService(
 
 
     @Transactional
-    fun  removeQueryEvaluationByQueryGroupAndSubject(queryGroupId: Long, subjectId: Long) {
-        queryEvaluationRepository.deleteByQueryGroupIdAndSubjectId(queryGroupId, subjectId)
+    fun  removeQueryParticipantContent(queryGroupId: Long, subjectId: Long) {
+        queryParticipantContentRepository.deleteByQueryGroupIdAndSubjectId(queryGroupId, subjectId);
     }
 
     companion object {

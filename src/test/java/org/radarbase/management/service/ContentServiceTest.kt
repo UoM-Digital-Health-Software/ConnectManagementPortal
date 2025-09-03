@@ -264,7 +264,7 @@ class ContentServiceTest(
         val queryParticipant = QueryParticipant()
         queryParticipant.queryGroup = queryGroup
         queryParticipant.subject = subject
-        queryParticipant.createdDate = ZonedDateTime.now()
+        queryParticipant.assignedDate = ZonedDateTime.now()
         queryParticipant.createdBy = user
 
         queryParticipantRepository.saveAndFlush(queryParticipant)
