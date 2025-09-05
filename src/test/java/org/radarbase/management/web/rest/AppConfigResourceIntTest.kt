@@ -8,10 +8,20 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.radarbase.auth.authentication.OAuthHelper
+import org.radarbase.auth.authorization.RoleAuthority
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.management.ManagementPortalTestApp
 import org.radarbase.management.domain.AppConfig
+import org.radarbase.management.domain.Authority
+import org.radarbase.management.domain.Role
+import org.radarbase.management.domain.User
 import org.radarbase.management.repository.SubjectRepository
+import org.radarbase.management.security.JwtAuthenticationFilter.Companion.radarToken
+import org.radarbase.management.security.RadarAuthentication
 import org.radarbase.management.service.*
 
 import org.radarbase.management.service.mapper.SubjectMapper
@@ -21,6 +31,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.mock.web.MockFilterConfig
+import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -47,24 +59,32 @@ internal class AppConfigResourceIntTest(
     @Autowired private val jacksonMessageConverter: MappingJackson2HttpMessageConverter,
     @Autowired private val pageableArgumentResolver: PageableHandlerMethodArgumentResolver,
     @Autowired private val exceptionTranslator: ExceptionTranslator,
-    @Autowired var objectMapper: ObjectMapper
-) {
+    @Autowired var objectMapper: ObjectMapper,
+    @Autowired private val radarToken: RadarToken,
+    @Autowired private val appConfigService: AppConfigService,
+    @Autowired private val userService: UserService
+
+
+    ) {
     private lateinit var restAppConfigResourceMockMvc: MockMvc
+    @Autowired private lateinit var mockUserService: UserService
+    @Autowired private lateinit var mockSubjectRepository: SubjectRepository
 
     @BeforeEach
     @Throws(ServletException::class)
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
+        mockUserService = mock()
+        mockSubjectRepository = mock()
+
+        var appConfigResource = AppConfigResource(appConfigService, mockUserService, mockSubjectRepository)
+
         val filter = OAuthHelper.createAuthenticationFilter()
         filter.init(MockFilterConfig())
+
         restAppConfigResourceMockMvc =
-            MockMvcBuilders.standaloneSetup(appConfigResource).setCustomArgumentResolvers(pageableArgumentResolver)
-                .setControllerAdvice(exceptionTranslator).setMessageConverters(jacksonMessageConverter)
-                .addFilter<StandaloneMockMvcBuilder>(filter) // add the oauth token by default to all requests for this mockMvc
-                .defaultRequest<StandaloneMockMvcBuilder>(
-                    MockMvcRequestBuilders.get("/").with(OAuthHelper.bearerToken())
-                ).build()
+                MockMvcBuilders.standaloneSetup(appConfigResource).build()
     }
 
 
@@ -72,19 +92,59 @@ internal class AppConfigResourceIntTest(
     @Transactional
     @Test
     fun subject() {
+        val token = mock<RadarToken>()
+        val roles: MutableSet<Role> = HashSet()
+        val role = Role()
+        val authority = Authority()
+        authority.name = RoleAuthority.SYS_ADMIN.authority
+        role.authority = authority
+        roles.add(role)
+
+        val user = User()
+        user.setLogin("93d21b93-1c1e-4aaf-983e-5b0cb4ae31f3")
+        user.firstName = "john"
+        user.lastName = "doe"
+        user.email = "john.doe@jhipster.com"
+        user.langKey = "en"
+        user.roles = roles
+        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+
+
+
         val subjectDto = subjectService.createSubject(SubjectServiceTest.createEntityDTO())
 
-        val result = restAppConfigResourceMockMvc.perform(MockMvcRequestBuilders.get("/api/config/null/null"))
+        var result = restAppConfigResourceMockMvc.perform(MockMvcRequestBuilders.get("/api/app-config/healthkitUpload.enabled")            .with { request: MockHttpServletRequest ->
+            request.radarToken = token
+            request.remoteUser = "test"
+            request
+        })
+
             .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
 
         val json = result.response.contentAsString
-        val configMap: Map<String, AppConfig> =
-            objectMapper.readValue(json, object : TypeReference<Map<String, AppConfig>>() {})
+        val configMap: Boolean =
+            objectMapper.readValue(json, object : TypeReference<Boolean>() {})
 
-        assertThat(configMap).isNotEmpty
-        assertThat(configMap).containsKey("healthkitUpload.enabled")
-        assertThat(configMap["healthkitUpload.enabled"]?.value).isEqualTo("true")
-        assertThat(configMap["healthkitUpload.enabled"]?.type).isEqualTo("bool")
+        assertThat(configMap).isEqualTo(true)
+
+        user.setLogin("ae3f7566-a2d6-44e6-9b62-a00cd8de439f")
+        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+
+
+         result = restAppConfigResourceMockMvc.perform(MockMvcRequestBuilders.get("/api/app-config/healthkitUpload.enabled")            .with { request: MockHttpServletRequest ->
+            request.radarToken = token
+            request.remoteUser = "test"
+            request
+        })
+
+            .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+
+        val json1 = result.response.contentAsString
+        val configMap1: Boolean =
+            objectMapper.readValue(json1, object : TypeReference<Boolean>() {})
+
+        assertThat(configMap1).isEqualTo(false)
+
 
     }
 }
