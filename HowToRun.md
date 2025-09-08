@@ -25,6 +25,8 @@ Tested on Java 17
 `
 
 
+Firstly follow QuickStart section of the README, then come back here for the rest: 
+
 
 # **BACKEND** 
 
