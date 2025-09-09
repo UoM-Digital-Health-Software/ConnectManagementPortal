@@ -19,7 +19,11 @@ Tested on Java 17
 
 `GRANT USAGE,CREATE on SCHEMA public TO radarbase;`
 
-6] Assign the DB to radarbase user
+6] Assign owner to the database: 
+
+`ALTER DATABASE managementportal OWNER TO radarbase;`
+
+7] Assign the DB to radarbase user
 
 `GRANT CONNECT ON DATABASE managementportal TO radarbase;
 `
