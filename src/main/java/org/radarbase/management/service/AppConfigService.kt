@@ -2,7 +2,6 @@ package org.radarbase.management.service
 
 import org.radarbase.management.domain.AppConfig
 import org.radarbase.management.repository.AppConfigRepository
-import org.radarbase.management.web.rest.AppConfigResource
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -12,7 +11,7 @@ import java.util.*
 @Service
 class AppConfigService(private val repository: AppConfigRepository) {
 
-    fun getMergedConfig(site: String?, userId: String?): Map<String?, AppConfig?> {
+    fun getMergedConfig(site: String?, userId: Long?): Map<String?, AppConfig?> {
         val configMap = mutableMapOf<String?, AppConfig?>()
 
 
@@ -35,7 +34,7 @@ class AppConfigService(private val repository: AppConfigRepository) {
     }
 
 
-    fun isFeatureEnabled(site: String?, userId: String, feature: String,  context: Map<String, Any> = emptyMap()): Boolean {
+    fun isFeatureEnabled(site: String?, userId: Long?, userLogin:String, feature: String,  context: Map<String, Any> = emptyMap()): Boolean {
         val config  = getMergedConfig(site, userId)
 
         val enabled = config[feature]?.value.toBoolean() ?: false
@@ -44,7 +43,7 @@ class AppConfigService(private val repository: AppConfigRepository) {
         val rolloutPct = config[feature]?.rolloutPct?.toInt() ?: 100
 
         val salt = getWeekSalt()
-        val bucket = getUserBucket(userId, salt)
+        val bucket = getUserBucket(userLogin, salt)
         if (bucket >= rolloutPct) return false
 
         val conditionalExpr = config[feature]?.conditional
@@ -53,8 +52,8 @@ class AppConfigService(private val repository: AppConfigRepository) {
         return true
     }
 
-    private fun getUserBucket(userId: String, salt: String): Int {
-        val input = "${userId}_${salt}"
+    private fun getUserBucket(userLogin: String, salt: String): Int {
+        val input = "${userLogin}_${salt}"
 
         var hash = 0
         for (c in input) {
@@ -74,7 +73,7 @@ class AppConfigService(private val repository: AppConfigRepository) {
         if (expr.isNullOrBlank()) return true
         var replaced = expr
         context.forEach { (k, v) ->
-            replaced = replaced!!.replace(k, v.toString())
+            replaced = replaced!!.replace("\b$k\b".toRegex(), v.toString())
         }
         return try {
             val engine = javax.script.ScriptEngineManager().getEngineByName("nashorn")

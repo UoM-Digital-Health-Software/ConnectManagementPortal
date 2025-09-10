@@ -6,8 +6,8 @@ import org.springframework.data.repository.RepositoryDefinition
 
 @Suppress("unused")
 @RepositoryDefinition(domainClass = AppConfig::class, idClass = Long::class)
-interface AppConfigRepository  : JpaRepository<AppConfig, Long?>  {
+interface AppConfigRepository  : JpaRepository<AppConfig, Long>  {
     fun findBySiteIsNullAndUserIdIsNull(): List<AppConfig>
     fun findBySiteAndUserIdIsNull(site: String): List<AppConfig>
-    fun findByUserId(userId: String): List<AppConfig>
+    fun findByUserId(userId: Long): List<AppConfig>
 }

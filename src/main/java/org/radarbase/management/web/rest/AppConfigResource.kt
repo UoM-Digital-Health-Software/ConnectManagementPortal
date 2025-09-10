@@ -21,7 +21,7 @@ class AppConfigResource(@Autowired  private val service: AppConfigService,
 
         if(feature == null) throw IllegalArgumentException("Feature must be provided ")
 
-        return service.isFeatureEnabled(subject?.activeProject?.projectName, user.login ?: "unknown" ,feature)
+        return service.isFeatureEnabled(subject?.activeProject?.projectName, user.id, user.login ?: "unknown" ,feature)
     }
 
 

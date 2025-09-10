@@ -40,6 +40,8 @@
                 <constraints nullable="true"/>
             </column>
         </createTable>
+
+
     </changeSet>
 
     <changeSet id="2-insert-default-healthkit-upload" author="you">
@@ -53,5 +55,17 @@
             <column name="rollout_version" value="v1"/>
             <column name="conditional" valueComputed="NULL"/>
         </insert>
+    </changeSet>
+
+
+    <changeSet id="3-insert-foreign-key" author="bastiaan@thehyve.nl">
+
+        <modifyDataType tableName="app_config" columnName="user_id" newDataType="BIGINT"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="app_config"
+                                 constraintName="fk_app_config_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="radar_user"/>
     </changeSet>
 </databaseChangeLog>
