@@ -70,6 +70,7 @@ class OAuth2ServerConfiguration(
                 .and()
                 .authorizeRequests()
                 .antMatchers("/oauth/token").permitAll()
+                .antMatchers("/api/config/**").permitAll()
                 .and()
                 .addFilterAfter(
                     jwtAuthenticationFilter,
@@ -136,6 +137,7 @@ class OAuth2ServerConfiguration(
                 .skipUrlPattern(HttpMethod.GET, "/oauth2/authorize")
                 .skipUrlPattern(HttpMethod.GET, "/images/**")
                 .skipUrlPattern(HttpMethod.GET, "/css/**")
+                .skipUrlPattern(HttpMethod.GET,"/api/config/**")
                 .skipUrlPattern(HttpMethod.GET, "/js/**")
                 .skipUrlPattern(HttpMethod.GET, "/radar-baseRR.png")
         }
@@ -179,6 +181,7 @@ class OAuth2ServerConfiguration(
                 .hasAnyAuthority(RoleAuthority.SYS_ADMIN_AUTHORITY)
                 .antMatchers("/api/profile-info").permitAll()
                 .antMatchers("/api/sitesettings").permitAll()
+                .antMatchers("/api/config/**").permitAll()
                 .antMatchers("/api/public/projects").permitAll()
                 .antMatchers("/api/logout-url").permitAll()
                 .antMatchers("/api/**")
