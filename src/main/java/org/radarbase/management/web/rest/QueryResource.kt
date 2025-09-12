@@ -222,11 +222,11 @@ class QueryResource(
     }
 
     @PostMapping("querycontentgroup")
-    fun saveOrUpdate(@RequestBody request: QueryContentGroupDTO): ResponseEntity<Void> {
-        queryContentService.saveAllOrUpdate(
+    fun saveOrUpdate(@RequestBody request: QueryContentGroupDTO): ResponseEntity<*> {
+        val id =  queryContentService.saveAllOrUpdate(
             request
         )
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok(id)
     }
 
     @DeleteMapping("querycontentgroup/{queryContentGroupId}")
@@ -320,16 +320,16 @@ class QueryResource(
         return result;
     }
 
-    @PutMapping("querycontentgroup/{queryContentGroupId}/status")
-    fun updateStatus(
-        @PathVariable queryContentGroupId: Long,
-        @RequestParam status: ContentGroupStatus
-    ): ResponseEntity<Void> {
-
-
-        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
-        return ResponseEntity.ok().build()
-    }
+//    @PutMapping("querycontentgroup/{queryContentGroupId}/status")
+//    fun updateStatus(
+//        @PathVariable queryContentGroupId: Long,
+//        @RequestParam status: ContentGroupStatus
+//    ): ResponseEntity<Void> {
+//
+//
+//        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
+//        return ResponseEntity.ok().build()
+//    }
 
 
     companion object {

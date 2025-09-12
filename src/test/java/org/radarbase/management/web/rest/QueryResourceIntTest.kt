@@ -450,7 +450,7 @@ internal class QueryResourceIntTest(
             .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.[*].name").value<Iterable<String?>>(
+                MockMvcResultMatchers.jsonPath("$.[*].queryGroupName").value<Iterable<String?>>(
                     Matchers.hasItem(
                         "Name"
                     )
@@ -894,7 +894,7 @@ internal class QueryResourceIntTest(
         val queryParticipant = createAndAddQueryParticipantToDB();
 
         mockMvc.perform(get(baseURL + "modules/1"))
-            .andExpect(status().isOk).andExpect(jsonPath("$.name").value("How to meditate"))
+            .andExpect(status().isOk).andExpect(jsonPath("$.name").value("Making sense of my situation"))
 
     }
 

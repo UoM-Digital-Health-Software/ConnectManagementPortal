@@ -272,6 +272,7 @@ export class AddQueryComponent {
         this.queryService
             .getAllQueryContentsAndGroups(this.queryGroupId)
             .subscribe((response: any) => {
+
                 this.contentGroups = response.map((group: any) => ({
                     name: group.contentGroupName,
                     items: group.queryContentDTOList || [],
@@ -280,9 +281,7 @@ export class AddQueryComponent {
                     status: group.status || 'INACTIVE',
                 }));
 
-                if (this.contentGroups.length > 0) {
-                    this.selectedGroupIndex = 0;
-                }
+
             });
         //when refreshing, hide add content section
         this.isEditingContent = false;
@@ -443,11 +442,15 @@ export class AddQueryComponent {
                 await this.saveIndividualQueries().toPromise();
             }
 
-            await this.submitContentChanges().toPromise();
 
-            this.refreshContentGroups();
+            if (this.isDuplicateMode) {
+                await this.submitContentChanges().toPromise();
+                this.router.navigate(['edit-query', this.queryGroupId])
+                return
+            }
+
+
             this.isEditingMode = true; // after save, should all be editing mode
-
             this.isDuplicateMode = false;
 
             this.alertService.success(
@@ -456,6 +459,8 @@ export class AddQueryComponent {
                 null,
                 'query-group'
             );
+
+
         } catch (err: any) {
             if (
                 err?.status === 409 ||
@@ -544,6 +549,8 @@ export class AddQueryComponent {
                 null,
                 'content-group'
             );
+
+            this.cancelEditContent();
         } catch (e) {
             this.alertService.error(
                 'Failed to delete content group',
@@ -554,17 +561,8 @@ export class AddQueryComponent {
     }
 
     selectGroup(index: number) {
-        this.selectedGroupIndex = index;
-
         this.currentEditingIndex = index;
-        const original = this.contentGroups[index];
-        this.currentEditingCopy = {
-            name: original.name,
-            items: original.items.map((item) => ({ ...item })),
-            queryGroupId: original.queryGroupId,
-            id: original.id,
-            status: original.status,
-        };
+        this.currentEditingCopy = this.contentGroups[index];
         this.isEditingContent = true;
     }
 
@@ -619,7 +617,11 @@ export class AddQueryComponent {
 
         if (hasError) return;
 
+        console.log("current editing copy", this.currentEditingCopy)
+
+
         const payload = {
+            status: this.currentEditingCopy.status,
             queryGroupId: this.queryGroupId,
             contentGroupName: this.currentEditingCopy.name,
             queryContentDTOList: this.currentEditingCopy.items,
@@ -627,7 +629,9 @@ export class AddQueryComponent {
         };
 
         try {
-            await this.queryService.saveContentGroup(payload).toPromise();
+            const newContentGroupId = await this.queryService.saveContentGroup(payload).toPromise() as number;
+            this.currentEditingCopy.id = newContentGroupId
+
 
             if (this.currentEditingIndex !== null && this.currentEditingCopy) {
                 this.contentGroups[this.currentEditingIndex] =
@@ -641,9 +645,8 @@ export class AddQueryComponent {
                 'content group'
             );
 
-            this.isEditingContent = false;
-            this.currentEditingIndex = null;
-            this.currentEditingCopy = null;
+
+            this.cancelEditContent()
         } catch (e) {
             this.alertService.error(
                 'Failed to save Content group.',
@@ -682,10 +685,10 @@ export class AddQueryComponent {
                     "Are you sure? This will prevent it from displaying on participants' phones"
                 )
             ) {
-                this.updateStatus(contentGroup, 'INACTIVE');
+                contentGroup.status = 'INACTIVE'
             }
         } else {
-            this.updateStatus(contentGroup, 'ACTIVE');
+            contentGroup.status = 'ACTIVE'
         }
     }
     updateStatus(contentGroup: any, status: string) {
