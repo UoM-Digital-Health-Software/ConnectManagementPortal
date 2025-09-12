@@ -31,9 +31,14 @@ export class AlertService {
         this.timeout = 5000; // default timeout in milliseconds
     }
 
-    clear() {
-        this.alerts.splice(0, this.alerts.length);
+    clear(category?: string) {
+        if (category) {
+            this.alerts = this.alerts.filter(alert => alert.category !== category);
+        } else {
+            this.alerts.splice(0, this.alerts.length);
+        }
     }
+    
 
     get(): Alert[] {
         return this.alerts;

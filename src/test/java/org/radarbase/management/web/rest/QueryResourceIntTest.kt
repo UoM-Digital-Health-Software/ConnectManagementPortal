@@ -155,7 +155,7 @@ internal class QueryResourceIntTest(
         val queryParticipant = QueryParticipant();
         queryParticipant.queryGroup = queryGroup;
         queryParticipant.subject = subject;
-        queryParticipant.createdDate = ZonedDateTime.now()
+        queryParticipant.assignedDate = ZonedDateTime.now()
         queryParticipant.createdBy = user;
 
         return queryParticipantRepository.saveAndFlush(queryParticipant);
@@ -450,7 +450,7 @@ internal class QueryResourceIntTest(
             .andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.[*].name").value<Iterable<String?>>(
+                MockMvcResultMatchers.jsonPath("$.[*].queryGroupName").value<Iterable<String?>>(
                     Matchers.hasItem(
                         "Name"
                     )
@@ -697,23 +697,33 @@ internal class QueryResourceIntTest(
     }
     @Test
     @Transactional
-    fun shouldDeleteQueryEvaluationContent() {
+    fun shouldDeleteQueryParticipantContent() {
         val queryParticipant = createAndAddQueryParticipantToDB()
         val queryGroup = queryParticipant.queryGroup!!
         val subject = queryParticipant.subject!!
 
-        val evaluation = QueryEvaluation().apply {
+        var contentGroup = QueryContentGroup()
+
+        contentGroup.queryGroup = queryGroup
+        contentGroup.contentGroupName = "Content Group Name"
+        contentGroup.createdDate = ZonedDateTime.now()
+        contentGroup.updatedDate = ZonedDateTime.now()
+
+        contentGroup = queryContentGroupRepository.saveAndFlush(contentGroup)
+
+        val queryParticipantContent = QueryParticipantContent().apply {
             this.queryGroup = queryGroup
             this.subject = subject
-            this.result = true
+            this.queryContentGroup= contentGroup
+            this.isArchived = false
             this.createdDate = ZonedDateTime.now()
         }
-        queryEvaluationRepository.saveAndFlush(evaluation)
+        queryParticipantContentRepository.saveAndFlush(queryParticipantContent)
 
-        Assertions.assertThat(queryEvaluationRepository.findAll().size).isEqualTo(1)
+        Assertions.assertThat(queryParticipantContentRepository.findAll().size).isEqualTo(1)
 
         mockMvc.perform(
-            delete(baseURL + "queryevaluation/querygroup/${queryGroup.id}/subject/${subject.id}")
+            delete(baseURL + "queryparticipantcontent/querygroup/${queryGroup.id}/subject/${subject.id}")
         )
             .andExpect(status().isOk)
 
@@ -884,7 +894,7 @@ internal class QueryResourceIntTest(
         val queryParticipant = createAndAddQueryParticipantToDB();
 
         mockMvc.perform(get(baseURL + "modules/1"))
-            .andExpect(status().isOk).andExpect(jsonPath("$.name").value("How to meditate"))
+            .andExpect(status().isOk).andExpect(jsonPath("$.name").value("Making sense of my situation"))
 
     }
 

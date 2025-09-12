@@ -51,7 +51,7 @@ class QueryContentService(
         return decoder.decode(encodedImg.toByteArray(StandardCharsets.UTF_8))
     }
 
-    fun saveAllOrUpdate(contentGroupDTO: QueryContentGroupDTO) {
+    fun saveAllOrUpdate(contentGroupDTO: QueryContentGroupDTO): Long? {
         val decoder = Base64.getDecoder()
 
         val queryGroup = queryGroupRepository.findById(
@@ -70,9 +70,9 @@ class QueryContentService(
                 updated = true
             }
 
+
             if (contentGroupDTO.status != null && existingGroup.status != contentGroupDTO.status) {
-                existingGroup.status = contentGroupDTO.status!!
-                updateContentGroupStatus(contentGroupDTO.id!!, contentGroupDTO.status!!)
+                updateContentGroupStatus(contentGroupDTO.status!!, existingGroup)
                 updated = true
             }
 
@@ -114,7 +114,9 @@ class QueryContentService(
 
             queryContentRepository.save(queryContent)
         }
-    }
+
+        return contentGroup.id
+   }
 
 
     fun findAllContentsByQueryGroupId(queryGroupId: Long): List<QueryContentDTO> {
@@ -184,8 +186,6 @@ class QueryContentService(
          if(consecutiveFailed >= resetThresholdDays) {
             return true
          }
-
-
 
          if (latestNotificationDate != null) {
              val today = ZonedDateTime.now()
@@ -342,13 +342,11 @@ class QueryContentService(
 
     }
 
-    fun updateContentGroupStatus(id: Long, status: ContentGroupStatus){
-        val contentGroup = queryContentGroupRepository.findById(id).orElseThrow { RuntimeException("Content Group not found") }
+    fun updateContentGroupStatus(status: ContentGroupStatus, contentGroup: QueryContentGroup){
         contentGroup.status = status
-        queryContentGroupRepository.save(contentGroup)
 
-        if (status == ContentGroupStatus.INACTIVE) {
-            queryParticipantContentRepository.deleteAllByQueryContentGroupId(id)
+        if (status == ContentGroupStatus.INACTIVE && contentGroup.id != null) {
+            queryParticipantContentRepository.deleteAllByQueryContentGroupId(contentGroup.id!!)
         }
     }
 

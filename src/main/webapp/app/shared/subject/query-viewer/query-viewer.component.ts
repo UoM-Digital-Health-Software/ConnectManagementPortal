@@ -25,7 +25,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
 
     queryPriticipant: QueryParticipant = {};
 
-    @Input() assignedQueryGroups: QueryGroup[];
+    @Input() assignedQueryGroups: QueryParticipant[];
 
     ifDisable: boolean = true;
 
@@ -54,7 +54,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
     getAllAssignedGroups() {
         this.queryParticipantService
             .getAllAssignedQueries(this.subject.id)
-            .subscribe((res: QueryGroup[]) => {
+            .subscribe((res: QueryParticipant[]) => {
                 this.assignedQueryGroups = res;
     
                 let fileteredQueryGroupList = this.queryGroupList.filter(
@@ -102,7 +102,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
                     .deleteAssignedQueryGroup(queryGroup.id, this.subject.id)
                     .subscribe(() => {
                         this.queryParticipantService
-                            .deleteQueryEvaluationContent(
+                            .deleteQueryParticipantContent(
                                 queryGroup.id,
                                 this.subject.id
                             )
