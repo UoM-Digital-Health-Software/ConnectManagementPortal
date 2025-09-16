@@ -237,7 +237,10 @@ export class AddQueryComponent {
     async ngOnInit() {
         this.route.url.subscribe((urlSegments) => {
             this.isDuplicateMode = urlSegments.some(
-                (seg) => seg.path === 'duplicateQuery'
+
+                (seg) => {
+                    return seg.path === 'duplicateQuery'
+                }
             );
         });
 
@@ -295,14 +298,6 @@ export class AddQueryComponent {
 
     private _counter = 0;
     formRuleWeakMap = new WeakMap();
-
-    getUniqueName(prefix: string, rule: any) {
-        if (!this.formRuleWeakMap.has(rule)) {
-            this.formRuleWeakMap.set(rule, `${prefix}-${++this._counter}`);
-        }
-
-        return this.formRuleWeakMap.get(rule);
-    }
 
     convertComparisonOperator(value?: string) {
         switch (value) {
@@ -413,13 +408,13 @@ export class AddQueryComponent {
             hasError = true;
         }
 
+
         if (!this.validateQueryRules(this.query.rules)) {
             this.queryRulesError = true;
             hasError = true;
         }
 
         if (hasError) return;
-
         try {
             if (this.isEditingMode) {
                 await this.queryService
@@ -444,11 +439,10 @@ export class AddQueryComponent {
 
 
             if (this.isDuplicateMode) {
-                await this.submitContentChanges().toPromise();
+                await this.copyContentToDuplicatedQueryGroup().toPromise();
                 this.router.navigate(['edit-query', this.queryGroupId])
                 return
             }
-
 
             this.isEditingMode = true; // after save, should all be editing mode
             this.isDuplicateMode = false;
@@ -462,6 +456,7 @@ export class AddQueryComponent {
 
 
         } catch (err: any) {
+
             if (
                 err?.status === 409 ||
                 err?.message?.includes('already exists')
@@ -478,7 +473,7 @@ export class AddQueryComponent {
         }
     }
 
-    submitContentChanges(): Observable<any> {
+    copyContentToDuplicatedQueryGroup(): Observable<any> {
         const saveRequests = this.contentGroups.map((group) => {
             let payload = null;
             if (this.isDuplicateMode) {
@@ -617,7 +612,6 @@ export class AddQueryComponent {
 
         if (hasError) return;
 
-        console.log("current editing copy", this.currentEditingCopy)
 
 
         const payload = {
@@ -630,8 +624,8 @@ export class AddQueryComponent {
 
         try {
             const newContentGroupId = await this.queryService.saveContentGroup(payload).toPromise() as number;
-            this.currentEditingCopy.id = newContentGroupId
 
+            this.currentEditingCopy.id = newContentGroupId
 
             if (this.currentEditingIndex !== null && this.currentEditingCopy) {
                 this.contentGroups[this.currentEditingIndex] =
