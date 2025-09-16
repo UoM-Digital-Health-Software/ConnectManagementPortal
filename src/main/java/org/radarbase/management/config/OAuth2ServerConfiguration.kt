@@ -184,7 +184,6 @@ class OAuth2ServerConfiguration(
                 .antMatchers("/api/config/**").permitAll()
                 .antMatchers("/api/public/projects").permitAll()
                 .antMatchers("/api/logout-url").permitAll()
-
                 .antMatchers("/api/**")
                 .authenticated() // Allow management/health endpoint to all to allow kubernetes to be able to
                 // detect the health of the service
