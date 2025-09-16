@@ -58,6 +58,11 @@
     </changeSet>
 
 
+
+
+
+
+
     <changeSet id="3-insert-foreign-key" author="bastiaan@thehyve.nl">
 
         <modifyDataType tableName="app_config" columnName="user_id" newDataType="BIGINT"/>
@@ -68,4 +73,19 @@
                                  referencedColumnNames="id"
                                  referencedTableName="radar_user"/>
     </changeSet>
+
+
+    <changeSet id="4-insert-default-sensorKit-upload" author="you">
+        <insert tableName="app_config">
+            <column name="site" valueComputed="NULL"/>
+            <column name="user_id" valueComputed="NULL"/>
+            <column name="key" value="sensorkitBGUpload.enabled"/>
+            <column name="value" value="true"/>
+            <column name="type" value="bool"/>
+            <column name="rollout_pct" value="100"/>
+            <column name="rollout_version" value="v1"/>
+            <column name="conditional" valueComputed="NULL"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
