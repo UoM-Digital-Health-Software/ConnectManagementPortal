@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.hibernate.envers.Audited
 import javax.persistence.CascadeType
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
@@ -10,6 +11,7 @@ import javax.persistence.*
  * Query Group.
  */
 @Entity
+@Audited
 @Table(name = "query_group")
 @EntityListeners(AbstractEntityListener::class)
 class QueryGroup : AbstractEntity(), Serializable {
