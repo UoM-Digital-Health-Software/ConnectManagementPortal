@@ -1,6 +1,5 @@
 package org.radarbase.management.security
 
-import io.ktor.http.*
 import java.io.IOException
 import java.time.Instant
 import javax.annotation.Nonnull
@@ -28,7 +27,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsUtils
 import org.springframework.web.filter.OncePerRequestFilter
-
 
 /**
  * Authentication filter using given validator.
@@ -108,14 +106,13 @@ class JwtAuthenticationFilter @JvmOverloads constructor(
         }
     }
 
-    private fun tokenFromHeader(httpRequest: HttpServletRequest): String? {
-        return httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
+    private fun tokenFromHeader(httpRequest: HttpServletRequest): String? =
+        httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
             ?.takeIf { it.startsWith(AUTHORIZATION_BEARER_HEADER) }
             ?.removePrefix(AUTHORIZATION_BEARER_HEADER)
             ?.trim { it <= ' ' }
             ?: parseCookies(httpRequest.getHeader(HttpHeaders.COOKIE)).find { it.name == "ory_kratos_session" }
                 ?.value
-    }
 
     @Throws(IOException::class)
     private fun validateToken(
