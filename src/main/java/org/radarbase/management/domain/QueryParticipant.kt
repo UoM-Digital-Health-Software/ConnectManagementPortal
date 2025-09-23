@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.hibernate.envers.Audited
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
 import java.time.ZonedDateTime
@@ -7,6 +8,7 @@ import javax.persistence.*
 
 
 @Entity
+@Audited
 @Table(name = "query_participant")
 @EntityListeners(AbstractEntityListener::class)
 class QueryParticipant : AbstractEntity(), Serializable {

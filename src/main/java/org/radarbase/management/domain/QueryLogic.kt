@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.hibernate.envers.Audited
 import org.radarbase.management.domain.enumeration.*
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
@@ -14,6 +15,7 @@ import kotlin.jvm.Transient
  * Query Logic
  */
 @Entity
+@Audited
 @Table(name = "query_logic")
 @EntityListeners(AbstractEntityListener::class)
 class QueryLogic : AbstractEntity(), Serializable {
