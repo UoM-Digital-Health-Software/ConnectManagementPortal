@@ -1,7 +1,5 @@
 package org.radarbase.management.config
 
-import java.util.*
-import javax.sql.DataSource
 import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.security.ClaimsTokenEnhancer
@@ -49,19 +47,25 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
+import java.util.*
+import javax.sql.DataSource
 
 @Configuration
-class OAuth2ServerConfiguration(
-    @Autowired private val dataSource: DataSource,
-    @Autowired private val passwordEncoder: PasswordEncoder
-) {
+class OAuth2ServerConfiguration {
+    @Autowired
+    private val dataSource: DataSource? = null
+
+    @Autowired
+    private val passwordEncoder: PasswordEncoder? = null
 
     @Configuration
     @Order(-20)
-    protected class LoginConfig(
-        @Autowired private val authenticationManager: AuthenticationManager,
-        @Autowired private val jwtAuthenticationFilter: JwtAuthenticationFilter
-    ) : WebSecurityConfigurerAdapter() {
+    protected class LoginConfig : WebSecurityConfigurerAdapter() {
+        @Autowired
+        private val authenticationManager: AuthenticationManager? = null
+
+        @Autowired
+        private val jwtAuthenticationFilter: JwtAuthenticationFilter? = null
 
         @Throws(Exception::class)
         override fun configure(http: HttpSecurity) {
@@ -89,17 +93,22 @@ class OAuth2ServerConfiguration(
     }
 
     @Configuration
-    class JwtAuthenticationFilterConfiguration(
-        @Autowired private val authenticationManager: AuthenticationManager,
-        @Autowired private val userRepository: UserRepository,
-        @Autowired private val keyStoreHandler: ManagementPortalOauthKeyStoreHandler
-    ) {
+    class JwtAuthenticationFilterConfiguration {
+        @Autowired
+        private val authenticationManager: AuthenticationManager? = null
+
+        @Autowired
+        private val userRepository: UserRepository? = null
+
+        @Autowired
+        private val keyStoreHandler: ManagementPortalOauthKeyStoreHandler? = null
+
         @Bean
         fun jwtAuthenticationFilter(): JwtAuthenticationFilter {
             return JwtAuthenticationFilter(
-                keyStoreHandler.tokenValidator,
-                authenticationManager,
-                userRepository,
+                keyStoreHandler!!.tokenValidator,
+                authenticationManager!!,
+                userRepository!!,
                 true
             )
         }
@@ -139,6 +148,7 @@ class OAuth2ServerConfiguration(
                 .skipUrlPattern(HttpMethod.GET, "/css/**")
                 .skipUrlPattern(HttpMethod.GET,"/api/config/**")
                 .skipUrlPattern(HttpMethod.GET, "/js/**")
+                .skipUrlPattern(HttpMethod.GET, "/oauth2/authorize")
                 .skipUrlPattern(HttpMethod.GET, "/radar-baseRR.png")
         }
 
@@ -160,10 +170,6 @@ class OAuth2ServerConfiguration(
                 .authorizeRequests()
                 .antMatchers("/oauth/**").permitAll()
                 .and()
-                .logout().invalidateHttpSession(true)
-                .logoutUrl("/api/logout")
-                .logoutSuccessHandler(logoutSuccessHandler)
-                .and()
                 .headers()
                 .frameOptions()
                 .disable()
@@ -171,11 +177,8 @@ class OAuth2ServerConfiguration(
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
-                .addFilterBefore(
-                    jwtAuthenticationFilter(),
-                    UsernamePasswordAuthenticationFilter::class.java
-                )
                 .authorizeRequests()
+                .antMatchers("/oauth/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/api/register")
                 .hasAnyAuthority(RoleAuthority.SYS_ADMIN_AUTHORITY)
@@ -187,7 +190,6 @@ class OAuth2ServerConfiguration(
                 .antMatchers("/api/**")
                 .authenticated() // Allow management/health endpoint to all to allow kubernetes to be able to
                 // detect the health of the service
-                .antMatchers("/oauth/token").permitAll()
                 .antMatchers("/management/health").permitAll()
                 .antMatchers("/management/**")
                 .hasAnyAuthority(RoleAuthority.SYS_ADMIN_AUTHORITY)
