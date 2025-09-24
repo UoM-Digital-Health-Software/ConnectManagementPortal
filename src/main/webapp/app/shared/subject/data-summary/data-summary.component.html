@@ -304,7 +304,7 @@ the readings).</p>
 
     <app-single-row-graph
         [applyCustomColour]="true"
-        *ngIf="charts['hrv']"
+        *ngIf="charts['hrv_data']"
         logoClass="heart-rate"
         chartId="hrv"
         [chart]="charts['hrv']"
@@ -325,7 +325,7 @@ the readings).</p>
 
     <app-single-row-graph
         [applyCustomColour]="true"
-        *ngIf="charts['activity']"
+        *ngIf="charts['activities']"
         logoClass="activity-img"
         chartId="activity"
         [chart]="charts['activity']"
@@ -363,7 +363,7 @@ the readings).</p>
 
         <app-single-graph
     [applyCustomColour]="true"
-        *ngIf="charts['heart_rate']"
+        *ngIf="charts['resp_rate']"
         logoClass="respiratory-img"
         chartId="hrv1"
         [chart]="charts['heart_rate']"

@@ -22,12 +22,12 @@ const barGraph: Graph = {
     showDataTables: true,
 };
 
-const lineGraph = (topLabel?: String, bottomLabel?: String, showDataLables: Boolean = true) => {
+const lineGraph = (topLabel?: String, bottomLabel?: String, showDataLables: Boolean = true, showScaleY: Boolean = false) => {
 
     let graphObject = {
 
         type: 'line',
-        showScaleY: false,
+        showScaleY: showScaleY,
         showDataTables: showDataLables,
         topLabel: topLabel,
         bottomLabel: bottomLabel
@@ -62,22 +62,22 @@ export class DataSummaryComponent implements OnInit {
     chart_heart_rate_variability: any = [];
     questionnaireDomains: any = [''];
     chart_type: { [id: string]: Graph } = {
-        delusion: lineGraph("Very much", "Not at all", false),
-        negative_emotions: lineGraph("Very much", "Not at all", false),
-        positive_emotions: lineGraph("Very much", "Not at all", false),
-        dissociation: lineGraph("Very much", "Not at all", false),
-        stress: lineGraph("Very much", "Not at all", false),
-        sleep_period: lineGraph("Very much", "Not at all", false),
-        hope: lineGraph("Very much", "Not at all", false),
-        mood: lineGraph("Very much", "Not at all", false),
-        anxiety: lineGraph("Very much", "Not at all", false),
-        self_esteem: lineGraph("Very much", "Not at all", false),
-        connectedness: lineGraph("Very much", "Not at all", false),
-        coping: lineGraph("Very much", "Not at all", false),
-        fear: lineGraph("Very much", "Not at all", false),
-        hallucination_hear: lineGraph("Very much", "Not at all", false),
-        hallucination_vision: lineGraph("Very much", "Not at all", false),
-        threat: lineGraph("Very much", "Not at all", false),
+        delusion: lineGraph("Very much", "Not at all", false, true),
+        negative_emotions: lineGraph("Very much", "Not at all", false, true),
+        positive_emotions: lineGraph("Very much", "Not at all", false, true),
+        dissociation: lineGraph("Very much", "Not at all", false, true),
+        stress: lineGraph("Very much", "Not at all", false, true),
+        sleep_period: lineGraph("Very much", "Not at all", false, true),
+        hope: lineGraph("Very much", "Not at all", false, true),
+        mood: lineGraph("Very much", "Not at all", false, true),
+        anxiety: lineGraph("Very much", "Not at all", false, true),
+        self_esteem: lineGraph("Very much", "Not at all", false, true),
+        connectedness: lineGraph("Very much", "Not at all", false, true),
+        coping: lineGraph("Very much", "Not at all", false, true),
+        fear: lineGraph("Very much", "Not at all", false,true),
+        hallucination_hear: lineGraph("Very much", "Not at all", false, true),
+        hallucination_vision: lineGraph("Very much", "Not at all", false, true),
+        threat: lineGraph("Very much", "Not at all", false, true),
 
         questionnaire: barGraph,
         heart_rate: lineGraph("Higher heart rate", "Lower heart rate"),
@@ -632,6 +632,8 @@ export class DataSummaryComponent implements OnInit {
         let allMonths = this.generateMonths(months[0]);
 
 
+        console.log("all data", allData)
+
 
         //TODO: delete, for testing only
 
@@ -660,11 +662,13 @@ export class DataSummaryComponent implements OnInit {
                 let whereaboutsKeys = this.getMostCommonAnswer(data.histogram.whereabouts, this.whereaboutsMap)
 
 
+                console.log("sleepKeys", sleepKeys)
+
                 const [yearPart, monthPart] = String(month).split("-");
                 const date = new Date(Number(yearPart), parseInt(monthPart) - 1);
                 let monthString = date.toLocaleString("en-US", { month: "long" });
 
-                this.months.push({ name: monthString, social: socialKeys.join(", "), sleep: sleepKeys, whereabouts: whereaboutsKeys.join(",") })
+                this.months.push({ name: monthString, social: socialKeys.filter(k => k != null).join(", "), sleep: sleepKeys.filter(k => k != null), whereabouts: whereaboutsKeys.filter(k => k != null).join(",") })
 
 
             }
