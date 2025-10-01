@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
 import javax.persistence.*
+import org.hibernate.envers.Audited
 
 
 @Entity
+@Audited
 @Table(name = "modules")
 @EntityListeners(AbstractEntityListener::class)
 class Module : AbstractEntity(), Serializable {

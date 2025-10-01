@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- query_aud -->
+    <changeSet id="create-query_aud" author="gwen">
+        <createTable tableName="query_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="entity" type="VARCHAR(255)"/>
+            <column name="query_metric" type="VARCHAR(255)"/>
+            <column name="comparison_operator" type="VARCHAR(255)"/>
+            <column name="time_frame" type="VARCHAR(255)"/>
+            <column name="time_frame_mod" type="BOOLEAN"/>
+            <column name="value" type="VARCHAR(255)"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_aud" columnNames="id, rev" constraintName="query_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_aud_rev"/>
+    </changeSet>
+
+    <!-- query_content_aud -->
+    <changeSet id="create-query_content_aud" author="gwen">
+        <createTable tableName="query_content_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="heading" type="VARCHAR(255)"/>
+            <column name="image_alternative_text" type="VARCHAR(255)"/>
+            <column name="image" type="BYTEA"/>
+            <column name="resource_id" type="BIGINT"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="text_value" type="VARCHAR(255)"/>
+            <column name="query_content_group_id" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_content_aud" columnNames="id, rev" constraintName="query_content_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_content_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_content_aud_rev"/>
+    </changeSet>
+
+    <!-- query_content_group_aud -->
+    <changeSet id="create-query_content_group_aud" author="gwen">
+        <createTable tableName="query_content_group_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="content_group_name" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_content_group_aud" columnNames="id, rev" constraintName="query_content_group_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_content_group_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_content_group_aud_rev"/>
+    </changeSet>
+
+    <!-- query_evaluation_aud -->
+    <changeSet id="create-query_evaluation_aud" author="gwen">
+        <createTable tableName="query_evaluation_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="notification_sent" type="BOOLEAN"/>
+            <column name="result" type="BOOLEAN"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="query_group_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_evaluation_aud" columnNames="id, rev" constraintName="query_evaluation_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_evaluation_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_evaluation_aud_rev"/>
+    </changeSet>
+
+    <!-- query_group_aud -->
+    <changeSet id="create-query_group_aud" author="gwen">
+        <createTable tableName="query_group_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="can_edit" type="BOOLEAN"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="is_archived" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="updated_by" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_group_aud" columnNames="id, rev" constraintName="query_group_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_group_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_group_aud_rev"/>
+    </changeSet>
+
+    <!-- query_logic_aud -->
+    <changeSet id="create-query_logic_aud" author="gwen">
+        <createTable tableName="query_logic_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="logic_operator" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="parent_id" type="BIGINT"/>
+            <column name="query_id" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_logic_aud" columnNames="id, rev" constraintName="query_logic_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_logic_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_logic_aud_rev"/>
+    </changeSet>
+
+        <!-- query_participant_aud -->
+    <changeSet id="create-query_participant_aud" author="gwen">
+        <createTable tableName="query_participant_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="assigned_date" type="TIMESTAMP"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_participant_aud"
+                       columnNames="id, rev"
+                       constraintName="query_participant_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_participant_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_participant_aud_rev"/>
+    </changeSet>
+
+    <!-- query_participant_content_aud -->
+    <changeSet id="create-query_participant_content_aud" author="gwen">
+        <createTable tableName="query_participant_content_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="is_archived" type="BOOLEAN"/>
+            <column name="query_content_group_id" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_participant_content_aud"
+                       columnNames="id, rev"
+                       constraintName="query_participant_content_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_participant_content_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_participant_content_aud_rev"/>
+    </changeSet>
+
+    <!-- modules_aud -->
+    <changeSet id="create-modules_aud" author="gwen">
+        <createTable tableName="modules_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="revend" type="INT"/>
+            <column name="revend_tstmp" type="TIMESTAMP"/>
+            <column name="group_name" type="VARCHAR(255)"/>
+            <column name="group_name_mod" type="BOOLEAN"/>
+            <column name="link" type="VARCHAR(255)"/>
+            <column name="link_mod" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="name_mod" type="BOOLEAN"/>
+        </createTable>
+        <addPrimaryKey tableName="modules_aud"
+                       columnNames="id, rev"
+                       constraintName="modules_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="modules_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_modules_aud_rev"/>
+        <addForeignKeyConstraint baseTableName="modules_aud"
+                                 baseColumnNames="revend"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_modules_aud_revend"/>
+    </changeSet>
+
+
+</databaseChangeLog>

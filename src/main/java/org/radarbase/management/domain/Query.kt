@@ -2,6 +2,7 @@ package org.radarbase.management.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import org.hibernate.envers.Audited
 import org.radarbase.management.domain.enumeration.ComparisonOperator
 import org.radarbase.management.domain.enumeration.QueryTimeFrame
 import org.radarbase.management.domain.support.AbstractEntityListener
@@ -14,6 +15,7 @@ import javax.persistence.*
  * Query.
  */
 @Entity
+@Audited
 @Table(name = "query")
 @EntityListeners(AbstractEntityListener::class)
 class Query : AbstractEntity(), Serializable {
