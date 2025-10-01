@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Create table for app configs / feature flags -->
+    <changeSet id="20250926150000_add_pdf_summary_request" author="Jindrich Gorner">
+        <createTable tableName="pdf_summary_request">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="subject_id"  type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="summary_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="request_on"  type="timestamp" defaultValueDate="${now}" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="requested_by" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="summary_created_on" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="email_sent" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+    </changeSet>
+
+
+
+    <changeSet id="20250926150000_add_pdf_summary_tracker_foreign_key" author="bastiaan@thehyve.nl">
+
+        <modifyDataType tableName="app_config" columnName="user_id" newDataType="BIGINT"/>
+
+        <addForeignKeyConstraint baseColumnNames="subject_id"
+                                 baseTableName="pdf_summary_tracker"
+                                 constraintName="fk_pdf_summary_tracker_subject_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="subject"/>
+
+        <addForeignKeyConstraint baseColumnNames="requested_by"
+                                 baseTableName="pdf_summary_tracker"
+                                 constraintName="fk_pdf_summary_tracker_requested_by"
+                                 referencedColumnNames="id"
+                                 referencedTableName="radar_user"/>
+
+
+    </changeSet>
+
+
+
+
+
+
+
+
+</databaseChangeLog>

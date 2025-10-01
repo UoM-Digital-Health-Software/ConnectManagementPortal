@@ -6,6 +6,7 @@ import { EventManager } from '../util/event-manager.service';
 import { Subject } from './subject.model';
 import { SubjectService } from './subject.service';
 import {HideableSubjectField, SiteSettingsService} from "./sitesettings.service";
+import { AlertService } from '../util/alert.service';
 
 @Component({
     selector: 'jhi-subject-detail',
@@ -23,7 +24,8 @@ export class SubjectDetailComponent implements OnInit, OnDestroy {
             private eventManager: EventManager,
             private subjectService: SubjectService,
             private siteSettingsService: SiteSettingsService,
-            private route: ActivatedRoute,
+        private route: ActivatedRoute,
+                       private alertService: AlertService
     ) {
     }
 
@@ -38,6 +40,31 @@ export class SubjectDetailComponent implements OnInit, OnDestroy {
         this.subjectService.find(id).subscribe((subject: Subject) => {
             this.subject = subject;
         });
+    }
+
+
+    requestSummary() {
+
+        this.subjectService.requestDataSummary(this.subject.login).subscribe((response) => {
+
+          const body = response.body
+
+            console.log("body", body)
+            if (body.success) {
+                    this.alertService.success('The summary has been requested. You will receive an email once it is ready.', null, null);
+
+            } else {
+                console.log("error")
+                    this.alertService.error(body.message, null, null);
+
+            }
+
+
+
+        })
+
+
+
     }
 
     previousState() {
