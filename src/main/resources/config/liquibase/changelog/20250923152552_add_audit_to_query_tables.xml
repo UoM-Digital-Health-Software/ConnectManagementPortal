@@ -1,399 +1,248 @@
-<?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-  
-    <changeSet author="Gwen" id="1759149743240-73">
-        <dropForeignKeyConstraint baseTableName="query_participant_aud" constraintName="fk1cyopfi38a0q71v5w6ej75dfx"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-74">
-        <dropForeignKeyConstraint baseTableName="query_content_group_aud" constraintName="fk1qe69t7bka24od8trstr46y3b"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-75">
-        <dropForeignKeyConstraint baseTableName="query_evaluation_aud" constraintName="fk2jrfavw98prrblcq97bc9cs1m"/>
-    </changeSet>
-    
-    <changeSet author="Gwen" id="1759149743240-77">
-        <dropForeignKeyConstraint baseTableName="query_aud" constraintName="fk76oq7jpeuo108qktswhhv7aul"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- query_aud -->
+    <changeSet id="create-query_aud" author="gwen">
+        <createTable tableName="query_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="entity" type="VARCHAR(255)"/>
+            <column name="query_metric" type="VARCHAR(255)"/>
+            <column name="comparison_operator" type="VARCHAR(255)"/>
+            <column name="time_frame" type="VARCHAR(255)"/>
+            <column name="time_frame_mod" type="BOOLEAN"/>
+            <column name="value" type="VARCHAR(255)"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_aud" columnNames="id, rev" constraintName="query_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_aud_rev"/>
     </changeSet>
 
-    <changeSet author="Gwen" id="1759149743240-79">
-        <dropForeignKeyConstraint baseTableName="query_logic_aud" constraintName="fk900dnqafbppefpwabkh4qpqh8"/>
+    <!-- query_content_aud -->
+    <changeSet id="create-query_content_aud" author="gwen">
+        <createTable tableName="query_content_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="heading" type="VARCHAR(255)"/>
+            <column name="image_alternative_text" type="VARCHAR(255)"/>
+            <column name="image" type="BYTEA"/>
+            <column name="resource_id" type="BIGINT"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="text_value" type="VARCHAR(255)"/>
+            <column name="query_content_group_id" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_content_aud" columnNames="id, rev" constraintName="query_content_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_content_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_content_aud_rev"/>
     </changeSet>
 
-    <changeSet author="Gwen" id="1759149743240-81">
-        <dropForeignKeyConstraint baseTableName="query_group_aud" constraintName="fkbit302geiha5hmyure4yoqvae"/>
+    <!-- query_content_group_aud -->
+    <changeSet id="create-query_content_group_aud" author="gwen">
+        <createTable tableName="query_content_group_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="content_group_name" type="VARCHAR(255)"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_content_group_aud" columnNames="id, rev" constraintName="query_content_group_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_content_group_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_content_group_aud_rev"/>
+    </changeSet>
+
+    <!-- query_evaluation_aud -->
+    <changeSet id="create-query_evaluation_aud" author="gwen">
+        <createTable tableName="query_evaluation_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="notification_sent" type="BOOLEAN"/>
+            <column name="result" type="BOOLEAN"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="query_group_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_evaluation_aud" columnNames="id, rev" constraintName="query_evaluation_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_evaluation_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_evaluation_aud_rev"/>
+    </changeSet>
+
+    <!-- query_group_aud -->
+    <changeSet id="create-query_group_aud" author="gwen">
+        <createTable tableName="query_group_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="can_edit" type="BOOLEAN"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="is_archived" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="updated_by" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_group_aud" columnNames="id, rev" constraintName="query_group_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_group_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_group_aud_rev"/>
+    </changeSet>
+
+    <!-- query_logic_aud -->
+    <changeSet id="create-query_logic_aud" author="gwen">
+        <createTable tableName="query_logic_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="logic_operator" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="parent_id" type="BIGINT"/>
+            <column name="query_id" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_logic_aud" columnNames="id, rev" constraintName="query_logic_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_logic_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_logic_aud_rev"/>
+    </changeSet>
+
+        <!-- query_participant_aud -->
+    <changeSet id="create-query_participant_aud" author="gwen">
+        <createTable tableName="query_participant_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="assigned_date" type="TIMESTAMP"/>
+            <column name="updated_date" type="TIMESTAMP"/>
+            <column name="created_by" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_participant_aud"
+                       columnNames="id, rev"
+                       constraintName="query_participant_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_participant_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_participant_aud_rev"/>
+    </changeSet>
+
+    <!-- query_participant_content_aud -->
+    <changeSet id="create-query_participant_content_aud" author="gwen">
+        <createTable tableName="query_participant_content_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="created_date" type="TIMESTAMP"/>
+            <column name="is_archived" type="BOOLEAN"/>
+            <column name="query_content_group_id" type="BIGINT"/>
+            <column name="query_group_id" type="BIGINT"/>
+            <column name="subject_id" type="BIGINT"/>
+        </createTable>
+        <addPrimaryKey tableName="query_participant_content_aud"
+                       columnNames="id, rev"
+                       constraintName="query_participant_content_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="query_participant_content_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_query_participant_content_aud_rev"/>
+    </changeSet>
+
+    <!-- modules_aud -->
+    <changeSet id="create-modules_aud" author="gwen">
+        <createTable tableName="modules_aud">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rev" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revtype" type="SMALLINT"/>
+            <column name="revend" type="INT"/>
+            <column name="revend_tstmp" type="TIMESTAMP"/>
+            <column name="group_name" type="VARCHAR(255)"/>
+            <column name="group_name_mod" type="BOOLEAN"/>
+            <column name="link" type="VARCHAR(255)"/>
+            <column name="link_mod" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="name_mod" type="BOOLEAN"/>
+        </createTable>
+        <addPrimaryKey tableName="modules_aud"
+                       columnNames="id, rev"
+                       constraintName="modules_aud_pkey"/>
+        <addForeignKeyConstraint baseTableName="modules_aud"
+                                 baseColumnNames="rev"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_modules_aud_rev"/>
+        <addForeignKeyConstraint baseTableName="modules_aud"
+                                 baseColumnNames="revend"
+                                 referencedTableName="_revisions_info"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_modules_aud_revend"/>
     </changeSet>
 
 
- 
-    <changeSet author="Gwen" id="1759149743240-87">
-        <dropForeignKeyConstraint baseTableName="query_content_aud" constraintName="fkhb8b9uem3r83t0r5nd15dsvt"/>
-    </changeSet>
-  
-    <changeSet author="Gwen" id="1759149743240-91">
-        <dropForeignKeyConstraint baseTableName="query_participant_content_aud" constraintName="fkobfjsjanfhwohf285il5n5yqd"/>
-    </changeSet>
-
-
-
-
-    <changeSet author="Gwen" id="1759149743240-104">
-        <dropColumn columnName="assigned_date_mod" tableName="query_participant_aud"/>
-    </changeSet>
-  
-    <changeSet author="Gwen" id="1759149743240-110">
-        <dropColumn columnName="can_edit_mod" tableName="query_group_aud"/>
-    </changeSet>
-
-    <changeSet author="Gwen" id="1759149743240-114">
-        <dropColumn columnName="content_group_name_mod" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-115">
-        <dropColumn columnName="created_by_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-116">
-        <dropColumn columnName="created_by_mod" tableName="query_participant_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-117">
-        <dropColumn columnName="created_date_mod" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-118">
-        <dropColumn columnName="created_date_mod" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-119">
-        <dropColumn columnName="created_date_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-120">
-        <dropColumn columnName="created_date_mod" tableName="query_participant_content_aud"/>
-    </changeSet>
-
-
-    <changeSet author="Gwen" id="1759149743240-127">
-        <dropColumn columnName="description_mod" tableName="query_group_aud"/>
-    </changeSet>
-  
-    <changeSet author="Gwen" id="1759149743240-134">
-        <dropColumn columnName="entity_mod" tableName="query_aud"/>
-    </changeSet>
-    
-    <changeSet author="Gwen" id="1759149743240-140">
-        <dropColumn columnName="field_mod" tableName="query_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-145">
-        <dropColumn columnName="heading_mod" tableName="query_content_aud"/>
-    </changeSet>
- 
-    <changeSet author="Gwen" id="1759149743240-147">
-        <dropColumn columnName="image_alt_text_mod" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-148">
-        <dropColumn columnName="image_blob_mod" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-149">
-        <dropColumn columnName="is_archived_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-150">
-        <dropColumn columnName="is_archived_mod" tableName="query_participant_content_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-156">
-        <dropColumn columnName="logic_operator_mod" tableName="query_logic_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-160">
-        <dropColumn columnName="name_mod" tableName="query_group_aud"/>
-    </changeSet>
-    
-    <changeSet author="Gwen" id="1759149743240-163">
-        <dropColumn columnName="notification_sent_mod" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-164">
-        <dropColumn columnName="operator_mod" tableName="query_aud"/>
-    </changeSet>
-    
-    <changeSet author="Gwen" id="1759149743240-168">
-        <dropColumn columnName="parent_mod" tableName="query_logic_aud"/>
-    </changeSet>
-   
-   
-    <changeSet author="Gwen" id="1759149743240-182">
-        <dropColumn columnName="queries_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-183">
-        <dropColumn columnName="query_content_group_mod" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-184">
-        <dropColumn columnName="query_content_group_mod" tableName="query_participant_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-185">
-        <dropColumn columnName="query_content_groups_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-186">
-        <dropColumn columnName="query_content_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-187">
-        <dropColumn columnName="query_group_mod" tableName="query_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-188">
-        <dropColumn columnName="query_group_mod" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-189">
-        <dropColumn columnName="query_group_mod" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-190">
-        <dropColumn columnName="query_group_mod" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-191">
-        <dropColumn columnName="query_group_mod" tableName="query_logic_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-192">
-        <dropColumn columnName="query_group_mod" tableName="query_participant_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-193">
-        <dropColumn columnName="query_group_mod" tableName="query_participant_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-194">
-        <dropColumn columnName="query_logics_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-195">
-        <dropColumn columnName="query_mod" tableName="query_logic_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-196">
-        <dropColumn columnName="query_participants_mod" tableName="query_group_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-200">
-        <dropColumn columnName="resource_id_mod" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-201">
-        <dropColumn columnName="result_mod" tableName="query_evaluation_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-206">
-        <dropColumn columnName="revend" tableName="query_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-207">
-        <dropColumn columnName="revend" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-208">
-        <dropColumn columnName="revend" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-209">
-        <dropColumn columnName="revend" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-210">
-        <dropColumn columnName="revend" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-211">
-        <dropColumn columnName="revend" tableName="query_logic_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-212">
-        <dropColumn columnName="revend" tableName="query_participant_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-213">
-        <dropColumn columnName="revend" tableName="query_participant_content_aud"/>
-    </changeSet>
-  
-    <changeSet author="Gwen" id="1759149743240-230">
-        <dropColumn columnName="revend_tstmp" tableName="query_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-231">
-        <dropColumn columnName="revend_tstmp" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-232">
-        <dropColumn columnName="revend_tstmp" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-233">
-        <dropColumn columnName="revend_tstmp" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-234">
-        <dropColumn columnName="revend_tstmp" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-235">
-        <dropColumn columnName="revend_tstmp" tableName="query_logic_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-236">
-        <dropColumn columnName="revend_tstmp" tableName="query_participant_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-237">
-        <dropColumn columnName="revend_tstmp" tableName="query_participant_content_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-264">
-        <dropColumn columnName="status_mod" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-265">
-        <dropColumn columnName="subject_mod" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-266">
-        <dropColumn columnName="subject_mod" tableName="query_participant_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-267">
-        <dropColumn columnName="subject_mod" tableName="query_participant_content_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-275">
-        <dropColumn columnName="type_mod" tableName="query_content_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-276">
-        <dropColumn columnName="type_mod" tableName="query_logic_aud"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-278">
-        <dropColumn columnName="update_by_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-279">
-        <dropColumn columnName="updated_date_mod" tableName="query_content_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-280">
-        <dropColumn columnName="updated_date_mod" tableName="query_evaluation_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-281">
-        <dropColumn columnName="updated_date_mod" tableName="query_group_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-282">
-        <dropColumn columnName="updated_date_mod" tableName="query_participant_aud"/>
-    </changeSet>
-  
-    <changeSet author="Gwen" id="1759149743240-285">
-        <dropColumn columnName="value_mod" tableName="query_aud"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-286">
-        <dropColumn columnName="value_mod" tableName="query_content_aud"/>
-    </changeSet>
-    
-    <changeSet author="Gwen" id="1759149743240-1">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="aggregation_period" tableName="metric_averages"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-2">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="aggregation_type" tableName="metric_averages"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-3">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="assigned_date" tableName="query_participant"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-4">
-        <dropNotNullConstraint columnDataType="boolean" columnName="can_edit" tableName="query_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-5">
-        <dropDefaultValue columnDataType="boolean" columnName="can_edit" tableName="query_group"/>
-    </changeSet>
-
-    <changeSet author="Gwen" id="1759149743240-7">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="comparison_operator" tableName="query"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-8">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="created_at" tableName="metric_averages"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-9">
-        <dropNotNullConstraint columnDataType="bigint" columnName="created_by" tableName="query_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-10">
-        <dropNotNullConstraint columnDataType="bigint" columnName="created_by" tableName="query_participant"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-11">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="created_date" tableName="query_content_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-12">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="created_date" tableName="query_evaluation"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-13">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="created_date" tableName="query_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-14">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="created_date" tableName="query_participant_content"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-17">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="group_name" tableName="modules"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-18">
-        <dropNotNullConstraint columnDataType="boolean" columnName="is_archived" tableName="query_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-19">
-        <dropDefaultValue columnDataType="boolean" columnName="is_archived" tableName="query_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-20">
-        <dropNotNullConstraint columnDataType="boolean" columnName="is_archived" tableName="query_participant_content"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-21">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="link" tableName="modules"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-22">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="metric_name" tableName="metric_averages"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-23">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="name" tableName="modules"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-24">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="name" tableName="query_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-25">
-        <dropNotNullConstraint columnDataType="boolean" columnName="notification_sent" tableName="query_evaluation"/>
-    </changeSet>
-    
-    <changeSet author="Gwen" id="1759149743240-29">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="period_end_date" tableName="metric_averages"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-30">
-        <dropNotNullConstraint columnDataType="timestamp" columnName="period_start_date" tableName="metric_averages"/>
-    </changeSet>
-   
-    <changeSet author="Gwen" id="1759149743240-35">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_content_group_id" tableName="query_content"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-36">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_content_group_id" tableName="query_participant_content"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-37">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_group_id" tableName="query"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-38">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_group_id" tableName="query_content"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-39">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_group_id" tableName="query_evaluation"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-40">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_group_id" tableName="query_logic"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-41">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_group_id" tableName="query_participant"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-42">
-        <dropNotNullConstraint columnDataType="bigint" columnName="query_group_id" tableName="query_participant_content"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-43">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="query_metric" tableName="query"/>
-    </changeSet>
-
-    <changeSet author="Gwen" id="1759149743240-45">
-        <dropNotNullConstraint columnDataType="boolean" columnName="result" tableName="query_evaluation"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-46">
-        <dropDefaultValue columnDataType="varchar(255)" columnName="status" tableName="query_content_group"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-47">
-        <dropNotNullConstraint columnDataType="bigint" columnName="subject_id" tableName="metric_averages"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-48">
-        <dropNotNullConstraint columnDataType="bigint" columnName="subject_id" tableName="query_evaluation"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-49">
-        <dropNotNullConstraint columnDataType="bigint" columnName="subject_id" tableName="query_participant"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-50">
-        <dropNotNullConstraint columnDataType="bigint" columnName="subject_id" tableName="query_participant_content"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-51">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="time_frame" tableName="query"/>
-    </changeSet>
-    <changeSet author="Gwen" id="1759149743240-52">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="type" tableName="query_logic"/>
-    </changeSet>
-  
-    <changeSet author="Gwen" id="1759149743240-55">
-        <dropNotNullConstraint columnDataType="varchar(255)" columnName="value" tableName="query"/>
-    </changeSet>
-   
-  
 </databaseChangeLog>
