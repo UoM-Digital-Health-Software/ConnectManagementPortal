@@ -18,6 +18,7 @@ import org.radarbase.management.domain.Subject
 import org.radarbase.management.domain.User
 import org.radarbase.management.repository.PdfSummaryRequestRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ClassPathResource
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -100,7 +101,8 @@ data class HistogramResponse(
 @Service
 class AWSService(
     @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-    @Autowired private val mailService: MailService) {
+    @Autowired private val mailService: MailService,
+    @Value("\${test.dataSource:}") private val dataSourceTest: String) {
     private val log = LoggerFactory.getLogger(javaClass)
     private var s3AsyncClient: S3AsyncClient? = null
     private var bucketName: String = "connect-uom"
@@ -110,12 +112,18 @@ class AWSService(
 
 
 
-    private fun createS3Client() : S3Client  {
+    private fun createS3Client() : S3Client?  {
         val region = Region.EU_WEST_2
-        val s3Client = S3Client.builder()
-            .region(region)
-            .credentialsProvider(DefaultCredentialsProvider.create())
-            .build()
+        val s3Client: S3Client? = runCatching {
+            val client = S3Client.builder()
+                .region(region)
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build()
+
+            // running the listbuckets to test if credentials exists
+            client.listBuckets()
+            client
+        }.getOrNull()
 
 
         return s3Client
@@ -124,7 +132,6 @@ class AWSService(
 
 
     private fun extractDateFromFile(prefix: String): LocalDate {
-        // prefix looks like "summary-data/2025-09-25_<userId>/"
         val folderName = prefix.removePrefix("summary-data/").removeSuffix("/")
         val datePart = folderName.substringBefore("_")
         return LocalDate.parse(datePart, DateTimeFormatter.ISO_DATE)
@@ -132,24 +139,21 @@ class AWSService(
 
 
     fun startProcessing(projectName: String, login: String, dataSource: DataSource) : DataSummaryResult? {
-        val dataSource = dataSource  // Change this to DataSource.CLASSPATH to load from resources
-
         val s3Client = createS3Client()
 
-        val files = if (dataSource == DataSource.S3) {
+        val files = if (s3Client != null) {
             listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName)
         } else {
+            log.info("[AWS] getting files through classpath")
             listClasspathJsonFiles(folderPath, login, projectName)
         }
 
-        if(files.size == 0) {
+
+        if(files.isEmpty()) {
             return null;
         }
 
-        val monthlyFeatureStats = processJsonFiles(s3Client, bucketName, files, dataSource)
-
-        return monthlyFeatureStats;
-
+        return processJsonFiles(s3Client, bucketName, files, dataSource)
     }
 
     fun listS3JsonFiles(s3Client: S3Client, bucket: String, prefix: String, userId: String, projectName: String): List<String> {
@@ -198,14 +202,12 @@ class AWSService(
             .filter { it != prefix } // Exclude the folder itself
     }
     fun listClasspathJsonFiles(prefix: String, userId: String, projectName: String) : List<String> {
-
-
-        val testUserId = "24fadaf2-8c16-48fe-98ea-13ee4f778d66"
-
+        val testUserId = userId
 
         val classLoader =  Thread.currentThread().contextClassLoader
         val resource = classLoader.getResource(prefix) ?: return emptyList()
         val allFolders = java.io.File(resource.toURI())
+        log.info("[AWS] prefi {}", prefix)
 
         val userFolders = allFolders
             .listFiles { file -> file.isDirectory }  // only keep directories
@@ -213,10 +215,16 @@ class AWSService(
             ?.filter { it.endsWith("_$testUserId") } // filter by suffix
             ?: emptyList()
 
+        log.info("[AWS] userFolders {}", userFolders)
 
         val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()  // or handle the case gracefully
 
+        log.info("[AWS] latestFolder {}", latestFolder)
+
         val files  = classLoader.getResource("$prefix$latestFolder/$projectName/$testUserId") ?: return emptyList()
+
+        log.info("[AWS] files {}", files)
+
         val allFiles = java.io.File(files.toURI())
 
         return  allFiles.list()?.map  {
@@ -245,12 +253,13 @@ class AWSService(
     }
     @Scheduled(cron = "0 * * * * ?")
     fun checkIfSummaryIsReady() {
-        val dataSource = DataSource.CLASSPATH
+        val s3Client = createS3Client()
+
         val latestRequests = pdfSummaryRequestRepository.findLatestPerSubject();
         latestRequests.forEach {
 
             log.info("[PDF-WORKER] Checking for {}", it.summaryId)
-            if (it.emailSent == false) {
+            if (!it.emailSent) {
 
                 val subject = it.subject
                 val login = subject?.user?.login
@@ -259,9 +268,7 @@ class AWSService(
                 var files: List<String> = listOf()
 
                 if (login != null && projectName != null) {
-
-                    files = if(dataSource == DataSource.S3) {
-                        val s3Client = createS3Client()
+                    files = if(s3Client != null) {
                         listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName)
                     } else {
                         listClasspathJsonFiles(folderPath, login, projectName)
@@ -275,6 +282,8 @@ class AWSService(
                     log.info("[PDF-WORKER] Sending email for {}", subject?.externalId)
                     sendSummaryReadyEmail(it.requestedBy, it.subject)
                     updatePdfSummaryRequestAsCompleted(it);
+                } else {
+                    log.info("[PDF-WORKER] no files for {}", subject?.externalId)
                 }
             }
         }
@@ -282,7 +291,7 @@ class AWSService(
 
 
     fun processJsonFiles(
-       Client: S3Client,
+       Client: S3Client?,
         bucket: String,
         fileKeys: List<String>,
         dataSource: DataSource
@@ -307,9 +316,10 @@ class AWSService(
                 continue
             }
 
-            val jsonString = when (dataSource) {
-                DataSource.S3 -> downloadS3Json(Client, bucket, key)
-                DataSource.CLASSPATH -> readClassPathJson(key)
+            val jsonString = if (Client != null) {
+                downloadS3Json(Client, bucket, key)
+            } else {
+                readClassPathJson(key)
             }
 
 
@@ -439,22 +449,7 @@ class AWSService(
                     }
                 }
             }
-
-            // histogram
-
-     //       jsonData.questionnaire_responses.
-
-//            log.info("questionnaire data is ${jsonData.questionnaire_responses.total_responses}")
-//            monthlyAverages
-//                .getOrPut(month) { mutableMapOf() }
-//                .getOrPut("questionnaire_responses") { mutableListOf() }
-//                .add(jsonData.questionnaire_responses.total_responses.toDouble())
-
         }
-
-//        return monthlyAverages.mapValues { (_, features) ->
-//            features.mapValues { (_, means) -> means.average() }
-//        }
 
         return dataSummaryResult
     }
@@ -471,25 +466,12 @@ class AWSService(
         }
     }
 
-
     fun readClassPathJson(filePath: String) : String {
         val classLoader = Thread.currentThread().contextClassLoader
         val inputStream = classLoader.getResourceAsStream(filePath)
             ?: throw IllegalArgumentException("File not found: $filePath")
 
         return inputStream.bufferedReader(StandardCharsets.UTF_8).use { it.readText() }
-    }
-
-
-
-    private fun processHistogramCategory(
-        source: Map<String, Int>?,
-        target: MutableMap<String, Int>
-    ) {
-        source?.forEach { (feature, value) ->
-            val normalizedKey = feature.toDoubleOrNull()?.toInt()?.toString() ?: feature
-            target.merge(normalizedKey, value, Int::plus)
-        }
     }
 
 
@@ -540,8 +522,9 @@ class AWSService(
             .replace("{{CREATED_AT}}", createdAt)
             .replace("{{PARTICIPANTS}}", participantsYaml)
 
+        val s3Client =  createS3Client()
 
-        if(local) {
+        if(s3Client == null) {
             val outputDir = File("src/main/resources/$resourceFolderPath")
 
             log.info("[AWS] making directory")
@@ -555,11 +538,7 @@ class AWSService(
             return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
 
         } else {
-
-
             try {
-                val s3Client = createS3Client()
-
                 val key = "run-specs/tmp/manifest-$runId.yaml"
 
                 val request = PutObjectRequest.builder()
@@ -592,12 +571,7 @@ class AWSService(
 
         return ApiResponse(success = false, message = "Something went wrong...")
 
-
-        // println("✅ Manifest written to resources: ${file.absolutePath}")
     }
-    ///// old stuff
-
-
 
     private fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
         val newPdfSummaryTracker = PdfSummaryRequest()
@@ -608,81 +582,6 @@ class AWSService(
         newPdfSummaryTracker.subject =  subject
 
         pdfSummaryRequestRepository.saveAndFlush(newPdfSummaryTracker)
-    }
-    private fun configureS3Builder() {
-        bucketName = "voicein-ethics-upload"
-        s3AsyncClient = S3AsyncClient.builder().region(region).build()
-    }
-
-    fun createPresignedGetUrl(bucketName: String?, keyName: String?): String? {
-        S3Presigner.create().use { presigner ->
-            val objectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(keyName)
-                .build()
-            val presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(10)) // The URL will expire in 10 minutes.
-                .getObjectRequest(objectRequest)
-                .build()
-            val presignedRequest = presigner.presignGetObject(presignRequest)
-            log.info("Presigned URL: [{}]", presignedRequest.url().toString())
-            log.info("HTTP method: [{}]", presignedRequest.httpRequest().method())
-            return presignedRequest.url().toExternalForm()
-        }
-    }
-
-
-    fun useHttpUrlConnectionToGetDataAsInputStream(presignedUrlString: String?): InputStream? {
-        val byteArrayOutputStream = ByteArrayOutputStream() // Capture the response body to a byte array.
-        var inputStreamTest : InputStream = ByteArrayInputStream.nullInputStream()
-
-        try {
-            val presignedUrl = URL(presignedUrlString)
-            val connection = presignedUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.inputStream.use { content ->
-
-                inputStreamTest = content
-                content.close()
-            }
-            log.info("HTTP response code is " + connection.responseCode)
-        } catch (e: S3Exception) {
-            log.error(e.message, e)
-        } catch (e: IOException) {
-            log.error(e.message, e)
-        }
-
-        val byteArray = byteArrayOutputStream.toByteArray();
-        val inputStream : InputStream =  ByteArrayInputStream(byteArray);
-
-        return inputStream
-    }
-
-
-
-
-
-    fun readLocalFile()  : Map<String, List<Double>> {
-        val featureStatisticsMap = mutableMapOf<String, MutableList<Double>>()
-        try {
-            val objectMapper = jacksonObjectMapper()
-            val inputStream: InputStream = ClassPathResource("monthly_health_data.json").inputStream
-            val data: List<Map<String, Any>> = objectMapper.readValue(inputStream)
-
-            for (monthData in data) {
-                val featureStatistics = monthData["feature_statistics"] as Map<String, Any>
-
-                featureStatistics.forEach { (feature, stats) ->
-                    val meanValue = (stats as Map<String, Any>)["mean"] as? Double ?: (stats["mean_duration"] as? Double)
-                    if (meanValue != null) {
-                        featureStatisticsMap.getOrPut(feature) { mutableListOf() }.add(meanValue)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return featureStatisticsMap
     }
 
 }
