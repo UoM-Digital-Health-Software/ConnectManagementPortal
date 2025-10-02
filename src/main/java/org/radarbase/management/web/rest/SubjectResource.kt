@@ -705,11 +705,6 @@ class SubjectResource(
         NotAuthorizedException::class
     )
     fun requestDataSummary(@PathVariable login: String) : ResponseEntity<*> {
-        authService.checkScope(Permission.SUBJECT_READ)
-
-
-        log.info("[AWS] requested summary request")
-
         val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
 
         val currentUser = userService.getUserWithAuthorities()
@@ -725,10 +720,6 @@ class SubjectResource(
             return ResponseEntity.ok(response);
 
         }
-
-
-
-
 
         return ResponseEntity.ok(null);
     }

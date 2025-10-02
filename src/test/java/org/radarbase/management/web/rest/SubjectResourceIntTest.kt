@@ -7,14 +7,19 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.radarbase.auth.authentication.OAuthHelper
+import org.radarbase.auth.authorization.RoleAuthority
+import org.radarbase.auth.token.RadarToken
 import org.radarbase.management.ManagementPortalTestApp
+import org.radarbase.management.domain.Authority
+import org.radarbase.management.domain.Role
 import org.radarbase.management.domain.Subject
-import org.radarbase.management.repository.SubjectRepository
-import org.radarbase.management.service.SourceService
-import org.radarbase.management.service.SourceTypeService
-import org.radarbase.management.service.SubjectService
-import org.radarbase.management.service.SubjectServiceTest
+import org.radarbase.management.domain.User
+import org.radarbase.management.repository.*
+import org.radarbase.management.service.*
 import org.radarbase.management.service.dto.MinimalSourceDetailsDTO
 import org.radarbase.management.service.dto.ProjectDTO
 import org.radarbase.management.service.dto.SourceDTO
@@ -23,6 +28,7 @@ import org.radarbase.management.service.dto.SubjectDTO
 import org.radarbase.management.service.mapper.SubjectMapper
 import org.radarbase.management.web.rest.errors.ExceptionTranslator
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.actuate.audit.AuditEventRepository
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
@@ -36,6 +42,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
 import javax.servlet.ServletException
@@ -58,18 +66,46 @@ internal class SubjectResourceIntTest(
     @Autowired private val jacksonMessageConverter: MappingJackson2HttpMessageConverter,
     @Autowired private val pageableArgumentResolver: PageableHandlerMethodArgumentResolver,
     @Autowired private val exceptionTranslator: ExceptionTranslator,
+    @Autowired private val projectRepository: ProjectRepository,
+    @Autowired private val eventRepository: AuditEventRepository,
+    @Autowired private val revisionService: RevisionService,
+    @Autowired private val authService: AuthService,
+    @Autowired private val connectDataLogRepository: ConnectDataLogRepository,
+    @Autowired private val roleRepository: RoleRepository,
+    @Autowired private val awsService: AWSService,
+    @Autowired private val userRepository: UserRepository,
+    @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository
+
 ) {
     private lateinit var restSubjectMockMvc: MockMvc
-
+    @Autowired private lateinit var mockUserService: UserService
     @BeforeEach
     @Throws(ServletException::class)
     fun setUp() {
+        mockUserService = mock()
         MockitoAnnotations.openMocks(this)
+
+
+        val subjectResourceMock = SubjectResource(
+                subjectService,
+                subjectRepository,
+                subjectMapper,
+                projectRepository,
+                sourceTypeService,
+                eventRepository,
+                 revisionService,
+                sourceService,
+                authService,
+                connectDataLogRepository,
+                roleRepository,
+                awsService,
+                mockUserService
+        )
 
         val filter = OAuthHelper.createAuthenticationFilter()
         filter.init(MockFilterConfig())
         restSubjectMockMvc =
-            MockMvcBuilders.standaloneSetup(subjectResource).setCustomArgumentResolvers(pageableArgumentResolver)
+            MockMvcBuilders.standaloneSetup(subjectResourceMock).setCustomArgumentResolvers(pageableArgumentResolver)
                 .setControllerAdvice(exceptionTranslator).setMessageConverters(jacksonMessageConverter)
                 .addFilter<StandaloneMockMvcBuilder>(filter) // add the oauth token by default to all requests for this mockMvc
                 .defaultRequest<StandaloneMockMvcBuilder>(
@@ -575,5 +611,74 @@ internal class SubjectResourceIntTest(
             ).contentType(TestUtil.APPLICATION_JSON_UTF8).content(TestUtil.convertObjectToJsonBytes(attributes))
         ).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.attributes").isNotEmpty())
+    }
+
+
+    @Throws(Exception::class)
+    @Transactional
+    @Test
+    fun requestDataSummary_shouldReturnManifest() {
+
+        val token = mock<RadarToken>()
+        val roles: MutableSet<Role> = HashSet()
+        var role = Role()
+        val authority = Authority()
+        authority.name = RoleAuthority.SYS_ADMIN.authority
+        role.authority = authority
+
+        role = roleRepository.saveAndFlush(role)
+        roles.add(role)
+        val user = User()
+        user.setLogin("test")
+        user.firstName = "john"
+        user.lastName = "doe"
+        user.email = "john.doe@jhipster.com"
+        user.langKey = "en"
+        user.roles = roles
+        user.password = "\$2a\$10\$6.DGYBLII7NCgDoP2iTM2OKe0JS1.fupultHlGIZxx2kHCaxaDA2G"
+        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+
+        userRepository.saveAndFlush(user)
+
+        val dbBefore = pdfSummaryRequestRepository.findAll();
+
+
+        val subjectDto = SubjectServiceTest.createEntityDTO()
+        val createdSubject = subjectService.createSubject(subjectDto)
+        assertNotNull(createdSubject)
+
+
+        restSubjectMockMvc.perform(
+            MockMvcRequestBuilders.get("/api/subjects/{login}/summary/request", createdSubject?.login)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value("true"))
+
+
+
+        val dbAfter = pdfSummaryRequestRepository.findAll()
+        Assertions.assertThat(dbAfter.size).isEqualTo(dbBefore.size + 1)
+
+
+        val newSummaryRequest = dbAfter.get(0)
+
+        Assertions.assertThat(newSummaryRequest.emailSent).isEqualTo(false)
+        Assertions.assertThat(newSummaryRequest.subject!!.id).isEqualTo(createdSubject!!.id)
+        val today = LocalDate.now()
+        val formatted = today.format(DateTimeFormatter.ISO_DATE)
+        Assertions.assertThat(newSummaryRequest.summaryId).isEqualTo("${formatted}_${createdSubject.login}")
+
+
+        restSubjectMockMvc.perform(
+            MockMvcRequestBuilders.get("/api/subjects/{login}/summary/request", createdSubject?.login)
+                .accept(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Please wait 24 hours before requesting another summary"))
+
+
+
     }
 }

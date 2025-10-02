@@ -39,19 +39,18 @@
 
 
 
-    <changeSet id="20250926150000_add_pdf_summary_tracker_foreign_key" author="bastiaan@thehyve.nl">
+    <changeSet id="20250926150000_add_pdf_summary_tracker_foreign_key" author="Jindrich Gorner">
 
-        <modifyDataType tableName="app_config" columnName="user_id" newDataType="BIGINT"/>
 
         <addForeignKeyConstraint baseColumnNames="subject_id"
-                                 baseTableName="pdf_summary_tracker"
-                                 constraintName="fk_pdf_summary_tracker_subject_id"
+                                 baseTableName="pdf_summary_request"
+                                 constraintName="fk_pdf_summary_request_subject_id"
                                  referencedColumnNames="id"
                                  referencedTableName="subject"/>
 
         <addForeignKeyConstraint baseColumnNames="requested_by"
-                                 baseTableName="pdf_summary_tracker"
-                                 constraintName="fk_pdf_summary_tracker_requested_by"
+                                 baseTableName="pdf_summary_request"
+                                 constraintName="fk_pdf_summary_request_requested_by"
                                  referencedColumnNames="id"
                                  referencedTableName="radar_user"/>
 

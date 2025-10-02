@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ClassPathResource
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
@@ -99,6 +100,7 @@ data class HistogramResponse(
 
 
 @Service
+@Transactional
 class AWSService(
     @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
     @Autowired private val mailService: MailService,
@@ -207,7 +209,6 @@ class AWSService(
         val classLoader =  Thread.currentThread().contextClassLoader
         val resource = classLoader.getResource(prefix) ?: return emptyList()
         val allFolders = java.io.File(resource.toURI())
-        log.info("[AWS] prefi {}", prefix)
 
         val userFolders = allFolders
             .listFiles { file -> file.isDirectory }  // only keep directories
@@ -215,15 +216,9 @@ class AWSService(
             ?.filter { it.endsWith("_$testUserId") } // filter by suffix
             ?: emptyList()
 
-        log.info("[AWS] userFolders {}", userFolders)
-
         val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()  // or handle the case gracefully
 
-        log.info("[AWS] latestFolder {}", latestFolder)
-
         val files  = classLoader.getResource("$prefix$latestFolder/$projectName/$testUserId") ?: return emptyList()
-
-        log.info("[AWS] files {}", files)
 
         val allFiles = java.io.File(files.toURI())
 
