@@ -4,12 +4,14 @@
 
     </div>
 </div>
-
-<div class="main">
     <p *ngIf="!isDataSummaryReady">
-        Data summary is not ready yet. The DHS team will let you know when it is
-        ready to download.
+        There is no data summary. If you haven't requested it yet, please request it. You will then be notified by email when it is ready to download.
     </p>
+<div class="main" *ngIf="isDataSummaryReady">
+
+
+    <div>
+    </div>
 
 
  <div>
@@ -112,14 +114,7 @@ the readings).</p>
 </div>
 
 
-    <div class="padding-top"></div>
-
-
-
-
-
-
-
+<div class="padding-top"></div>
 
     <div *ngFor="let key of delusionKeys">
         <app-single-row-graph
