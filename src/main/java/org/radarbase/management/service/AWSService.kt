@@ -103,8 +103,7 @@ data class HistogramResponse(
 @Transactional
 class AWSService(
     @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-    @Autowired private val mailService: MailService,
-    @Value("\${test.dataSource:}") private val dataSourceTest: String) {
+    @Autowired private val mailService: MailService) {
     private val log = LoggerFactory.getLogger(javaClass)
     private var s3AsyncClient: S3AsyncClient? = null
     private var bucketName: String = "connect-uom"
@@ -114,7 +113,7 @@ class AWSService(
 
 
 
-    private fun createS3Client() : S3Client?  {
+    fun createS3Client() : S3Client?  {
         val region = Region.EU_WEST_2
         val s3Client: S3Client? = runCatching {
             val client = S3Client.builder()
@@ -221,7 +220,7 @@ class AWSService(
     }
 
 
-    private fun updatePdfSummaryRequestAsCompleted(pdfSummaryRequest: PdfSummaryRequest) {
+    fun updatePdfSummaryRequestAsCompleted(pdfSummaryRequest: PdfSummaryRequest) {
         pdfSummaryRequest.emailSent = true
         pdfSummaryRequest.summaryCreatedOn = ZonedDateTime.now()
         pdfSummaryRequestRepository.save(pdfSummaryRequest)
@@ -242,7 +241,7 @@ class AWSService(
 
 
 
-    // uncomment based on dev testing 
+    // uncomment based on dev testing
     //@Scheduled(cron = "0 0 0/4 * * ?") every 4 hour
     //@Scheduled(cron = "0 0 * * * ?") every hour
     @Scheduled(cron = "0 * * * * ?")
@@ -269,7 +268,6 @@ class AWSService(
                     }
 
                 } else {
-                    log.info("[PDF-WORKER] No login or projectName for {}", it.id)
                 }
 
                 if (files.isNotEmpty()) {
