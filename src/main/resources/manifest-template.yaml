@@ -1,0 +1,180 @@
+run_id: {{RUN_ID}}
+created_by: {{CREATED_BY}}
+created_at: {{CREATED_AT}}
+source:
+    bucket: connect-output-storage
+    prefix: output
+    participants:
+        {{PARTICIPANTS}}
+filters:
+    exclude_metrics:
+        - active_apple_healthkit_audio_exposure
+        - active_apple_healthkit_env_exposure
+        - apple_ios_magnetic_field
+        - ios_phone_relative_location
+        - sensorkit_acceleration
+        - sensorkit_ambient_light
+        - sensorkit_ambient_pressure
+        - sensorkit_device_usage
+        - sensorkit_keyboard_metrics
+        - sensorkit_message_usage
+        - sensorkit_phone_usage
+        - sensorkit_rotation_rate
+        - sensorkit_telephony_speech_metrics
+        - sensorkit_visits
+        - android_phone_acceleration
+        - android_phone_battery_level
+        - android_phone_bluetooth_devices
+        - android_phone_contacts
+        - android_phone_relative_location
+        - android_phone_usage_event
+        - android_phone_user_interaction
+        - android_phone_light
+        - application_device_info
+        - application_record_counts
+        - application_server_status
+        - application_time_zone
+        - application_uptime
+        - android_phone_gyroscope
+        - android_phone_magnetic_field
+        - connect_data_log
+workspace:
+    root: /mnt/connect/workdir
+    run_subdir: runs/{run_id}
+outputs:
+    merged_prefix: s3://connect-uom/merged-data/{site}/{participant_id}/
+    summary_prefix: s3://connect-uom/summary-data/{run_id}/{site}/{participant_id}/
+    manifest_key: s3://connect-uom/manifests/{run_id}/manifest.json
+    logs_prefix: s3://connect-uom/logs/{run_id}/
+processing:
+  steps:
+    - type: download
+      strategy: s3-sync
+      refresh:
+        mode: incremental
+        relative_days: 30
+        per_metric:
+          active_apple_healthkit_steps:
+            mode: relative
+            anchor: start_of_month
+    - type: merge
+      script: connect_summary/merge-data.py
+      output_format: csv
+      update: true
+    - type: redact
+      rules:
+        - metric_prefix: active_apple_healthkit_
+          column: value.sourceName
+          value: REDACTED
+    - type: summary
+      script: connect_summary/generate_summaries.py
+      time_resolution: month
+      cache_policy:
+        reuse: true
+        manifest_prefix: s3://connect-uom/summary-manifests/
+        refresh:
+          mode: relative
+          anchor: start_of_month
+      features:
+        - id: steps_android_health_connect
+          flag: steps:android_health_connect_typed_data:value.time:value.key:Steps:value.intValue:cumulative
+        - id: steps_fitbit
+          flag: steps:connect_fitbit_intraday_steps:value.time:value.steps:count:cumulative
+        - id: steps_healthkit
+          flag: steps:active_apple_healthkit_steps:value.time:value.key:steps:value.doubleValue:cumulative
+        - id: heart_rate_android
+          flag: heart_rate:android_health_connect_typed_data:value.time:value.key:HeartRate:value.intValue
+        - id: heart_rate_fitbit
+          flag: heart_rate:connect_fitbit_intraday_heart_rate:value.time:value.heartRate:BPM
+        - id: heart_rate_healthkit
+          flag: heart_rate:active_apple_healthkit_heart_rate:value.time:value.key:heart_rate:value.doubleValue
+        - id: heart_rate_variability
+          flag: heart_rate_variability:active_apple_healthkit_heart_rate_variability:value.time:value.key:heart_rate_variability:value.doubleValue
+        - id: heart_rate_variability_fitbit
+          flag: heart_rate_variability:connect_fitbit_intraday_heart_rate_variability:value.time:value.rmssd:RMSSD
+        - id: respiratory_rate_healthkit
+          flag: respiratory_rate:active_apple_healthkit_resp_rate:value.time:value.doubleValue:breaths_per_minute
+        - id: respiratory_rate_fitbit
+          flag: respiratory_rate:connect_fitbit_breathing_rate:value.time:value.fullSleep:breaths_per_minute
+        - id: sleep_duration_healthkit
+          flag: sleep:active_apple_healthkit_sleep_stage:value.time:value.duration:seconds:cumulative
+        - id: sleep_duration_fitbit
+          flag: sleep:connect_fitbit_sleep_stages:value.time:value.duration:minutes:cumulative
+        - id: activity_duration_healthkit
+          flag: activity:active_apple_healthkit_activity:value.time:value.duration:seconds:cumulative
+        - id: activity_duration_android
+          flag: activity:android_health_connect_typed_data:value.time:value.key:ExerciseSession:value.duration:cumulative
+        - id: activity_duration_fitbit
+          flag: activity:connect_fitbit_activity_log:value.startTime:value.duration:minutes:cumulative
+      questionnaires:
+        - id: questionnaire_response
+          flag: questionnaire_response:value.timeCompleted
+      questionnaire_sliders:
+        - id: negative_emotions
+          flag: negative_emotions:questionnaire_response:value.answers:negative_emotions_:value:value.timeCompleted
+        - id: positive_emotions
+          flag: positive_emotions:questionnaire_response:value.answers:positive_emotions_:value:value.timeCompleted
+        - id: stress
+          flag: stress:questionnaire_response:value.answers:stress_:value:value.timeCompleted
+        - id: dissociation
+          flag: dissociation:questionnaire_response:value.answers:dissociation_:value:value.timeCompleted
+        - id: hope
+          flag: hope:questionnaire_response:value.answers:hope_:value:value.timeCompleted
+        - id: mood
+          flag: mood:questionnaire_response:value.answers:mood_:value:value.timeCompleted
+        - id: anxiety
+          flag: anxiety:questionnaire_response:value.answers:anxiety_:value:value.timeCompleted
+        - id: self_esteem
+          flag: self_esteem:questionnaire_response:value.answers:self_esteem_:value:value.timeCompleted
+        - id: connectedness
+          flag: connectedness:questionnaire_response:value.answers:connectedness_:value:value.timeCompleted
+        - id: coping
+          flag: coping:questionnaire_response:value.answers:coping_:value:value.timeCompleted
+        - id: fear
+          flag: fear:questionnaire_response:value.answers:fear_:value:value.timeCompleted
+        - id: hallucination_hear
+          flag: hallucination_hear:questionnaire_response:value.answers:hallucination_hear_:value:value.timeCompleted
+        - id: hallucination_vision
+          flag: hallucination_vision:questionnaire_response:value.answers:hallucination_vision_:value:value.timeCompleted
+        - id: threat
+          flag: threat:questionnaire_response:value.answers:threat_:value:value.timeCompleted
+        - id: delusion_1
+          flag: delusion_1:questionnaire_response:value.answers:delusion_1:value:value.timeCompleted
+        - id: delusion_2
+          flag: delusion_2:questionnaire_response:value.answers:delusion_2:value:value.timeCompleted
+        - id: delusion_3
+          flag: delusion_3:questionnaire_response:value.answers:delusion_3:value:value.timeCompleted
+        - id: delusion_4
+          flag: delusion_4:questionnaire_response:value.answers:delusion_4:value:value.timeCompleted
+        - id: delusion_5
+          flag: delusion_5:questionnaire_response:value.answers:delusion_5:value:value.timeCompleted
+        - id: delusion_6
+          flag: delusion_6:questionnaire_response:value.answers:delusion_6:value:value.timeCompleted
+        - id: delusion_7
+          flag: delusion_7:questionnaire_response:value.answers:delusion_7:value:value.timeCompleted
+        - id: delusion_8
+          flag: delusion_8:questionnaire_response:value.answers:delusion_8:value:value.timeCompleted
+        - id: delusion_9
+          flag: delusion_9:questionnaire_response:value.answers:delusion_9:value:value.timeCompleted
+        - id: delusion_10
+          flag: delusion_10:questionnaire_response:value.answers:delusion_10:value:value.timeCompleted
+        - id: delusion_11
+          flag: delusion_11:questionnaire_response:value.answers:delusion_11:value:value.timeCompleted
+        - id: delusion_12
+          flag: delusion_12:questionnaire_response:value.answers:delusion_12:value:value.timeCompleted
+      questionnaire_histograms:
+        - id: social
+          flag: social:questionnaire_response:value.answers:social_1:value:value.timeCompleted
+        - id: whereabouts
+          flag: whereabouts:questionnaire_response:value.answers:whereabouts_1:value:value.timeCompleted
+        - id: sleep
+          flag: sleep:questionnaire_response:value.answers:sleep_5:value:value.timeCompleted
+    - type: publish
+      upload_logs: true
+publishing:
+    delete_local_workspace: false
+    retain_local_logs: 7d
+    remove_local_raw_after_publish: true
+    remove_local_merged_after_publish: true
+    remove_local_summary_after_publish: true
+    notifications: []

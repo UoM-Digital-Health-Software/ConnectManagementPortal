@@ -668,27 +668,10 @@ export class DataSummaryComponent implements OnInit {
                 const date = new Date(Number(yearPart), parseInt(monthPart) - 1);
                 let monthString = date.toLocaleString("en-US", { month: "long" });
 
-                this.months.push({ name: monthString, social: socialKeys.filter(k => k != null).join(", "), sleep: sleepKeys.filter(k => k != null), whereabouts: whereaboutsKeys.filter(k => k != null).join(",") })
 
+                 this.months.push({ name: monthString, social: socialKeys.filter(k => k != null).join(" & "), sleep: sleepKeys.filter(k => k != null).join(" & "), whereabouts: whereaboutsKeys.filter(k => k != null).join(" & ") })
 
             }
-
-
-
-
-
-
-
-            // console.log("social keys", sleepKeys)
-
-            // this goes through the slider data (questionnaire_responses/slider in export from James)
-            // if there is a data add it to this.data
-            // add corresponding month
-            // data looks like this basically
-            // this.data [1,2,2,3,4,5,6,7,8,9,10,11]
-            // months [Apr, Mar, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec, Jan, Feb]
-            // this is then fed to createGraphs and creates an object ready for chart.js
-
 
 
             console.log("all slider", allSlider)
@@ -705,13 +688,11 @@ export class DataSummaryComponent implements OnInit {
                     }
                 }
 
-                // no data then add empty data
+
+                  
                 this.pushToData(sliderKey, 0);
                 this.addMonthPerKey(sliderKey, month);
             });
-
-            // similar like above but this goes through physical data (heart rate etc)
-            //but same principles
 
             allPhysical.forEach((sliderKey) => {
                 if (data) {
