@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { EventManager } from '../util/event-manager.service';
 import { Subject } from './subject.model';
 import { SubjectService } from './subject.service';
-import {HideableSubjectField, SiteSettingsService} from "./sitesettings.service";
+import { HideableSubjectField, SiteSettingsService } from "./sitesettings.service";
 import { AlertService } from '../util/alert.service';
 
 @Component({
@@ -18,14 +18,14 @@ export class SubjectDetailComponent implements OnInit, OnDestroy {
     subject: Subject;
     private subscription: any;
     private eventSubscriber: Subscription;
-    public siteSettings$ =this.siteSettingsService.siteSettings$;
+    public siteSettings$ = this.siteSettingsService.siteSettings$;
 
     constructor(
-            private eventManager: EventManager,
-            private subjectService: SubjectService,
-            private siteSettingsService: SiteSettingsService,
+        private eventManager: EventManager,
+        private subjectService: SubjectService,
+        private siteSettingsService: SiteSettingsService,
         private route: ActivatedRoute,
-                       private alertService: AlertService
+        private alertService: AlertService
     ) {
     }
 
@@ -47,24 +47,18 @@ export class SubjectDetailComponent implements OnInit, OnDestroy {
 
         this.subjectService.requestDataSummary(this.subject.login).subscribe((response) => {
 
-          const body = response.body
+            const body = response.body
 
-            console.log("body", body)
             if (body.success) {
-                    this.alertService.success('The summary has been requested. You will receive an email once it is ready.', null, null);
+                this.alertService.success('The summary has been requested. You will receive an email once it is ready.', null, null);
 
             } else {
-                console.log("error")
-                    this.alertService.error(body.message, null, null);
+                this.alertService.error(body.message, null, null);
 
             }
 
 
-
         })
-
-
-
     }
 
     previousState() {
@@ -77,7 +71,7 @@ export class SubjectDetailComponent implements OnInit, OnDestroy {
     }
 
     registerChangeInSubjects() {
-        this.eventSubscriber = this.eventManager.subscribe('subjectListModification', ({content}) => {
+        this.eventSubscriber = this.eventManager.subscribe('subjectListModification', ({ content }) => {
             if (content.subject.login === this.subject.login && (content.op === 'UPDATE' || content.op === 'CREATE')) {
                 this.subject = content.subject;
             }

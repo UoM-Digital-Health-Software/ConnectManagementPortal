@@ -162,7 +162,7 @@ class AWSService(
         val request = ListObjectsV2Request.builder()
             .bucket(bucket)
             .prefix(prefix)
-            .delimiter("/") // ensures we only list top-level folders
+            .delimiter("/")
             .build()
 
 
@@ -176,7 +176,6 @@ class AWSService(
 
 
         if (matchingFolders.isEmpty()) {
-            log.info("[AWS] there is no matching folders" )
             return emptyList()
         }
 
@@ -185,23 +184,16 @@ class AWSService(
             .maxByOrNull { extractDateFromFile(it) }!!
 
 
-        log.info("[AWS] latest folder {}", latestFolder )
-
         val filesRequest = ListObjectsV2Request.builder()
             .bucket(bucket)
             .prefix("$latestFolder$projectName/$userId")
             .build()
 
-        log.info("[AWS] latest folder url {}",         "$latestFolder/$projectName/$userId" )
-
-
 
         val filesResponse = s3Client.listObjectsV2(filesRequest)
-        log.info("[AWS] number of files {}", filesResponse.contents().size )
-
 
         return filesResponse.contents().map(S3Object::key)
-            .filter { it != prefix } // Exclude the folder itself
+            .filter { it != prefix }
     }
     fun listClasspathJsonFiles(prefix: String, userId: String, projectName: String) : List<String> {
         val testUserId = userId
@@ -211,12 +203,12 @@ class AWSService(
         val allFolders = java.io.File(resource.toURI())
 
         val userFolders = allFolders
-            .listFiles { file -> file.isDirectory }  // only keep directories
-            ?.map { it.name }                        // get just the folder names
-            ?.filter { it.endsWith("_$testUserId") } // filter by suffix
+            .listFiles { file -> file.isDirectory }
+            ?.map { it.name }
+            ?.filter { it.endsWith("_$testUserId") }
             ?: emptyList()
 
-        val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()  // or handle the case gracefully
+        val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()
 
         val files  = classLoader.getResource("$prefix$latestFolder/$projectName/$testUserId") ?: return emptyList()
 
@@ -246,6 +238,13 @@ class AWSService(
         )
 
     }
+
+
+
+
+    // uncomment based on dev testing 
+    //@Scheduled(cron = "0 0 0/4 * * ?") every 4 hour
+    //@Scheduled(cron = "0 0 * * * ?") every hour
     @Scheduled(cron = "0 * * * * ?")
     fun checkIfSummaryIsReady() {
         val s3Client = createS3Client()
@@ -299,14 +298,8 @@ class AWSService(
             allSlider = mutableListOf(),
             allPhysical = mutableListOf()
         )
-        log.info("filekeys ${fileKeys}")
-
-
 
         for (key in fileKeys) {
-            log.info("current key is ${key}")
-
-
             if(key.contains(".DS_Store")) {
                 continue
             }
@@ -491,25 +484,17 @@ class AWSService(
         val runId = "${today}_${userId}"
         val createdAt = Instant.now().toString()
 
-
-        // check if
-
         val existingPdfSummary = pdfSummaryRequestRepository.findBySummaryIdAndSubject(runId, subject);
 
         if(existingPdfSummary != null) {
             return ApiResponse(success = false, message = "Please wait 24 hours before requesting another summary")
-
         }
 
-        // Load template from resources
         val templateStream = this::class.java.getResourceAsStream("/manifest-template.yaml")
             ?: throw IllegalStateException("manifest-template.yaml not found in resources")
 
-
-        log.info("[AWS] we have the stream")
         val template = templateStream.bufferedReader().use { it.readText() }
 
-        // Fill placeholders
         val participantsYaml = "- $userId"
         val yamlContent = template
             .replace("{{RUN_ID}}", runId)
@@ -522,7 +507,6 @@ class AWSService(
         if(s3Client == null) {
             val outputDir = File("src/main/resources/$resourceFolderPath")
 
-            log.info("[AWS] making directory")
             if (!outputDir.exists()) {
                 outputDir.mkdirs()
             }
@@ -543,15 +527,12 @@ class AWSService(
                     .build()
 
 
-                log.info("[AWS] request build {}", request)
-
                 s3Client.putObject(
                     request,
                     software.amazon.awssdk.core.sync.RequestBody.fromBytes(
                         yamlContent.toByteArray(StandardCharsets.UTF_8)
                     )
                 )
-
 
                 addPdfSummaryTrackerRecord(subject, currentUser, runId)
                 return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
@@ -563,9 +544,7 @@ class AWSService(
             }
         }
 
-
         return ApiResponse(success = false, message = "Something went wrong...")
-
     }
 
     private fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
