@@ -64,7 +64,9 @@ class SubjectResource(
     @Autowired private val sourceService: SourceService,
     @Autowired private val authService: AuthService,
     @Autowired private val connectDataLogRepository: ConnectDataLogRepository,
-    @Autowired private val roleRepository: RoleRepository
+    @Autowired private val roleRepository: RoleRepository,
+    @Autowired private val awsService: AWSService,
+    @Autowired private val userService: UserService,
 ) {
 
     /**
@@ -685,13 +687,41 @@ class SubjectResource(
     )
     fun getDataSummary(@PathVariable login: String) : ResponseEntity<DataSummaryResult> {
         authService.checkScope(Permission.SUBJECT_READ)
-        val awsService =   AWSService();
+
 
         val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
         val project = subject!!.activeProject!!.projectName!!;
 
+
+
         val monthlyStatistics =   awsService.startProcessing(project, login, DataSource.S3)
         return ResponseEntity.ok(monthlyStatistics);
+    }
+
+
+    @GetMapping("/subjects/{login:" + Constants.ENTITY_ID_REGEX + "}/summary/request")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun requestDataSummary(@PathVariable login: String) : ResponseEntity<*> {
+        val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
+
+        val currentUser = userService.getUserWithAuthorities()
+
+        currentUser?.let {
+           val response =  awsService.writeManifestToResources(
+                resourceFolderPath = "manifests/test",
+                subject = subject,
+                currentUser = currentUser,
+                createdBy = it.email!!,
+                local = true
+            )
+            return ResponseEntity.ok(response);
+
+        }
+
+        return ResponseEntity.ok(null);
     }
 
 

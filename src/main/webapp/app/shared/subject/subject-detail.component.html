@@ -2,7 +2,7 @@
 <div *ngIf="subject">
     <h2><span [translate]="'managementPortalApp.subject.detail.title'"></span>: {{subject.id}}</h2>
     <hr>
-    <jhi-alert-error></jhi-alert-error>
+    <jhi-alert></jhi-alert>
     <dl class="row-md jh-entity-details">
         <dt><span [translate]="'managementPortalApp.subject.login'"></span></dt>
         <dd>
@@ -72,6 +72,22 @@
             <span class="fa fa-arrow-left"></span>
             <span [translate]="'entity.action.back'"></span>
         </button>
+
+
+        <button
+            class="btn btn-success"
+            type="button"
+               (click)="requestSummary()"
+
+            replaceUrl="true"
+        >
+            <span class="fa"></span>
+            <span class="hidden-md-down">Request summary</span>
+        </button>
+
+
+
+
         <button *jhiHasAnyAuthority="['ROLE_SYS_ADMIN', 'ROLE_PROJECT_ADMIN']"
             class="btn btn-dark"
             [routerLink]="['/subject', subject.login, 'revisions']">

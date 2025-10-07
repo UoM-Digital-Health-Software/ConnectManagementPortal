@@ -74,6 +74,17 @@ export class SubjectService {
         );
     }
 
+    requestDataSummary(login: string, req?: any): Observable<any> {
+        const params = createRequestOption(req);
+        return this.http.get(
+            `${this.resourceUrl}/${encodeURIComponent(login)}/summary/request`,
+            { params, observe: 'response' }
+        );
+    }
+
+
+
+
     makeReportReady(login: string, req?: any): Observable<any> {
         const params = createRequestOption(req);
         return this.http.post(
