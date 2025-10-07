@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.hibernate.envers.Audited
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
@@ -7,6 +8,7 @@ import javax.persistence.*
 
 
 @Entity
+@Audited
 @Table(name = "query_content")
 @EntityListeners(
     AbstractEntityListener::class

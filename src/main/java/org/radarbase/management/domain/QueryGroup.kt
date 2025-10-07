@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.hibernate.envers.Audited
 import javax.persistence.CascadeType
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
@@ -10,6 +11,7 @@ import javax.persistence.*
  * Query Group.
  */
 @Entity
+@Audited
 @Table(name = "query_group")
 @EntityListeners(AbstractEntityListener::class)
 class QueryGroup : AbstractEntity(), Serializable {
@@ -31,7 +33,7 @@ class QueryGroup : AbstractEntity(), Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updated_by")
-    var updateBy: User? = null
+    var updatedBy: User? = null
 
     @Column(name = "created_date")
     var createdDate: ZonedDateTime? = null
@@ -67,7 +69,7 @@ class QueryGroup : AbstractEntity(), Serializable {
                 + "name='" + name + '\''
                 + ", description='" + description + '\''
                 + ", createdBy='" + createdBy + '\''
-                + ", updateBy='" + updateBy + '\''
+                + ", updateBy='" + updatedBy + '\''
                 + ", createdDate='" + createdDate + '\''
                 + ", updatedDate='" + updatedDate + '\''
                 + "}")

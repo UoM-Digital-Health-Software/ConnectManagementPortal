@@ -1,5 +1,6 @@
 package org.radarbase.management.domain
 
+import org.hibernate.envers.Audited
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
@@ -8,6 +9,7 @@ import javax.persistence.*
 
 
 @Entity
+@Audited
 @Table(name = "query_content_group")
 @EntityListeners(AbstractEntityListener::class)
 class QueryContentGroup : AbstractEntity(), Serializable {

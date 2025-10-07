@@ -139,7 +139,7 @@ public class QueryBuilderService(
             existingQueryGroup.name = queryGroupDTO.name
             existingQueryGroup.description = queryGroupDTO.description
             existingQueryGroup.updatedDate  = ZonedDateTime.now()
-            existingQueryGroup.updateBy = user;
+            existingQueryGroup.updatedBy = user;
 
             queryGroupRepository.saveAndFlush(existingQueryGroup);
         }
