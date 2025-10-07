@@ -155,6 +155,8 @@ ext['logback.version'] = "1.2.13" // Cannot upgrade this to 1.3.x or 1.4.x; caus
 
 dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0'
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0") // or latest version
+
 
     /* The entries in the block below are added here to force the version of
     *  transitive dependencies and mitigate reported vulnerabilities */
