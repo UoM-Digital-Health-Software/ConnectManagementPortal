@@ -110,7 +110,8 @@
             "scripts": [],
              "include": [
 
-                     "src/main/webapp/app/shared/queries/addQuery.component.spec.ts"
+                     "src/main/webapp/app/shared/queries/addQuery.component.spec.ts",
+                     "src/main/webapp/app/shared/subject/query-viewer/query-viewer.component.ts"
                 ]
 
           }
