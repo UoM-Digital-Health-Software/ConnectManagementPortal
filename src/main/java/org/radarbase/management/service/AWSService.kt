@@ -143,7 +143,7 @@ class AWSService(
         val s3Client = createS3Client()
 
         val files = if (s3Client != null) {
-            listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName)
+            listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, null)
         } else {
             log.info("[AWS] getting files through classpath")
             listClasspathJsonFiles(folderPath, login, projectName)
@@ -157,7 +157,9 @@ class AWSService(
         return processJsonFiles(s3Client, bucketName, files, dataSource)
     }
 
-    fun listS3JsonFiles(s3Client: S3Client, bucket: String, prefix: String, userId: String, projectName: String): List<String> {
+
+
+    fun listS3JsonFiles(s3Client: S3Client, bucket: String, prefix: String, userId: String, projectName: String, summaryId: String?): List<String> {
         val request = ListObjectsV2Request.builder()
             .bucket(bucket)
             .prefix(prefix)
@@ -182,6 +184,10 @@ class AWSService(
         val latestFolder = matchingFolders
             .maxByOrNull { extractDateFromFile(it) }!!
 
+
+        if (summaryId != null && latestFolder != summaryId) {
+            return emptyList()
+        }
 
         val filesRequest = ListObjectsV2Request.builder()
             .bucket(bucket)
@@ -262,7 +268,7 @@ class AWSService(
 
                 if (login != null && projectName != null) {
                     files = if(s3Client != null) {
-                        listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName)
+                        listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, it.summaryId)
                     } else {
                         listClasspathJsonFiles(folderPath, login, projectName)
                     }
