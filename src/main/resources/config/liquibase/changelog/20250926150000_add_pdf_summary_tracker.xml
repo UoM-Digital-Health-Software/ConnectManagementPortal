@@ -8,6 +8,14 @@
 
     <!-- Create table for app configs / feature flags -->
     <changeSet id="20250926150000_add_pdf_summary_request" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="pdf_summary_request"/>
+            </not>
+        </preConditions>
+
+
         <createTable tableName="pdf_summary_request">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -41,6 +49,11 @@
 
     <changeSet id="20250926150000_add_pdf_summary_tracker_foreign_key" author="Jindrich Gorner">
 
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="pdf_summary_request"/>
+            </not>
+        </preConditions>
 
         <addForeignKeyConstraint baseColumnNames="subject_id"
                                  baseTableName="pdf_summary_request"

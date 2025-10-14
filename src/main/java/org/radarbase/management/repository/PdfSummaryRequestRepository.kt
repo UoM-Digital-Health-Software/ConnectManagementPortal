@@ -23,6 +23,9 @@ interface PdfSummaryRequestRepository : JpaRepository<PdfSummaryRequest, Long?>,
     fun findBySummaryCreatedOnIsNullAndEmailSentIsFalse(): List<PdfSummaryRequest>
 
 
+    fun findBySubject(subject: Subject) : List<PdfSummaryRequest>
+
+
     fun findBySummaryIdAndSubject(summaryId: String, subject: Subject) : PdfSummaryRequest?
 
     @Query("""

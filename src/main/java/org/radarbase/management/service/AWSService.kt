@@ -190,8 +190,7 @@ class AWSService(
         val latestFolder = matchingFolders
             .maxByOrNull { extractDateFromFile(it) }!!
 
-
-        if (summaryId != null && latestFolder != summaryId) {
+        if (summaryId != null && !latestFolder.contains(summaryId)) {
             return emptyList()
         }
 
@@ -494,10 +493,10 @@ class AWSService(
         val runId = "${today}_${userId}"
         val createdAt = Instant.now().toString()
 
-        val existingPdfSummary = pdfSummaryRequestRepository.findBySummaryIdAndSubject(runId, subject);
+        val existingPdfSummaries = pdfSummaryRequestRepository.findBySubject(subject)
 
-        if(existingPdfSummary != null) {
-            return ApiResponse(success = false, message = "Please wait 24 hours before requesting another summary")
+        if(existingPdfSummaries.isNotEmpty()) {
+            return ApiResponse(success = false, message = "The summary has been already requested.")
         }
 
         val templateStream = this::class.java.getResourceAsStream("/manifest-template.yaml")
@@ -528,7 +527,7 @@ class AWSService(
 
         } else {
             try {
-                val key = "run-specs/tmp/manifest-$runId.yaml"
+                val key = "run-specs/pending/manifest-$runId.yaml"
 
                 val request = PutObjectRequest.builder()
                     .bucket(bucket)
