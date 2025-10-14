@@ -115,19 +115,25 @@ class AWSService(
 
     fun createS3Client() : S3Client?  {
         val region = Region.EU_WEST_2
-        val s3Client: S3Client? = runCatching {
-            val client = S3Client.builder()
-                .region(region)
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .build()
+//        val s3Client: S3Client? = runCatching {
+//            val client = S3Client.builder()
+//                .region(region)
+//                .credentialsProvider(DefaultCredentialsProvider.create())
+//                .build()
+//
+//            // running the listbuckets to test if credentials exists
+//            client.listBuckets()
+//            client
+//        }.getOrNull()ß
 
-            // running the listbuckets to test if credentials exists
-            client.listBuckets()
-            client
-        }.getOrNull()
 
 
-        return s3Client
+        val client = S3Client.builder()
+            .region(region)
+            .credentialsProvider(DefaultCredentialsProvider.create())
+            .build()
+
+        return client
     }
 
 
