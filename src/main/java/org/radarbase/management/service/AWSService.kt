@@ -1,27 +1,36 @@
 package org.radarbase.management.service
-import software.amazon.awssdk.services.s3.model.S3Object
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.model.GetObjectRequest
-import software.amazon.awssdk.services.s3.model.S3Exception
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import java.net.HttpURLConnection
 import java.net.URL
-import java.time.Duration
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 import com.fasterxml.jackson.module.kotlin.readValue
+
+
+import org.radarbase.management.domain.PdfSummaryRequest
+import org.radarbase.management.domain.Subject
+import org.radarbase.management.domain.User
+import org.radarbase.management.repository.PdfSummaryRequestRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ClassPathResource
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
 import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
+import software.amazon.awssdk.services.s3.model.*
 import java.io.*
 import java.lang.IllegalArgumentException
 import java.nio.charset.StandardCharsets
+import java.time.*
+import java.time.format.DateTimeFormatter
 
 enum class DataSource {
     S3, CLASSPATH
@@ -34,7 +43,10 @@ data class S3JsonData(
     val feature_statistics: Map<String, FeatureStatistics>,
     val questionnaire_responses: QuestionnaireResponses
 )
-
+data class ApiResponse(
+    val success: Boolean,
+    val message: String
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class DataSummary(val start_date: String?, val end_date: String?, val total_days_with_data: Int)
 
@@ -85,73 +97,204 @@ data class HistogramResponse(
     val whereabouts: MutableMap<String,  Int>,
     val sleep: MutableMap<String,  Int>)
 
-class AWSService {
+
+
+@Service
+@Transactional
+class AWSService(
+    @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
+    @Autowired private val mailService: MailService) {
     private val log = LoggerFactory.getLogger(javaClass)
     private var s3AsyncClient: S3AsyncClient? = null
-    private var bucketName: String? = null
+    private var bucketName: String = "connect-uom"
+    private var folderPath = "summary-data/"
     var region = Region.of("eu-west-2")
 
 
-//Map<String, Map<String, Double>>
-    fun startProcessing(projectName: String, login: String, dataSource: DataSource) : DataSummaryResult? {
-         log.info("[PDF-EXPORT] start processing")
-
-        val dataSource = dataSource  // Change this to DataSource.CLASSPATH to load from resources
-
-        val keyName = "output/" + projectName + "/" + login + "/export/"
-          log.info("[PDF-EXPORT] key ${keyName}")
-
-        val bucketName = "connect-output-storage"
-        val folderPath = keyName
-        val region = Region.EU_WEST_2 // Change to your AWS region
-        val resourceFolderPath = "export/" // Folder inside resources
 
 
-        val s3Client = S3Client.builder()
+    fun createS3Client() : S3Client?  {
+        val region = Region.EU_WEST_2
+//        val s3Client: S3Client? = runCatching {
+//            val client = S3Client.builder()
+//                .region(region)
+//                .credentialsProvider(DefaultCredentialsProvider.create())
+//                .build()
+//
+//            // running the listbuckets to test if credentials exists
+//            client.listBuckets()
+//            client
+//        }.getOrNull()ß
+
+
+
+        val client = S3Client.builder()
             .region(region)
             .credentialsProvider(DefaultCredentialsProvider.create())
             .build()
 
+        return client
+    }
 
-        val files = if (dataSource == DataSource.S3) {
-            listS3JsonFiles(s3Client, bucketName, folderPath)
+
+
+    private fun extractDateFromFile(prefix: String): LocalDate {
+        val folderName = prefix.removePrefix("summary-data/").removeSuffix("/")
+        val datePart = folderName.substringBefore("_")
+        return LocalDate.parse(datePart, DateTimeFormatter.ISO_DATE)
+    }
+
+
+    fun startProcessing(projectName: String, login: String, dataSource: DataSource) : DataSummaryResult? {
+        val s3Client = createS3Client()
+
+        val files = if (s3Client != null) {
+            listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, null)
         } else {
-            listClasspathJsonFiles(resourceFolderPath)
+            log.info("[AWS] getting files through classpath")
+            listClasspathJsonFiles(folderPath, login, projectName)
         }
-    log.info("[PDF-EXPORT] file size ${files.size}")
 
-            if(files.size == 0) {
-                return null;
-            }
 
-        val monthlyFeatureStats = processJsonFiles(s3Client, bucketName, files, dataSource)
+        if(files.isEmpty()) {
+            return null;
+        }
 
-        return monthlyFeatureStats;
-
+        return processJsonFiles(s3Client, bucketName, files, dataSource)
     }
 
-    fun listS3JsonFiles(s3Client: S3Client, bucket: String, prefix: String): List<String> {
-        val request = ListObjectsV2Request.builder().bucket(bucket).prefix(prefix).build()
+
+
+    fun listS3JsonFiles(s3Client: S3Client, bucket: String, prefix: String, userId: String, projectName: String, summaryId: String?): List<String> {
+        val request = ListObjectsV2Request.builder()
+            .bucket(bucket)
+            .prefix(prefix)
+            .delimiter("/")
+            .build()
+
+
         val response = s3Client.listObjectsV2(request)
-        return response.contents().map(S3Object::key)
-            .filter { it != prefix } // Exclude the folder itself
+
+        val matchingFolders = response.commonPrefixes()
+            .map { it.prefix() }
+            .filter { it.endsWith("_$userId/") }
+
+
+
+
+        if (matchingFolders.isEmpty()) {
+            return emptyList()
+        }
+
+
+        val latestFolder = matchingFolders
+            .maxByOrNull { extractDateFromFile(it) }!!
+
+        if (summaryId != null && !latestFolder.contains(summaryId)) {
+            return emptyList()
+        }
+
+        val filesRequest = ListObjectsV2Request.builder()
+            .bucket(bucket)
+            .prefix("$latestFolder$projectName/$userId")
+            .build()
+
+
+        val filesResponse = s3Client.listObjectsV2(filesRequest)
+
+        return filesResponse.contents().map(S3Object::key)
+            .filter { it != prefix }
     }
-    fun listClasspathJsonFiles(resourceFolderPath: String) : List<String> {
+    fun listClasspathJsonFiles(prefix: String, userId: String, projectName: String) : List<String> {
+        val testUserId = userId
 
         val classLoader =  Thread.currentThread().contextClassLoader
-        val resource = classLoader.getResource(resourceFolderPath) ?: return emptyList()
-        val file = java.io.File(resource.toURI())
+        val resource = classLoader.getResource(prefix) ?: return emptyList()
+        val allFolders = java.io.File(resource.toURI())
 
-        return file.list()?.map  {
-            "$resourceFolderPath$it"
+        val userFolders = allFolders
+            .listFiles { file -> file.isDirectory }
+            ?.map { it.name }
+            ?.filter { it.endsWith("_$testUserId") }
+            ?: emptyList()
+
+        val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()
+
+        val files  = classLoader.getResource("$prefix$latestFolder/$projectName/$testUserId") ?: return emptyList()
+
+        val allFiles = java.io.File(files.toURI())
+
+        return  allFiles.list()?.map  {
+            "$prefix$latestFolder/$projectName/$testUserId/$it"
         }  ?: emptyList()
 
+    }
 
+
+    fun updatePdfSummaryRequestAsCompleted(pdfSummaryRequest: PdfSummaryRequest) {
+        pdfSummaryRequest.emailSent = true
+        pdfSummaryRequest.summaryCreatedOn = ZonedDateTime.now()
+        pdfSummaryRequestRepository.save(pdfSummaryRequest)
+    }
+
+    fun sendSummaryReadyEmail(user: User?, subject: Subject?) {
+
+        mailService.sendEmail(
+            user?.email,
+            "CONNECT PDF Summary is ready: ${subject?.externalId}",
+            "Please login to the CONNECT Management Portal to download the PDF summary",
+            false,
+            false
+        )
+
+    }
+
+
+
+
+    // uncomment based on dev testing
+    //@Scheduled(cron = "0 0 0/4 * * ?") every 4 hour
+    //@Scheduled(cron = "0 0 * * * ?") every hour
+    @Scheduled(cron = "0 0 0/4 * * ?")
+    fun checkIfSummaryIsReady() {
+        val s3Client = createS3Client()
+
+        val latestRequests = pdfSummaryRequestRepository.findLatestPerSubject();
+        latestRequests.forEach {
+
+            log.info("[PDF-WORKER] Checking for {}", it.summaryId)
+            if (!it.emailSent) {
+
+                val subject = it.subject
+                val login = subject?.user?.login
+                val projectName = subject?.activeProject?.projectName
+
+                var files: List<String> = listOf()
+
+                if (login != null && projectName != null) {
+                    files = if(s3Client != null) {
+                        listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, it.summaryId)
+                    } else {
+                        listClasspathJsonFiles(folderPath, login, projectName)
+                    }
+
+                } else {
+                }
+
+                if (files.isNotEmpty()) {
+                    log.info("[PDF-WORKER] Sending email for {}", subject?.externalId)
+                    sendSummaryReadyEmail(it.requestedBy, it.subject)
+                    updatePdfSummaryRequestAsCompleted(it);
+                } else {
+                    log.info("[PDF-WORKER] no files for {}", subject?.externalId)
+                }
+            }
+        }
     }
 
 
     fun processJsonFiles(
-       Client: S3Client,
+       Client: S3Client?,
         bucket: String,
         fileKeys: List<String>,
         dataSource: DataSource
@@ -166,16 +309,14 @@ class AWSService {
         )
 
         for (key in fileKeys) {
-            log.info("current key is ${key}")
-
-
-            if(key == "export/.DS_Store") {
+            if(key.contains(".DS_Store")) {
                 continue
             }
 
-            val jsonString = when (dataSource) {
-                DataSource.S3 -> downloadS3Json(Client, bucket, key)
-                DataSource.CLASSPATH -> readClassPathJson(key)
+            val jsonString = if (Client != null) {
+                downloadS3Json(Client, bucket, key)
+            } else {
+                readClassPathJson(key)
             }
 
 
@@ -305,22 +446,7 @@ class AWSService {
                     }
                 }
             }
-
-            // histogram
-
-     //       jsonData.questionnaire_responses.
-
-//            log.info("questionnaire data is ${jsonData.questionnaire_responses.total_responses}")
-//            monthlyAverages
-//                .getOrPut(month) { mutableMapOf() }
-//                .getOrPut("questionnaire_responses") { mutableListOf() }
-//                .add(jsonData.questionnaire_responses.total_responses.toDouble())
-
         }
-
-//        return monthlyAverages.mapValues { (_, features) ->
-//            features.mapValues { (_, means) -> means.average() }
-//        }
 
         return dataSummaryResult
     }
@@ -337,7 +463,6 @@ class AWSService {
         }
     }
 
-
     fun readClassPathJson(filePath: String) : String {
         val classLoader = Thread.currentThread().contextClassLoader
         val inputStream = classLoader.getResourceAsStream(filePath)
@@ -347,87 +472,99 @@ class AWSService {
     }
 
 
+    fun writeManifestToResources(
+        subject: Subject?,
+        currentUser: User?,
+        resourceFolderPath: String,
+        createdBy: String = "system",
+        local: Boolean = false
+    ) : ApiResponse {
 
 
-
-
-
-    ///// old stuff
-
-    private fun configureS3Builder() {
-        bucketName = "voicein-ethics-upload"
-        s3AsyncClient = S3AsyncClient.builder().region(region).build()
-    }
-
-    fun createPresignedGetUrl(bucketName: String?, keyName: String?): String? {
-        S3Presigner.create().use { presigner ->
-            val objectRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(keyName)
-                .build()
-            val presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(10)) // The URL will expire in 10 minutes.
-                .getObjectRequest(objectRequest)
-                .build()
-            val presignedRequest = presigner.presignGetObject(presignRequest)
-            log.info("Presigned URL: [{}]", presignedRequest.url().toString())
-            log.info("HTTP method: [{}]", presignedRequest.httpRequest().method())
-            return presignedRequest.url().toExternalForm()
+        if(subject == null || currentUser == null) {
+           throw IllegalArgumentException("Subject or current user is not present")
         }
-    }
 
+        val userId = subject.user?.login
 
-    fun useHttpUrlConnectionToGetDataAsInputStream(presignedUrlString: String?): InputStream? {
-        val byteArrayOutputStream = ByteArrayOutputStream() // Capture the response body to a byte array.
-        var inputStreamTest : InputStream = ByteArrayInputStream.nullInputStream()
+        val bucket: String = "connect-uom"
 
-        try {
-            val presignedUrl = URL(presignedUrlString)
-            val connection = presignedUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.inputStream.use { content ->
+        val today = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+        val runId = "${today}_${userId}"
+        val createdAt = Instant.now().toString()
 
-                inputStreamTest = content
-                content.close()
+        val existingPdfSummaries = pdfSummaryRequestRepository.findBySubject(subject)
+
+        if(existingPdfSummaries.isNotEmpty()) {
+            return ApiResponse(success = false, message = "The summary has been already requested.")
+        }
+
+        val templateStream = this::class.java.getResourceAsStream("/manifest-template.yaml")
+            ?: throw IllegalStateException("manifest-template.yaml not found in resources")
+
+        val template = templateStream.bufferedReader().use { it.readText() }
+
+        val participantsYaml = "- $userId"
+        val yamlContent = template
+            .replace("{{RUN_ID}}", runId)
+            .replace("{{CREATED_BY}}", createdBy)
+            .replace("{{CREATED_AT}}", createdAt)
+            .replace("{{PARTICIPANTS}}", participantsYaml)
+
+        val s3Client =  createS3Client()
+
+        if(s3Client == null) {
+            val outputDir = File("src/main/resources/$resourceFolderPath")
+
+            if (!outputDir.exists()) {
+                outputDir.mkdirs()
             }
-            log.info("HTTP response code is " + connection.responseCode)
-        } catch (e: S3Exception) {
-            log.error(e.message, e)
-        } catch (e: IOException) {
-            log.error(e.message, e)
+
+            val file = File(outputDir, "manifest-$runId.yaml")
+            file.writeText(yamlContent, StandardCharsets.UTF_8)
+            addPdfSummaryTrackerRecord(subject, currentUser, runId)
+            return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
+
+        } else {
+            try {
+                val key = "run-specs/pending/manifest-$runId.yaml"
+
+                val request = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .contentType("application/x-yaml")
+                    .build()
+
+
+                s3Client.putObject(
+                    request,
+                    software.amazon.awssdk.core.sync.RequestBody.fromBytes(
+                        yamlContent.toByteArray(StandardCharsets.UTF_8)
+                    )
+                )
+
+                addPdfSummaryTrackerRecord(subject, currentUser, runId)
+                return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
+
+            } catch(e: Exception) {
+                log.error("[AWS] the summary failed creation failed for user {}, and subject: {}, with error {}", currentUser.id, subject.id, e.message)
+                throw Exception("Summary file could not be created. Please try again or contact support")
+
+            }
         }
 
-        val byteArray = byteArrayOutputStream.toByteArray();
-        val inputStream : InputStream =  ByteArrayInputStream(byteArray);
-
-        return inputStream
+        return ApiResponse(success = false, message = "Something went wrong...")
     }
 
+    private fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
+        val newPdfSummaryTracker = PdfSummaryRequest()
 
+        newPdfSummaryTracker.summaryId = summaryId
+        newPdfSummaryTracker.requestedBy = requestedBy
+        newPdfSummaryTracker.requestedOn = ZonedDateTime.now()
+        newPdfSummaryTracker.subject =  subject
 
-
-
-    fun readLocalFile()  : Map<String, List<Double>> {
-        val featureStatisticsMap = mutableMapOf<String, MutableList<Double>>()
-        try {
-            val objectMapper = jacksonObjectMapper()
-            val inputStream: InputStream = ClassPathResource("monthly_health_data.json").inputStream
-            val data: List<Map<String, Any>> = objectMapper.readValue(inputStream)
-
-            for (monthData in data) {
-                val featureStatistics = monthData["feature_statistics"] as Map<String, Any>
-
-                featureStatistics.forEach { (feature, stats) ->
-                    val meanValue = (stats as Map<String, Any>)["mean"] as? Double ?: (stats["mean_duration"] as? Double)
-                    if (meanValue != null) {
-                        featureStatisticsMap.getOrPut(feature) { mutableListOf() }.add(meanValue)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return featureStatisticsMap
+        pdfSummaryRequestRepository.saveAndFlush(newPdfSummaryTracker)
     }
 
 }
