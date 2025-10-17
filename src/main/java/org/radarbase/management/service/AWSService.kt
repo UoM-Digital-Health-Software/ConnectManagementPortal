@@ -255,7 +255,7 @@ class AWSService(
     // uncomment based on dev testing
     //@Scheduled(cron = "0 0 0/4 * * ?") every 4 hour
     //@Scheduled(cron = "0 0 * * * ?") every hour
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 0/4 * * ?")
     fun checkIfSummaryIsReady() {
         val s3Client = createS3Client()
 
