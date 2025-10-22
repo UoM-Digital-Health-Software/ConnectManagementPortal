@@ -657,9 +657,9 @@ export class DataSummaryComponent implements OnInit {
             if (data) {
                 delete data.questionnaire_slider['delusion_1'];
 
-                let socialKeys = this.getMostCommonAnswer(data.histogram.social, this.socialMap)
-                let sleepKeys = this.getMostCommonAnswer(data.histogram.sleep, this.sleepMap)
-                let whereaboutsKeys = this.getMostCommonAnswer(data.histogram.whereabouts, this.whereaboutsMap)
+                let socialKeys = this.getMostCommonAnswer(data.questionnaire_histogram.social, this.socialMap)
+                let sleepKeys = this.getMostCommonAnswer(data.questionnaire_histogram.sleep, this.sleepMap)
+                let whereaboutsKeys = this.getMostCommonAnswer(data.questionnaire_histogram.whereabouts, this.whereaboutsMap)
 
 
                 console.log("sleepKeys", sleepKeys)
@@ -689,7 +689,7 @@ export class DataSummaryComponent implements OnInit {
                 }
 
 
-                  
+
                 this.pushToData(sliderKey, 0);
                 this.addMonthPerKey(sliderKey, month);
             });
