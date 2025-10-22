@@ -12,7 +12,7 @@ import java.io.IOException
 class FirebaseConfiguration {
 
     private val FIREBASE_APP_NAME = "actinow-64cf2"
-    private val FIREBASE_CREDENTIALS_FILE = "actinow-firebase-adminsdk.json" // <--- inside resources
+    private val FIREBASE_CREDENTIALS_FILE = "notif_config/actinow-firebase-adminsdk.json"
 
     @Bean
     @Throws(IOException::class)

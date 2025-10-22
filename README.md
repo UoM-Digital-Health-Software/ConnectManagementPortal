@@ -25,6 +25,8 @@ Management Portal is an application which is used to manage clinical studies for
 - [Using Docker to simplify development (optional)](#using-docker-to-simplify-development-optional)
 - [Documentation](#documentation)
 - [Client libraries](#client-libraries)
+- [Notifications](#notifications)
+
 
 ## Dependencies
 
@@ -434,3 +436,14 @@ The resulting file can be imported into the [Swagger editor][], or used with [Sw
 [Swagger editor]: https://editor.swagger.io/
 [Swagger codegen]: https://swagger.io/swagger-codegen/
 [OAuth2 spec]: https://tools.ietf.org/html/rfc6749#section-9
+
+
+
+## Notifications 
+
+Place firebase json file into src/main/resources/notif_config. 
+
+To obtain the json file, download it from the Firebase site, using the mhealth gmail account. The details are in the keypass 
+
+
+
