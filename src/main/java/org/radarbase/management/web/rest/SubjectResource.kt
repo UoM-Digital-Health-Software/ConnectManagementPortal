@@ -46,6 +46,8 @@ import java.util.*
 import java.util.stream.Stream
 import javax.validation.Valid
 import org.hibernate.Hibernate
+import org.springframework.data.web.PageableDefault
+
 /**
  * REST controller for managing Subject.
  */
@@ -63,7 +65,8 @@ class SubjectResource(
     @Autowired private val authService: AuthService,
     @Autowired private val connectDataLogRepository: ConnectDataLogRepository,
     @Autowired private val roleRepository: RoleRepository,
-    @Autowired private val awsService: AWSService
+    @Autowired private val awsService: AWSService,
+    @Autowired private val userService: UserService,
 ) {
 
     /**
@@ -596,6 +599,18 @@ class SubjectResource(
         return ResponseEntity.ok(dataLogDTOList);
     }
 
+    @GetMapping("/datalogs")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun getDataLogs(@RequestParam  ids: List<String>) : ResponseEntity<*> {
+        authService.checkScope(Permission.SUBJECT_READ)
+        val logs = connectDataLogRepository.findLatestLogsByUserIds(ids)
+        val result =  logs.groupBy { it.userId }
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/subjects/{login:" + Constants.ENTITY_ID_REGEX + "}/reportready")
     @Timed
     @Throws (
@@ -670,11 +685,38 @@ class SubjectResource(
     fun getDataSummary(@PathVariable login: String) : ResponseEntity<DataSummaryResult> {
         authService.checkScope(Permission.SUBJECT_READ)
 
+
         val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
         val project = subject!!.activeProject!!.projectName!!;
 
         val monthlyStatistics =   awsService.startProcessing(project, login, DataSource.CLASSPATH)
         return ResponseEntity.ok(monthlyStatistics);
+    }
+
+
+    @GetMapping("/subjects/{login:" + Constants.ENTITY_ID_REGEX + "}/summary/request")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun requestDataSummary(@PathVariable login: String) : ResponseEntity<*> {
+        val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
+
+        val currentUser = userService.getUserWithAuthorities()
+
+        currentUser?.let {
+           val response =  awsService.writeManifestToResources(
+                resourceFolderPath = "manifests/test",
+                subject = subject,
+                currentUser = currentUser,
+                createdBy = it.email!!,
+                local = true
+            )
+            return ResponseEntity.ok(response);
+
+        }
+
+        return ResponseEntity.ok(null);
     }
 
 

@@ -10,7 +10,11 @@ generated/
 keystore.jks
 keystore.p12
 src/main/resources/config/keystore.p12
+src/main/resources/notif_config
+
+src/main/resources/manifests/test
 src/main/docker/etc/config/keystore.p12
+
 /src/main/docker/etc/smtp.env
 ######################
 # Patch files

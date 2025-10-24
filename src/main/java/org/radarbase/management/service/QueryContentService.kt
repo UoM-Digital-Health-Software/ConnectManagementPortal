@@ -6,6 +6,7 @@ import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.repository.*
 import org.radarbase.management.service.dto.ModuleGroupDTO
+import org.radarbase.management.service.dto.NotificationDTO
 import org.radarbase.management.service.dto.QueryContentDTO
 import org.radarbase.management.service.dto.QueryContentGroupDTO
 
@@ -36,7 +37,8 @@ class QueryContentService(
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val queryGroupContentMapper: QueryGroupContentMapper,
     private val queryContentGroupMapper: QueryContentGroupMapper,
-    private val moduleRepository: ModuleRepository
+    private val moduleRepository: ModuleRepository,
+    private val notificationService: NotificationService
 
 
 ) {
@@ -150,13 +152,23 @@ class QueryContentService(
     }
 
 
-    fun sendNotification(contentGroup: QueryContentGroup?, latestEvaluation: QueryEvaluation) {
+    fun sendNotification(contentGroup: QueryContentGroup?, latestEvaluation: QueryEvaluation, subject: Subject) {
 
 
+        contentGroup?.let {
+            val user = subject.user ?: throw IllegalArgumentException("[QueryContentService][SendNotification]User is not present")
+            val contentGroupName = contentGroup?.contentGroupName
 
-        //TODO: implement this once the notification capability was added
-        latestEvaluation.notificationSent = true
-        queryEvaluationRepository.save(latestEvaluation)
+            val notificationDTO = NotificationDTO().apply {
+                title = contentGroupName
+                body = "Click here to read more"
+                route = "/queryContent/" + contentGroup.id
+            }
+            notificationService.sendNotification(listOf(user), notificationDTO)
+
+            latestEvaluation.notificationSent = true
+            queryEvaluationRepository.save(latestEvaluation)
+        }
     }
 
      fun shouldSendNotification(evaluations : List<QueryEvaluation>, latestNotificationDate: ZonedDateTime?): Boolean {
@@ -325,14 +337,14 @@ class QueryContentService(
                 val latestNotificationDate = queryEvaluationRepository.findFirstBySubjectAndQueryGroupAndNotificationSentIsTrueOrderByCreatedDateDesc(subject, queryGroup)?.createdDate
 
                 if(shouldSendNotification(evaluations, latestNotificationDate)) {
+
                     var content = tryAssignNewContent(queryGroup, subject)
 
                     if(content == null) {
                         content = getRandomAlreadyAssignedContent(queryGroup, subject)
                     }
 
-
-                    sendNotification(content, latestEvaluation)
+                    sendNotification(content, latestEvaluation, subject)
                 }
             }
         }

@@ -4,4 +4,6 @@ export interface Graph {
     showDataTables: boolean;
     color?: string;
     timeframe?: 'week' | 'month';
+    topLabel?: String,
+    bottomLabel?: String
 }
