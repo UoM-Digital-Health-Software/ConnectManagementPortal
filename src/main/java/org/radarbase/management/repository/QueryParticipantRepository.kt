@@ -15,4 +15,14 @@ interface QueryParticipantRepository : JpaRepository<QueryParticipant, Long>  {
     fun findBySubjectIdAndQueryGroupId(subjectId: Long, queryGroupId: Long) : QueryParticipant
 
     fun existsByQueryGroupId(queryGroupId: Long): Boolean
+
+    @Query("""
+    SELECT q FROM QueryParticipant q
+    WHERE q.id IN (
+        SELECT MIN(q2.id)
+        FROM QueryParticipant q2
+        GROUP BY q2.subject
+    )
+""")
+    fun findOnePerUniqueSubject(): List<QueryParticipant>
 }

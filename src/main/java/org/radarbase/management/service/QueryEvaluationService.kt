@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.annotation.Scheduled
+import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 data class DataPoint(
@@ -35,6 +37,7 @@ public class QueryEValuationService(
     private val queryParticipantRepository: QueryParticipantRepository,
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val awsService: AWSService,
+    private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
     @Value("\${test.fixedYear:}") private val fixedYearStr: String,
     @Value("\${test.fixedMonth:}") private val fixedMonthStr: String
 
@@ -67,6 +70,10 @@ public class QueryEValuationService(
         }
 
         val average = relevantData.average();
+
+        log.info("[QUERY] average {}", average)
+        log.info("[QUERY] expected value {}", expectedValue)
+
 
         return when (comparsionOperator){
             ">" -> average  > expectedValue.toDouble()
@@ -126,8 +133,14 @@ public class QueryEValuationService(
         var avgEvalData = mutableListOf<Double>()
         var histogramEvalData = mutableMapOf<String, Int>()
 
+
+        log.info("[QUERY] evalute single condition {}", userData)
+
         for (date in datesToQuery) {
+            log.info("[QUERY] date {}", date)
+
             val summary = userData[date] ?: continue
+            log.info("[QUERY] summary {}", summary)
             if (comparisonOperator == "IS") {
                 aggregateDataForHistogramEvaluation(metric, date, userData, histogramEvalData)
             } else {
@@ -135,6 +148,8 @@ public class QueryEValuationService(
 
             }
         }
+
+        log.info("[QUERY] averae eval data {}", avgEvalData)
 
         return if (comparisonOperator == "IS") {
             evaluateAgainstHistogramData(histogramEvalData, expectedValue)
@@ -221,26 +236,38 @@ public class QueryEValuationService(
         val subjectLogin = subject.user?.login!!
         val subjectId = subject.id!!;
 
-        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.CLASSPATH, AggregationLevel.DAY)?.data ?: throw IllegalArgumentException("There is no data for the user")
+        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.S3, AggregationLevel.DAY)?.data ?: throw IllegalArgumentException("There is no data for the user")
+
+        log.info("[QUERY] processed data {}", processedData)
 
         val subjectOpt = subjectRepository.findById(subjectId)
         val queryParticipant = queryParticipantRepository.findBySubjectId(subjectId);
         val results: MutableMap<String, Boolean> = mutableMapOf()
 
         if(subjectOpt.isPresent && queryParticipant.isNotEmpty()) {
+
+            log.info("[QUERY] in query processing")
             val subject = subjectOpt.get();
 
             for (queryParticipant: QueryParticipant in queryParticipant) {
+
+                log.info("[QUERY] first query")
                 val queryGroup = queryParticipant.queryGroup ?: continue
                 val queryGroupId = queryGroup.id ?: continue
 
                 val flatConditions = queryLogicRepository.findByQueryGroupId(queryGroupId)
+
+                log.info("[QUERY] before buildLogicTree")
+
                 val root = buildLogicTree(flatConditions) ?: return results;
 
 
                 val currentDate = LocalDate.now()
                 val month = currentDate.month
                 val monthName = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+
+                log.info("[QUERY] before evalute")
+
 
                 val result =  evaluteQueryCondition(root, processedData)
 
@@ -282,6 +309,48 @@ public class QueryEValuationService(
 
 
         return root;
+    }
+
+
+
+    fun requestASummary() {
+
+        // get the list of assigned queries, get it based on unique subject
+
+
+       val uniqueSubjects =  queryParticipantRepository.findOnePerUniqueSubject().map { e -> e.subject }
+
+
+    }
+
+
+    @Scheduled(cron = "0 0 5 * * ?")
+    fun evaluateQueries() {
+
+        val now = LocalTime.now()
+        if (now.hour != 5) {
+            return
+        }
+        log.info("[evaluateQueries] running")
+        val queryParticipantList =  queryParticipantRepository.findAll()
+
+        for(queryParticipant  in queryParticipantList) {
+
+            val participant = queryParticipant.subject
+            val queryGroup  = queryParticipant.queryGroup
+
+            if(participant == null  || queryGroup == null ) {
+                continue
+            }
+
+            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant)
+            if(latestPDFSummary?.emailSent == true)  {
+                val project = participant.activeProject!!.projectName!!
+                testLogicEvaluation(participant, project, null);
+
+                queryContentService.processCompletedQueriesForParticipant(participant.id!!)
+            }
+        }
     }
 
 
