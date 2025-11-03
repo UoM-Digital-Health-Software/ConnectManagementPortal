@@ -60,8 +60,8 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
                 let fileteredQueryGroupList = this.queryGroupList.filter(
                     (o1) =>
                         !this.assignedQueryGroups.some(
-                            (o2) => o1.id === o2.id
-                        ) && !o1.isArchived 
+                            (o2) => o1.id === o2.queryGroupId
+                        ) && !o1.isArchived
                 );
     
                 this.queryGroupList = fileteredQueryGroupList.slice();
