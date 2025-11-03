@@ -385,9 +385,6 @@ class AWSService(
                 }
             }
 
-//            dataSummaryResult.data
-//                .getOrPut(month) { dataSummaryCategory }
-
             val mutableData = dataSummaryResult.data.toMutableMap()
             mutableData.getOrPut(month) { dataSummaryCategory }
             dataSummaryResult.data = mutableData
@@ -565,19 +562,7 @@ class AWSService(
         for(participant in uniqueParticipants) {
             if(participant != null) {
                 writeManifestToResources(participant, currentUser, "manifests/test", "connect-dev-output", "day", "worker" , false )
-//                val pdfSummaryRequest = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant)
-//
-//                if(pdfSummaryRequest == null) {
-//                    writeManifestToResources(participant, currentUser, "manifests/test", "connect-dev-output", "day" , "worker", false)
-//                    continue
-//                }
-//
-//                val is1WeekLater = ZonedDateTime.now().isAfter(pdfSummaryRequest.requestedOn?.plusWeeks(1))
-//
-//
-//                if(is1WeekLater) {
-//                    writeManifestToResources(participant, currentUser, "manifests/test", "connect-dev-output", "day", "worker" , false )
-//                }
+
             }
         }
 
