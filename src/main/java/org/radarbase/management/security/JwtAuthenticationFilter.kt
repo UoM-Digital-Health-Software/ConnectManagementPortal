@@ -108,14 +108,13 @@ class JwtAuthenticationFilter @JvmOverloads constructor(
         }
     }
 
-    private fun tokenFromHeader(httpRequest: HttpServletRequest): String? {
-        return httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
+    private fun tokenFromHeader(httpRequest: HttpServletRequest): String? =
+        httpRequest.getHeader(HttpHeaders.AUTHORIZATION)
             ?.takeIf { it.startsWith(AUTHORIZATION_BEARER_HEADER) }
             ?.removePrefix(AUTHORIZATION_BEARER_HEADER)
             ?.trim { it <= ' ' }
             ?: parseCookies(httpRequest.getHeader(HttpHeaders.COOKIE)).find { it.name == "ory_kratos_session" }
                 ?.value
-    }
 
     @Throws(IOException::class)
     private fun validateToken(

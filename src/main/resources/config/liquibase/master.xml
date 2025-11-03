@@ -49,7 +49,12 @@
     <include file="classpath:config/liquibase/changelog/20230914100400_add_unique_constraint_two_factor_username.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20230918100400_add_log_table.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20231114150000_add_user_identity.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20250828150000_add_app_config.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20250926150000_add_pdf_summary_tracker.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20250221155500_added_initial_rp_tables.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20250923152552_add_audit_to_query_tables.xml" relativeToChangelogFile="false"/>
-     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
+    <include file="classpath:config/liquibase/changelog/20250902155500_added_device_table.xml" relativeToChangelogFile="false"/>
+
+
+    <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>
