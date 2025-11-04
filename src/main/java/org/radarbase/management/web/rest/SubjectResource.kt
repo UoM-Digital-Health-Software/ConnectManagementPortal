@@ -715,7 +715,7 @@ class SubjectResource(
                 subject = subject,
                 currentUser = currentUser,
                 createdBy = it.email!!,
-                local = true
+                local = false
             )
             return ResponseEntity.ok(response);
 
