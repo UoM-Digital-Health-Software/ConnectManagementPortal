@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Create table for app configs / feature flags -->
+    <changeSet id="20251030150000_add_notification_content" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="content_notification"/>
+            </not>
+        </preConditions>
+
+
+        <createTable tableName="content_notification">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="subject_id"  type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+
+            <column name="channel" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="content_group_id"  type="bigint">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="created_on"  type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="sent_on" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+
+
+            <column name="sent" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+
+    </changeSet>
+
+
+
+    <changeSet id="20251030150000_add_notification_content_foreign_key" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="content_notification"/>
+            </not>
+        </preConditions>
+
+        <addForeignKeyConstraint baseColumnNames="subject_id"
+                                 baseTableName="content_notification"
+                                 constraintName="fk_content_notification_subject_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="subject"/>
+
+        <addForeignKeyConstraint baseColumnNames="content_group_id"
+                                 baseTableName="notification_content"
+                                 constraintName="fk_content_notification_content_group_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="query_content"/>
+
+
+
+    </changeSet>
+
+
+
+
+
+
+
+
+</databaseChangeLog>

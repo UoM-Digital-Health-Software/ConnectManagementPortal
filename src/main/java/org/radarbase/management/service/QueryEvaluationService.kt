@@ -12,9 +12,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
-import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 data class DataPoint(
@@ -38,8 +36,7 @@ public class QueryEValuationService(
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val awsService: AWSService,
     private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-    @Value("\${test.fixedYear:}") private val fixedYearStr: String,
-    @Value("\${test.fixedMonth:}") private val fixedMonthStr: String
+
 
 
 ) {
@@ -262,7 +259,7 @@ public class QueryEValuationService(
         newQueryEvaluation.subject = subject
         newQueryEvaluation.createdDate = ZonedDateTime.now()
         newQueryEvaluation.result = result
-        newQueryEvaluation.notificationSent = false
+        newQueryEvaluation.notificationScheduled = false
 
         queryEvaluationRepository.save(newQueryEvaluation);
 
@@ -292,7 +289,7 @@ public class QueryEValuationService(
     @Scheduled(cron = "0 0 5 * * ?")
     fun evaluateQueries() {
 
-        val now = LocalTime.now()
+        val now = TimeUtils.getCurrentTime()
         if (now.hour != 5) {
             return
         }
