@@ -11,21 +11,8 @@ export class YOURCOMPONENTNAMEComponent implements OnInit {
     constructor() {}
 
     months = [
-        { name: "January", count: 24 },
-        { name: "February", count: 24 },
-        { name: "March", count: 24 },
-        { name: "April", count: 24 },
-        {name: "May", count: 24},
-        {name: "June", count: 24},
-        {name: "July", count: 24},
-        {name: "August", count: 24},
-        {name: "September", count: 24},
-        {name: "October", count: 24},
-        {name: "November", count: 24},
-        {name: "December", count: 24},
-
-
     ];
+
     @Input() description1: string = ''
     @Input() description2: string = ''
 
@@ -63,12 +50,42 @@ export class YOURCOMPONENTNAMEComponent implements OnInit {
     ngAfterViewInit() {
         //@ts-ignore
 
+        if (this.chart && this.chart.data) {
+            this.chart.data.labels.forEach((label, index) => {
+
+
+            const [abbr, year] = label.split(" ");
+
+            const monthMap = {
+            Jan: "January",
+            Feb: "February",
+            Mar: "March",
+            Apr: "April",
+            May: "May",
+            Jun: "June",
+            Jul: "July",
+            Aug: "August",
+            Sep: "September",
+            Oct: "October",
+            Nov: "November",
+            Dec: "December"
+            };
+
+            const fullMonth = monthMap[abbr];
+            let data = this.chart.data.datasets[0].data[index]
+
+            this.months.push({name: fullMonth, count: data == 0 ? "No data" : data})
+        })
+        }
+
 
         if (this.applyCustomColour) {
             this.chart.data.datasets[0]['backgroundColor'] = [
                 this.color.replace('0.9', '0.6'),
             ];
         }
+
+
 
     }
     chartGraph: any = {};
