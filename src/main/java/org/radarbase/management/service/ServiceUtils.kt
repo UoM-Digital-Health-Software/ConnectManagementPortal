@@ -14,8 +14,13 @@ object TimeUtils {
 
 object QueryEvaluationOptions {
 
+    //TODO:  change this to S3 before deploying
     var source = DataSource.CLASSPATH
     var minimumExpectedData = 0.3
     var aggregationLevel = AggregationLevel.DAY
+    val resetThresholdDays = 2
+    //TODO:  currently set for testing prposes, change to 7 for deployment
+    val minNotificationIntervalDays = 1
+
 
 }

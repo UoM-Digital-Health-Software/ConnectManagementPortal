@@ -172,10 +172,7 @@ class QueryContentService(
     }
 
      fun shouldSendNotification(evaluations : List<QueryEvaluation>, latestNotificationDate: ZonedDateTime?): Boolean {
-         val resetThresholdDays = 2
 
-         //TOOD: change once after testing sessions
-         val minNotificationIntervalDays = 1
 
          if(evaluations.isEmpty()) return false
 
@@ -197,7 +194,7 @@ class QueryContentService(
          }
 
 
-         if(consecutiveFailed >= resetThresholdDays) {
+         if(consecutiveFailed >= QueryEvaluationOptions.resetThresholdDays) {
             return true
          }
 
@@ -205,7 +202,7 @@ class QueryContentService(
              val today = ZonedDateTime.now()
             val daysSinceLast = ChronoUnit.DAYS.between(latestNotificationDate, today)
 
-             if (daysSinceLast >= minNotificationIntervalDays) {
+             if (daysSinceLast >= QueryEvaluationOptions.minNotificationIntervalDays) {
                 return true
              }
          }
