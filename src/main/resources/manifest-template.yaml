@@ -7,56 +7,51 @@ source:
     participants:
         {{PARTICIPANTS}}
 filters:
-    exclude_metrics:
-        - active_apple_healthkit_audio_exposure
-        - active_apple_healthkit_env_exposure
-        - apple_ios_magnetic_field
-        - ios_phone_relative_location
-        - sensorkit_acceleration
-        - sensorkit_ambient_light
-        - sensorkit_ambient_pressure
-        - sensorkit_device_usage
-        - sensorkit_keyboard_metrics
-        - sensorkit_message_usage
-        - sensorkit_phone_usage
-        - sensorkit_rotation_rate
-        - sensorkit_telephony_speech_metrics
-        - sensorkit_visits
-        - android_phone_acceleration
-        - android_phone_battery_level
-        - android_phone_bluetooth_devices
-        - android_phone_contacts
-        - android_phone_relative_location
-        - android_phone_usage_event
-        - android_phone_user_interaction
-        - android_phone_light
-        - application_device_info
-        - application_record_counts
-        - application_server_status
-        - application_time_zone
-        - application_uptime
-        - android_phone_gyroscope
-        - android_phone_magnetic_field
-        - connect_data_log
+  exclude_metrics:
+    - active_apple_healthkit_audio_exposure
+    - active_apple_healthkit_env_exposure
+    - apple_ios_magnetic_field
+    - ios_phone_relative_location
+    - sensorkit_acceleration
+    - sensorkit_ambient_light
+    - sensorkit_ambient_pressure
+    - sensorkit_device_usage
+    - sensorkit_keyboard_metrics
+    - sensorkit_message_usage
+    - sensorkit_phone_usage
+    - sensorkit_rotation_rate
+    - sensorkit_telephony_speech_metrics
+    - sensorkit_visits
+    - android_phone_acceleration
+    - android_phone_battery_level
+    - android_phone_bluetooth_devices
+    - android_phone_contacts
+    - android_phone_relative_location
+    - android_phone_usage_event
+    - android_phone_user_interaction
+    - android_phone_light
+    - application_device_info
+    - application_record_counts
+    - application_server_status
+    - application_time_zone
+    - application_uptime
+    - android_phone_gyroscope
+    - android_phone_magnetic_field
+    - connect_data_log
 workspace:
-    root: /mnt/connect/workdir
-    run_subdir: runs/{run_id}
+  root: /mnt/connect/workdir
+  run_subdir: runs/{run_id}
 outputs:
-    merged_prefix: s3://connect-uom/merged-data/{site}/{participant_id}/
-    summary_prefix: s3://connect-uom/summary-data/{run_id}/{site}/{participant_id}/
-    manifest_key: s3://connect-uom/manifests/{run_id}/manifest.json
-    logs_prefix: s3://connect-uom/logs/{run_id}/
+  merged_prefix: s3://connect-uom/merged-data/{site}/{participant_id}/
+  summary_prefix: s3://connect-uom/summary-data/{run_id}/{site}/{participant_id}/
+  manifest_key: s3://connect-uom/manifests/{run_id}/manifest.json
+  logs_prefix: s3://connect-uom/logs/{run_id}/
 processing:
   steps:
     - type: download
       strategy: s3-sync
       refresh:
-        mode: incremental
-        relative_days: 30
-        per_metric:
-          active_apple_healthkit_steps:
-            mode: relative
-            anchor: start_of_month
+        mode: full
     - type: merge
       script: connect_summary/merge-data.py
       output_format: csv
@@ -70,11 +65,7 @@ processing:
       script: connect_summary/generate_summaries.py
       time_resolution: month
       cache_policy:
-        reuse: true
-        manifest_prefix: s3://connect-uom/summary-manifests/
-        refresh:
-          mode: relative
-          anchor: start_of_month
+        reuse: false
       features:
         - id: steps_android_health_connect
           flag: steps:android_health_connect_typed_data:value.time:value.key:Steps:value.intValue:cumulative
@@ -88,8 +79,8 @@ processing:
           flag: heart_rate:connect_fitbit_intraday_heart_rate:value.time:value.heartRate:BPM
         - id: heart_rate_healthkit
           flag: heart_rate:active_apple_healthkit_heart_rate:value.time:value.key:heart_rate:value.doubleValue
-        - id: heart_rate_variability
-          flag: heart_rate_variability:active_apple_healthkit_heart_rate_variability:value.time:value.key:heart_rate_variability:value.doubleValue
+        - id: heart_rate_variability_healthkit
+          flag: heart_rate_variability:active_apple_healthkit_heart_rate_variability:value.time:value.key:heart_rate.variability:value.doubleValue
         - id: heart_rate_variability_fitbit
           flag: heart_rate_variability:connect_fitbit_intraday_heart_rate_variability:value.time:value.rmssd:RMSSD
         - id: respiratory_rate_healthkit
@@ -172,9 +163,9 @@ processing:
     - type: publish
       upload_logs: true
 publishing:
-    delete_local_workspace: false
-    retain_local_logs: 7d
-    remove_local_raw_after_publish: true
-    remove_local_merged_after_publish: true
-    remove_local_summary_after_publish: true
-    notifications: []
+  delete_local_workspace: false
+  retain_local_logs: 7d
+  remove_local_raw_after_publish: false
+  remove_local_merged_after_publish: false
+  remove_local_summary_after_publish: false
+  notifications: []
