@@ -18,4 +18,12 @@
 
     </changeSet>
 
+    <changeSet id="20251107150000_update-query_evaluation-aud" author="Jindrich Gorner">
+        <addColumn tableName="query_evaluation_aud">
+            <column name="notification_scheduled" type="boolean" />
+            <column name="notification_scheduled_mod" type="boolean" />
+
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

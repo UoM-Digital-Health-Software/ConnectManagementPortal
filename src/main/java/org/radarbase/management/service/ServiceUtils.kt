@@ -10,3 +10,12 @@ object TimeUtils {
         return LocalTime.now(zone)
     }
 }
+
+
+object QueryEvaluationOptions {
+
+    var source = DataSource.CLASSPATH
+    var minimumExpectedData = 0.3
+    var aggregationLevel = AggregationLevel.DAY
+
+}

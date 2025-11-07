@@ -142,10 +142,6 @@ open class AWSService(
             listClasspathJsonFiles(folderPath, login, projectName)
         }
 
-
-        log.info("[LOG] files {}", files )
-
-
         if(files.isEmpty()) {
             return null;
         }
