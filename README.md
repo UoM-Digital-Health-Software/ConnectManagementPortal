@@ -1,7 +1,16 @@
 # ManagementPortal
 
+
+
 [![Latest release](https://img.shields.io/github/v/release/RADAR-base/ManagementPortal)](https://github.com/RADAR-base/ManagementPortal/releases/latest)
 [![Build Status](https://github.com/RADAR-base/ManagementPortal/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/RADAR-base/ManagementPortal/actions/workflows/main.yml?query=branch%3Amaster)
+
+
+Please refer to here for any other CONNECT related documentation: 
+
+```
+https://github.com/UoM-Digital-Health-Software/CONNECT/tree/main/mobile/CONNECT_DOCS
+```
 
 Management Portal is an application which is used to manage clinical studies for [RADAR-base](https://www.radar-base.org/) platform.
 
