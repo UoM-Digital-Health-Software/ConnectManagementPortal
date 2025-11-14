@@ -20,7 +20,8 @@ enum class PhysicalMetric(
     ACTIVITY("Activities", "number", null),
 
     EXERCISE_TIME("Exercise time", "number", "count"),
-}
+
+    HEART_RATE_RESTING("Heart Rate Resting", "number", "bpm"),}
 
 
 

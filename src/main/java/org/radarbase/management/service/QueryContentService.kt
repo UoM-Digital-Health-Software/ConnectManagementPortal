@@ -173,7 +173,9 @@ class QueryContentService(
 
      fun shouldSendNotification(evaluations : List<QueryEvaluation>, latestNotificationDate: ZonedDateTime?): Boolean {
          val resetThresholdDays = 2
-         val minNotificationIntervalDays = 7
+
+         //TOOD: change once after testing sessions
+         val minNotificationIntervalDays = 2
 
          if(evaluations.isEmpty()) return false
 
@@ -181,7 +183,7 @@ class QueryContentService(
 
          val hasPreviousTrue = evaluations.drop(1).any { it.result == true }
 
-         if (evaluations.first().result == true && !hasPreviousTrue) return true // first threshold pass ever
+         if (evaluations.first().result == true && !hasPreviousTrue) return true
 
          var consecutiveFailed = 0
 
@@ -336,7 +338,9 @@ class QueryContentService(
 
                 val latestNotificationDate = queryEvaluationRepository.findFirstBySubjectAndQueryGroupAndNotificationSentIsTrueOrderByCreatedDateDesc(subject, queryGroup)?.createdDate
 
-                if(shouldSendNotification(evaluations, latestNotificationDate)) {
+                val shouldSendNotification = shouldSendNotification(evaluations, latestNotificationDate)
+
+                if(shouldSendNotification) {
 
                     var content = tryAssignNewContent(queryGroup, subject)
 

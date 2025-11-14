@@ -13,6 +13,8 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.annotation.Scheduled
+import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 data class DataPoint(
@@ -35,6 +37,7 @@ public class QueryEValuationService(
     private val queryParticipantRepository: QueryParticipantRepository,
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val awsService: AWSService,
+    private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
     @Value("\${test.fixedYear:}") private val fixedYearStr: String,
     @Value("\${test.fixedMonth:}") private val fixedMonthStr: String
 
@@ -65,7 +68,6 @@ public class QueryEValuationService(
         if(relevantData.isEmpty() || relevantData.size < 7) {
             return false
         }
-
         val average = relevantData.average();
 
         return when (comparsionOperator){
@@ -105,7 +107,6 @@ public class QueryEValuationService(
             "questionnaire_slider" -> sliderData[metric.lowercase()]
             else -> null
         }
-
 
         return value
     }
@@ -221,22 +222,24 @@ public class QueryEValuationService(
         val subjectLogin = subject.user?.login!!
         val subjectId = subject.id!!;
 
-        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.CLASSPATH, AggregationLevel.DAY)?.data ?: throw IllegalArgumentException("There is no data for the user")
+        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.S3, AggregationLevel.DAY)?.data ?: throw IllegalArgumentException("There is no data for the user")
 
         val subjectOpt = subjectRepository.findById(subjectId)
         val queryParticipant = queryParticipantRepository.findBySubjectId(subjectId);
         val results: MutableMap<String, Boolean> = mutableMapOf()
 
         if(subjectOpt.isPresent && queryParticipant.isNotEmpty()) {
+
             val subject = subjectOpt.get();
 
             for (queryParticipant: QueryParticipant in queryParticipant) {
+
                 val queryGroup = queryParticipant.queryGroup ?: continue
                 val queryGroupId = queryGroup.id ?: continue
 
                 val flatConditions = queryLogicRepository.findByQueryGroupId(queryGroupId)
-                val root = buildLogicTree(flatConditions) ?: return results;
 
+                val root = buildLogicTree(flatConditions) ?: return results;
 
                 val currentDate = LocalDate.now()
                 val month = currentDate.month
@@ -282,6 +285,37 @@ public class QueryEValuationService(
 
 
         return root;
+    }
+
+
+
+    @Scheduled(cron = "0 0 5 * * ?")
+    fun evaluateQueries() {
+
+        val now = LocalTime.now()
+        if (now.hour != 5) {
+            return
+        }
+        log.info("[evaluateQueries] running")
+        val queryParticipantList =  queryParticipantRepository.findAll()
+
+        for(queryParticipant  in queryParticipantList) {
+
+            val participant = queryParticipant.subject
+            val queryGroup  = queryParticipant.queryGroup
+
+            if(participant == null  || queryGroup == null ) {
+                continue
+            }
+
+            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant)
+            if(latestPDFSummary?.emailSent == true)  {
+                val project = participant.activeProject!!.projectName!!
+                testLogicEvaluation(participant, project, null);
+
+                queryContentService.processCompletedQueriesForParticipant(participant.id!!)
+            }
+        }
     }
 
 
