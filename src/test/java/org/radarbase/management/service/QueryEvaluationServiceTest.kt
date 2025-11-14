@@ -1,6 +1,8 @@
 package org.radarbase.management.service
 
 
+import io.mockk.every
+import io.mockk.mockkObject
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,13 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.random.Random
 
+import org.mockito.kotlin.*
+import org.radarbase.auth.authorization.RoleAuthority
+import org.radarbase.management.domain.Role
+import org.springframework.beans.factory.annotation.Value
+import java.time.*
 
 /**
  * Test class for the SubjectService class.
@@ -33,11 +37,27 @@ import kotlin.random.Random
 class QueryEvaluationServiceTest(
     @Autowired private val queryEValuationService: QueryEValuationService,
     @Autowired private val userRepository: UserRepository,
+    @Autowired private val queryLogicRepository: QueryLogicRepository,
+    @Autowired private val queryGroupRepository: QueryGroupRepository,
+    @Autowired private val queryEvaluationRepository: QueryEvaluationRepository,
+    @Autowired private val subjectRepository: SubjectRepository,
+    @Autowired private val queryParticipantContentRepository: QueryParticipantContentRepository ,
+    @Autowired private val awsService: AWSService,
+
+
+
+
+
 
 
 ) : BasePostgresIntegrationTest() {
       lateinit var userData: UserData
 
+    private var queryParticipantRepository : QueryParticipantRepository = mock()
+    private var pdfSummaryRequestRepository : PdfSummaryRequestRepository = mock()
+    private var queryContentService: QueryContentService = mock()
+
+    lateinit var queryEValuationServiceMock: QueryEValuationService
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
         val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -72,6 +92,18 @@ class QueryEvaluationServiceTest(
     }
     @BeforeEach
     fun initTest() {
+
+        queryEValuationServiceMock = spy( QueryEValuationService(
+            queryLogicRepository,
+            queryContentService,
+            queryGroupRepository,
+            queryEvaluationRepository,
+            subjectRepository,
+            queryParticipantRepository,
+            queryParticipantContentRepository,
+            awsService,
+            pdfSummaryRequestRepository
+        ))
         userData = generateUserData(64.2,8, 50)
     }
     fun createQueryGroup(): QueryGroup {
@@ -422,9 +454,104 @@ class QueryEvaluationServiceTest(
         Assertions.assertEquals(today.minusYears(1).format(dayFormatter), result.first())
     }
 
+    private fun createParticipant(id: Long = 1L, sendEmail: Boolean = true): Subject {
+        val project = Project().apply { projectName = "Test Project" }
+
+        val user = User()
+        var role = Role(Authority(RoleAuthority.PARTICIPANT))
+        role.project = project
+
+        user.setLogin("user$id")
+        user?.roles
+            ?.firstOrNull { r -> r.authority?.name == RoleAuthority.PARTICIPANT.authority }
+            ?.project
 
 
+        user.roles = mutableSetOf(role)
 
+        return Subject().apply {
+            this.id = id
+            this.user = user
+        }
+    }
+
+    private fun createQueryParticipant(
+        subject: Subject? = createParticipant(),
+        queryGroup: QueryGroup? = QueryGroup().apply { id = 1L; name = "Group1" }
+    ): QueryParticipant {
+        return QueryParticipant().apply {
+            this.subject = subject
+            this.queryGroup = queryGroup
+        }
+    }
+
+    @Test
+    fun `evaluateQueries does nothing if hour is not 5`() {
+        mockkObject(TimeUtils)
+        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(16, 0)
+
+        queryEValuationServiceMock.evaluateQueries()
+
+        verify(queryParticipantRepository, never()).findAll()
+        verify(pdfSummaryRequestRepository, never()).findFirstBySubjectOrderByRequestedOnDesc(any())
+        verify(queryContentService, never()).processCompletedQueriesForParticipant(any())
+    }
+
+    @Test
+    fun `evaluateQueries skips participants with null subject or queryGroup`() {
+        mockkObject(TimeUtils)
+        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(5, 0)
+
+        val qp1 = createQueryParticipant(subject = null)
+        val qp2 = createQueryParticipant(queryGroup = null)
+        whenever(queryParticipantRepository.findAll()).thenReturn(listOf(qp1, qp2))
+
+        queryEValuationServiceMock.evaluateQueries()
+
+        verify(pdfSummaryRequestRepository, never()).findFirstBySubjectOrderByRequestedOnDesc(any())
+        verify(queryContentService, never()).processCompletedQueriesForParticipant(any())
+    }
+
+    @Test
+    fun `evaluateQueries processes participant with emailSent true`() {
+        mockkObject(TimeUtils)
+        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(5, 0)
+
+        val participant = createParticipant()
+        val queryParticipant = createQueryParticipant(subject = participant)
+        whenever(queryParticipantRepository.findAll()).thenReturn(listOf(queryParticipant))
+
+        val pdfSummary = PdfSummaryRequest().apply { emailSent = true }
+        whenever(pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant))
+            .thenReturn(pdfSummary)
+        val result = mutableMapOf("Group1" to true)
+        doReturn(result).whenever(queryEValuationServiceMock).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
+        doReturn(true).whenever(queryContentService).processCompletedQueriesForParticipant(participant.id!!)
+
+        queryEValuationServiceMock.evaluateQueries()
+
+        verify(queryEValuationServiceMock, times(1)).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
+        verify(queryContentService, times(1)).processCompletedQueriesForParticipant(participant.id!!)
+    }
+
+    @Test
+    fun `evaluateQueries skips participant if latest PDF summary emailSent is false`() {
+        mockkObject(TimeUtils)
+        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(5, 0)
+
+        val participant = createParticipant()
+        val queryParticipant = createQueryParticipant(subject = participant)
+        whenever(queryParticipantRepository.findAll()).thenReturn(listOf(queryParticipant))
+
+        val pdfSummary = PdfSummaryRequest().apply { emailSent = false }
+        whenever(pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant))
+            .thenReturn(pdfSummary)
+
+        queryEValuationServiceMock.evaluateQueries()
+
+        verify(queryEValuationServiceMock, never()).testLogicEvaluation(any(), any(), any())
+        verify(queryContentService, never()).processCompletedQueriesForParticipant(any())
+    }
 
     private fun getRoot(listQueries:  Map<String, Query>, rootLogic: QueryLogicOperator, innerRootLogic: QueryLogicOperator): QueryLogic? {
 

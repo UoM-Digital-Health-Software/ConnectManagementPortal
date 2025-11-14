@@ -15,11 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.transaction.annotation.Transactional
-import java.time.YearMonth
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.random.Random
+import org.mockito.kotlin.*
+import org.radarbase.management.repository.QueryParticipantRepository
+import org.radarbase.management.repository.UserRepository
+import org.radarbase.management.service.mapper.QueryContentGroupMapper
+import org.radarbase.management.service.mapper.QueryContentMapper
+
+import java.time.*
+
 
 
 /**
@@ -41,7 +47,11 @@ class ContentServiceTest(
     @Autowired private val queryContentService: QueryContentService,
     @Autowired private val contentGroupRepository: QueryContentGroupRepository,
     @Autowired private val contentRepository: QueryContentRepository,
-    @Autowired private val participantContentRepository: QueryParticipantContentRepository
+    @Autowired private val participantContentRepository: QueryParticipantContentRepository,
+    @Autowired private val queryContentMapper: QueryContentMapper,
+    @Autowired private val queryContentGroupMapper: QueryContentGroupMapper,
+    @Autowired private val moduleRepository: ModuleRepository
+
 
 ) : BasePostgresIntegrationTest() {
     lateinit var userData: UserData
@@ -49,6 +59,65 @@ class ContentServiceTest(
     lateinit var subject: Subject
     lateinit var queryGroup : QueryGroup
     lateinit var user: User
+
+
+    private lateinit var queryContentServiceMock: QueryContentService
+
+    private val contentNotificationRepositoryMock: ContentNotificationRepository = mock()
+    private val notificationService: NotificationService = mock()
+
+    private fun createNotification(sent: Boolean = false): ContentNotification {
+        val user = User()
+        user.setLogin("john.doe")
+        val subject = Subject().apply { this.user = user }
+        val group = QueryContentGroup().apply { contentGroupName = "Test Group"; id = 42L }
+
+        return ContentNotification().apply {
+            this.subject = subject
+            this.contentGroup = group
+            this.sent = sent
+        }
+    }
+    @BeforeEach
+    fun initTest() {
+        queryContentServiceMock =
+            spy(QueryContentService(
+                contentRepository,
+                queryGroupRepository,
+                queryContentMapper,
+                contentGroupRepository,
+                queryParticipantRepository,
+                subjectRepository,
+                queryEvaluationRepository,
+                participantContentRepository,
+                queryContentGroupMapper,
+                moduleRepository,
+
+        notificationService,
+        contentNotificationRepositoryMock
+        ))
+
+
+        user = userRepository.findAll()[0]
+        subject = subjectRepository.findAll()[0]
+        contentGroups = mutableListOf()
+        userData = generateUserData(64.2,8, 50)
+
+        queryGroup = queryGroupRepository.saveAndFlush(createQueryGroup());
+
+        contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName", queryGroup))
+
+        contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName 1", queryGroup))
+        contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName 2", queryGroup))
+
+        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[0]))
+        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[1]))
+        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[0]))
+
+
+        ContentTestUtil.addQueryParticipantContent(queryGroup, subject, contentGroups[0])
+    }
+
 
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
         val currentMonth = YearMonth.now()
@@ -82,27 +151,7 @@ class ContentServiceTest(
                 "HRV" to HRV)
         )
     }
-    @BeforeEach
-    fun initTest() {
-        user = userRepository.findAll()[0]
-        subject = subjectRepository.findAll()[0]
-        contentGroups = mutableListOf()
-        userData = generateUserData(64.2,8, 50)
 
-        queryGroup = queryGroupRepository.saveAndFlush(createQueryGroup());
-
-        contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName", queryGroup))
-
-        contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName 1", queryGroup))
-        contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName 2", queryGroup))
-
-        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[0]))
-        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[1]))
-        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[0]))
-
-
-        ContentTestUtil.addQueryParticipantContent(queryGroup, subject, contentGroups[0])
-    }
     fun createQueryGroup(): QueryGroup {
         val user = userRepository.findAll()[0];
 
@@ -157,7 +206,7 @@ class ContentServiceTest(
         val falseEval = QueryEvaluation()
         falseEval. result = false
         result = queryContentService.shouldSendNotification(listOf(falseEval), null)
-        Assertions.assertEquals(false, result )
+       Assertions.assertEquals(false, result )
 
 
         result = queryContentService.shouldSendNotification(listOf(trueEval, falseEval), null)
@@ -172,7 +221,7 @@ class ContentServiceTest(
 
         val trueEvalWithNotif = QueryEvaluation()
         trueEvalWithNotif.result = true
-        trueEvalWithNotif.notificationSent = true
+        trueEvalWithNotif.notificationScheduled = true
 
         val sixDaysAgo = ZonedDateTime.now().minusDays(6)
 
@@ -281,8 +330,41 @@ class ContentServiceTest(
 
 
         val queryEvaluationAfter = queryEvaluationRepository.findById(queryEvaluation.id).get()
-        Assertions.assertEquals(true,queryEvaluationAfter.notificationSent)
+        Assertions.assertEquals(true,queryEvaluationAfter.notificationScheduled)
     }
+
+    @Test
+    fun `sendScheduledNotifications does nothing if hour is not 16`() {
+        // Spy the current time
+        doReturn(LocalTime.of(10, 0)).whenever(queryContentServiceMock).getCurrentTime(ZoneId.of("Europe/London"))
+
+        queryContentServiceMock.sendScheduledNotifications()
+
+        verify(contentNotificationRepositoryMock, never()).findAllBySentIsFalse()
+        verify(notificationService, never()).sendNotification(any(), any())
+    }
+
+    @Test
+    fun `sendScheduledNotifications sends notifications at 16`() {
+        val notification = createNotification()
+        doReturn(LocalTime.of(16, 0)).whenever(queryContentServiceMock).getCurrentTime(ZoneId.of("Europe/London"))
+
+        whenever(contentNotificationRepositoryMock.findAllBySentIsFalse())
+            .thenReturn(listOf(notification))
+
+        whenever(notificationService.sendNotification(any(), any())).thenReturn(true)
+
+        queryContentServiceMock.sendScheduledNotifications()
+
+        // Verify the notification is marked as sent
+        Assertions.assertTrue(notification.sent)
+        assert(notification.sentOn != null)
+
+        verify(notificationService, times(1)).sendNotification(any(), any())
+        verify(contentNotificationRepositoryMock, times(1)).saveAndFlush(notification)
+    }
+
+
 
     private fun getRoot(listQueries:  Map<String, Query>, rootLogic: QueryLogicOperator, innerRootLogic: QueryLogicOperator): QueryLogic? {
 

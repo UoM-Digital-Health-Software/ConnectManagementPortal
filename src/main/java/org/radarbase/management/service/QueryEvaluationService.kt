@@ -12,9 +12,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
-import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 data class DataPoint(
@@ -38,8 +36,7 @@ public class QueryEValuationService(
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val awsService: AWSService,
     private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-    @Value("\${test.fixedYear:}") private val fixedYearStr: String,
-    @Value("\${test.fixedMonth:}") private val fixedMonthStr: String
+
 
 
 ) {
@@ -51,10 +48,12 @@ public class QueryEValuationService(
         }
     }
 
-    private fun evaluateAgainstHistogramData(aggregatedData: MutableMap<String, Int>, expectedValue: String) : Boolean {
+    private fun evaluateAgainstHistogramData(aggregatedData: MutableMap<String, Int>, expectedValue: String, timeFrameSize: Int) : Boolean {
+        val sizeTarget = (timeFrameSize * QueryEvaluationOptions.minimumExpectedData).toInt()
+
         val numberOfAnswers = aggregatedData.values.sum();
 
-        if(aggregatedData.isEmpty() || numberOfAnswers < 7) {
+        if(aggregatedData.isEmpty() || numberOfAnswers < sizeTarget) {
             return false
         }
         val maxRange = aggregatedData.maxByOrNull { it.value }
@@ -64,11 +63,14 @@ public class QueryEValuationService(
     }
 
 
-    private fun evaluateAgainstAveragedData(relevantData: List<Double>, expectedValue: String, comparsionOperator: String ): Boolean {
-        if(relevantData.isEmpty() || relevantData.size < 7) {
+    private fun evaluateAgainstAveragedData(relevantData: List<Double>, expectedValue: String, comparsionOperator: String, timeFrameSize: Int ): Boolean {
+
+        val sizeTarget = (timeFrameSize * QueryEvaluationOptions.minimumExpectedData).toInt()
+
+        if (relevantData.isEmpty() || relevantData.size < sizeTarget) {
             return false
         }
-        val average = relevantData.average();
+        val average = relevantData.average()
 
         return when (comparsionOperator){
             ">" -> average  > expectedValue.toDouble()
@@ -100,11 +102,12 @@ public class QueryEValuationService(
 
     private fun getRelevantDataForAveragedEvaluation(entity: String, metric:String, summary: DataSummaryCategory ) : Double? {
         val physicalData = summary.physical
-        val sliderData = summary.questionnaire_slider
+        val questionnaireGroup = summary.questionnaire_slider
 
         val value = when (entity.lowercase()) {
             "physical" -> physicalData[metric.lowercase()]
-            "questionnaire_slider" -> sliderData[metric.lowercase()]
+            "questionnaire_group" -> questionnaireGroup[metric.lowercase()]
+
             else -> null
         }
 
@@ -137,10 +140,11 @@ public class QueryEValuationService(
             }
         }
 
+
         return if (comparisonOperator == "IS") {
-            evaluateAgainstHistogramData(histogramEvalData, expectedValue)
+            evaluateAgainstHistogramData(histogramEvalData, expectedValue, datesToQuery.size)
         } else {
-            evaluateAgainstAveragedData(avgEvalData, expectedValue, comparisonOperator)
+            evaluateAgainstAveragedData(avgEvalData, expectedValue, comparisonOperator, datesToQuery.size)
         }
     }
     fun evaluateLogicalCondition(queryLogic: QueryLogic, userData:  MutableMap<String, DataSummaryCategory>) : Boolean {
@@ -222,7 +226,7 @@ public class QueryEValuationService(
         val subjectLogin = subject.user?.login!!
         val subjectId = subject.id!!;
 
-        val processedData = awsService.startProcessing(project, subjectLogin, DataSource.S3, AggregationLevel.DAY)?.data ?: throw IllegalArgumentException("There is no data for the user")
+        val processedData = awsService.startProcessing(project, subjectLogin, QueryEvaluationOptions.source, QueryEvaluationOptions.aggregationLevel)?.data ?: throw IllegalArgumentException("There is no data for the user")
 
         val subjectOpt = subjectRepository.findById(subjectId)
         val queryParticipant = queryParticipantRepository.findBySubjectId(subjectId);
@@ -262,7 +266,7 @@ public class QueryEValuationService(
         newQueryEvaluation.subject = subject
         newQueryEvaluation.createdDate = ZonedDateTime.now()
         newQueryEvaluation.result = result
-        newQueryEvaluation.notificationSent = false
+        newQueryEvaluation.notificationScheduled = false
 
         queryEvaluationRepository.save(newQueryEvaluation);
 
@@ -292,7 +296,7 @@ public class QueryEValuationService(
     @Scheduled(cron = "0 0 5 * * ?")
     fun evaluateQueries() {
 
-        val now = LocalTime.now()
+        val now = TimeUtils.getCurrentTime()
         if (now.hour != 5) {
             return
         }
