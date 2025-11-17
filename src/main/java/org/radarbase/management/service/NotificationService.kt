@@ -56,33 +56,43 @@ class NotificationService(
 
 
     private fun sendAppleNotifications(tokens: List<String>, title: String, body: String, route: String): Boolean {
-        var title: String? = title
-        var body: String? = body
         if (tokens.isEmpty()) {
             return false
         }
-        title = shorten(title, MAXIMUM_TITLE_LENGTH)
-        body = shorten(body, APPLE_MAXIMUM_BODY_LENGTH)
+
+
+        val shortenedTitle = shorten(title, MAXIMUM_TITLE_LENGTH)
+        val shortenedBody = shorten(body, APPLE_MAXIMUM_BODY_LENGTH)
+
+        val apnsConfig = ApnsConfig.builder()
+            .setAps(
+                Aps.builder()
+                    .setSound("default")
+                    .build()
+            )
+            .build()
+
         val message = MulticastMessage.builder()
+            .setApnsConfig(apnsConfig)
             .setNotification(
                 Notification.builder()
-                    .setTitle(title)
-                    .setBody(body)
+                    .setTitle(shortenedTitle)
+                    .setBody(shortenedBody)
                     .build()
             )
             .putData("route", route)
             .addAllTokens(tokens)
             .build()
+
         return try {
             val response = firebaseMessaging?.sendEachForMulticast(message)
             if (response != null) {
-                val responses = response.responses
-                processNotificationResponses(responses, tokens)
-                return response.successCount > 0
-            }
-            false
+                processNotificationResponses(response.responses, tokens)
+                response.successCount > 0
+            } else false
         } catch (exception: FirebaseMessagingException) {
-            return false
+            log.error("[iOS] Error sending notification", exception)
+            false
         }
     }
 
@@ -135,8 +145,9 @@ class NotificationService(
                 if (exception is FirebaseMessagingException) {
                     val errorCode = exception.errorCode
 
-                    log.info("[ANDROID] error {}", errorCode)
+                    log.info("[ANDROID] error {}", exception)
                     if (errorCode.name == "REGISTRATION_TOKEN_NOT_REGISTERED") {
+
                         //TODO: add delete token / archive token function
                         // tokenRepository.deleteByToken(token)
                     }
