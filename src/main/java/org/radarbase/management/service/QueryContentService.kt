@@ -12,12 +12,13 @@ import org.radarbase.management.service.dto.QueryContentGroupDTO
 
 import org.radarbase.management.service.mapper.QueryContentGroupMapper
 import org.radarbase.management.service.mapper.QueryContentMapper
-import org.radarbase.management.service.mapper.QueryGroupContentMapper
 import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
-import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -33,12 +34,11 @@ class QueryContentService(
     private val queryParticipantRepository: QueryParticipantRepository,
     private val subjectRepository: SubjectRepository,
     private val queryEvaluationRepository: QueryEvaluationRepository,
-    private val queryContentGroup: QueryContentGroupRepository,
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
-    private val queryGroupContentMapper: QueryGroupContentMapper,
     private val queryContentGroupMapper: QueryContentGroupMapper,
     private val moduleRepository: ModuleRepository,
-    private val notificationService: NotificationService
+    private val notificationService: NotificationService,
+    private val contentNotificationRepository: ContentNotificationRepository
 
 
 ) {
@@ -152,7 +152,7 @@ class QueryContentService(
     }
 
 
-    fun sendNotification(contentGroup: QueryContentGroup?, latestEvaluation: QueryEvaluation, subject: Subject) {
+    fun scheduleNotification(contentGroup: QueryContentGroup?, latestEvaluation: QueryEvaluation, subject: Subject) {
 
 
         contentGroup?.let {
@@ -166,16 +166,13 @@ class QueryContentService(
             }
             notificationService.sendNotification(listOf(user), notificationDTO)
 
-            latestEvaluation.notificationSent = true
+            latestEvaluation.notificationScheduled = true
             queryEvaluationRepository.save(latestEvaluation)
         }
     }
 
      fun shouldSendNotification(evaluations : List<QueryEvaluation>, latestNotificationDate: ZonedDateTime?): Boolean {
-         val resetThresholdDays = 2
 
-         //TOOD: change once after testing sessions
-         val minNotificationIntervalDays = 2
 
          if(evaluations.isEmpty()) return false
 
@@ -197,7 +194,7 @@ class QueryContentService(
          }
 
 
-         if(consecutiveFailed >= resetThresholdDays) {
+         if(consecutiveFailed >= QueryEvaluationOptions.resetThresholdDays) {
             return true
          }
 
@@ -205,7 +202,7 @@ class QueryContentService(
              val today = ZonedDateTime.now()
             val daysSinceLast = ChronoUnit.DAYS.between(latestNotificationDate, today)
 
-             if (daysSinceLast >= minNotificationIntervalDays) {
+             if (daysSinceLast >= QueryEvaluationOptions.minNotificationIntervalDays) {
                 return true
              }
          }
@@ -336,7 +333,7 @@ class QueryContentService(
                 val latestEvaluation = evaluations[0]
                 val queryGroup = latestEvaluation.queryGroup ?: continue
 
-                val latestNotificationDate = queryEvaluationRepository.findFirstBySubjectAndQueryGroupAndNotificationSentIsTrueOrderByCreatedDateDesc(subject, queryGroup)?.createdDate
+                val latestNotificationDate = queryEvaluationRepository.findFirstBySubjectAndQueryGroupAndNotificationScheduledIsTrueOrderByCreatedDateDesc(subject, queryGroup)?.createdDate
 
                 val shouldSendNotification = shouldSendNotification(evaluations, latestNotificationDate)
 
@@ -348,7 +345,10 @@ class QueryContentService(
                         content = getRandomAlreadyAssignedContent(queryGroup, subject)
                     }
 
-                    sendNotification(content, latestEvaluation, subject)
+                    notificationService.scheduleNotification(content, latestEvaluation, subject)
+
+                    latestEvaluation.notificationScheduled = true
+                    queryEvaluationRepository.save(latestEvaluation)
                 }
             }
         }
@@ -386,6 +386,45 @@ class QueryContentService(
                 modules = modules
             )
         }
+    }
+    open fun getCurrentTime(zone: ZoneId = ZoneId.of("Europe/London")): LocalTime = LocalTime.now(zone)
+
+    @Scheduled(cron = "0 0 16 * * ?", zone = "Europe/London")
+    fun sendScheduledNotifications() {
+        val now = getCurrentTime(ZoneId.of("Europe/London"))
+        if (now.hour != 16) {
+            return
+        }
+
+        log.info("[WORKER] running send Scheduled Notifications ")
+
+       val allUnsentNotifications =  contentNotificationRepository.findAllBySentIsFalse()
+
+        for(notification in allUnsentNotifications) {
+
+            log.info("[WORKER] trying to send this notificatio {} ", notification)
+
+
+            val user = notification.subject?.user ?: throw IllegalArgumentException("[QueryContentService][sendScheduledNotifications] User is not present")
+            val contentGroup = notification.contentGroup ?:  throw IllegalArgumentException("[QueryContentService][sendScheduledNotifications] Content Group is not present")
+
+            val notificationDTO = NotificationDTO().apply {
+                title = contentGroup.contentGroupName
+                body = "Click here to read more"
+                route = "/queryContent/" + contentGroup.id
+            }
+
+            val isSuccess = notificationService.sendNotification(listOf(user), notificationDTO)
+
+            notification.sent = isSuccess
+
+            if(isSuccess) {
+                notification.sentOn = ZonedDateTime.now()
+            }
+
+            contentNotificationRepository.saveAndFlush(notification)
+        }
+
     }
 
     companion object {

@@ -689,7 +689,7 @@ class SubjectResource(
         val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
         val project = subject!!.activeProject!!.projectName!!;
 
-        val monthlyStatistics =   awsService.startProcessing(project, login, DataSource.CLASSPATH)
+        val monthlyStatistics =   awsService.startProcessing(project, login, QueryEvaluationOptions.source, AggregationLevel.MONTH)
         return ResponseEntity.ok(monthlyStatistics);
     }
 
@@ -710,7 +710,7 @@ class SubjectResource(
                 subject = subject,
                 currentUser = currentUser,
                 createdBy = it.email!!,
-                local = true
+                local = false
             )
             return ResponseEntity.ok(response);
 

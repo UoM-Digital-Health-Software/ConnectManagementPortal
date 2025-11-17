@@ -79,6 +79,7 @@ internal class QueryResourceIntTest(
     @Throws(ServletException::class)
 
     fun setUp() {
+
         MockitoAnnotations.openMocks(this)
 
         mockUserService = mock()

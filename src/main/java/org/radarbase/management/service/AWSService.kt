@@ -102,7 +102,7 @@ data class HistogramResponse(
 
 @Service
 @Transactional
-class AWSService(
+open class AWSService(
     @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
     @Autowired private val mailService: MailService,
     @Autowired private val queryParticipantRepository: QueryParticipantRepository,
@@ -133,7 +133,7 @@ class AWSService(
         return LocalDate.parse(datePart, DateTimeFormatter.ISO_DATE)
     }
 
-    fun startProcessing(projectName: String, login: String, dataSource: DataSource, aggregationLevel: AggregationLevel = AggregationLevel.MONTH) : DataSummaryResult? {
+    open fun startProcessing(projectName: String, login: String, dataSource: DataSource, aggregationLevel: AggregationLevel) : DataSummaryResult? {
         val s3Client = createS3Client()
 
         val files = if (s3Client != null && dataSource == DataSource.S3) {
@@ -141,7 +141,6 @@ class AWSService(
         } else {
             listClasspathJsonFiles(folderPath, login, projectName)
         }
-
 
         if(files.isEmpty()) {
             return null;
@@ -197,21 +196,31 @@ class AWSService(
         val testUserId = "a96fac6c-9431-47d6-b304-4947d42e69bc"
 
         val classLoader =  Thread.currentThread().contextClassLoader
+
+        log.info("[TEST] before resoource {}", prefix)
         val resource = classLoader.getResource(prefix) ?: return emptyList()
+        log.info("[TEST] after resoource")
+
         val allFolders = java.io.File(resource.toURI())
+        log.info("[TEST]  allFolders {} ", allFolders)
 
         val userFolders = allFolders
             .listFiles { file -> file.isDirectory }
             ?.map { it.name }
             ?.filter { it.endsWith("_$testUserId") }
             ?: emptyList()
+        log.info("[TEST]  userFolders {} ", userFolders)
 
 
         val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()
+        log.info("[TEST]  latestFolder {} ", latestFolder)
 
+        log.info( "path is $prefix$latestFolder/$projectName/$testUserId")
         val files  = classLoader.getResource("$prefix$latestFolder/$projectName/$testUserId") ?: return emptyList()
+        log.info("[TEST]  files {} ", files)
 
         val allFiles = java.io.File(files.toURI())
+        log.info("[TEST]  allFiles {} ", allFiles)
 
         return  allFiles.list()?.map  {
             "$prefix$latestFolder/$projectName/$testUserId/$it"
@@ -429,7 +438,8 @@ class AWSService(
         bucketName : String = "connect-output-storage",
         timeFrame : String = "month",
         createdBy: String = "system",
-        local: Boolean = false
+        local: Boolean = false,
+        limit: Boolean = true
     ) : ApiResponse {
 
 
@@ -447,7 +457,7 @@ class AWSService(
 
         val existingPdfSummaries = pdfSummaryRequestRepository.findBySubject(subject)
 
-        if(existingPdfSummaries.isNotEmpty()) {
+        if(existingPdfSummaries.isNotEmpty() && limit) {
             return ApiResponse(success = false, message = "The summary has been already requested.")
         }
 
@@ -464,8 +474,11 @@ class AWSService(
             .replace("{{PARTICIPANTS}}", participantsYaml)
             .replace("{{BUCKET_NAME}}", bucketName)
             .replace("{{TIME_RESOLUTION}}", timeFrame)
-
+        log.info("[LOG] before S3")
         val s3Client =  createS3Client()
+        log.info("[LOG] after S3")
+
+
 
         if(s3Client == null) {
             val outputDir = File("src/main/resources/$resourceFolderPath")
@@ -480,6 +493,7 @@ class AWSService(
             return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
 
         } else {
+            log.info("[LOG] creating a manifest in S3")
             try {
                 val key = "run-specs/pending/manifest-$runId.yaml"
 
@@ -489,6 +503,7 @@ class AWSService(
                     .contentType("application/x-yaml")
                     .build()
 
+                log.info("[LOG] before putpobject")
 
                 s3Client.putObject(
                     request,
@@ -496,6 +511,9 @@ class AWSService(
                         yamlContent.toByteArray(StandardCharsets.UTF_8)
                     )
                 )
+
+                log.info("[LOG] after put object")
+
 
                 addPdfSummaryTrackerRecord(subject, currentUser, runId)
                 return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
@@ -533,7 +551,7 @@ class AWSService(
         return featureStatisticsMap
     }
 
-    private fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
+     fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
         val newPdfSummaryTracker = PdfSummaryRequest()
 
         newPdfSummaryTracker.summaryId = summaryId
@@ -544,12 +562,13 @@ class AWSService(
         pdfSummaryRequestRepository.saveAndFlush(newPdfSummaryTracker)
     }
 
+    open fun getCurrentTime(): LocalTime = LocalTime.now()
 
 
  //   @Scheduled(cron = "0 * * * * ?")
  @Scheduled(cron = "0 0 0 * * ?")
     fun requestDataSummaries() {
-       val now = LocalTime.now()
+       val now = getCurrentTime()
        if (now.hour != 0) {
            return
        }
@@ -561,7 +580,8 @@ class AWSService(
 
         for(participant in uniqueParticipants) {
             if(participant != null) {
-                writeManifestToResources(participant, currentUser, "manifests/test", "connect-dev-output", "day", "worker" , false )
+                log.info("[LOG] log for participant {}", participant)
+                writeManifestToResources(participant, currentUser, "manifests/test", "connect-dev-output", "day", "worker" , false , false)
 
             }
         }
@@ -572,7 +592,8 @@ class AWSService(
 
 
     // @Scheduled(cron = "0 0 0/4 * * ?")
-    @Scheduled(cron = "0 0 * * * ?")
+    @Scheduled(cron = "0 30 * * * ?")
+
 
     fun checkIfSummaryIsReady() {
 
