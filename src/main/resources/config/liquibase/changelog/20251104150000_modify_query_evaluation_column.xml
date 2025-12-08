@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Create table for app configs / feature flags -->
+    <changeSet id="20251104150000_modify_query_evaluation_column" author="Jindrich Gorner">
+
+
+        <renameColumn
+                tableName="query_evaluation"
+                oldColumnName="notification_sent"
+                newColumnName="notification_scheduled"
+                columnDataType="boolean"/>
+
+    </changeSet>
+
+    <changeSet id="20251107150000_update-query_evaluation-aud" author="Jindrich Gorner">
+        <addColumn tableName="query_evaluation_aud">
+            <column name="notification_scheduled" type="boolean" />
+            <column name="notification_scheduled_mod" type="boolean" />
+
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

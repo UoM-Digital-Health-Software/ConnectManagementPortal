@@ -42,8 +42,8 @@ class QueryEvaluation: AbstractEntity(), Serializable {
     var result: Boolean? = null
 
     @JvmField
-    @Column(name = "notification_sent")
-    var notificationSent: Boolean? = false
+    @Column(name = "notification_scheduled")
+    var notificationScheduled: Boolean? = false
 
 
     override fun toString(): String {

@@ -1,0 +1,75 @@
+{
+  "patient_id": "c0f85803-a4dd-4a67-a9db-7ef2909be6dd",
+  "site": "Test",
+  "data_summary": {
+    "start_date": "2025-10-22",
+    "end_date": "2025-10-22",
+    "total_days_with_data": 1,
+    "missing_days": null,
+    "features_available": [
+      "heart_rate",
+      "heart_rate_resting",
+      "heart_rate_variability",
+      "respiratory_rate",
+      "steps"
+    ]
+  },
+  "feature_statistics": {
+    "heart_rate_variability": {
+      "total_entries": 65,
+      "days_with_data": 1,
+      "mean": 74.82521300315257,
+      "median": 74.82521300315257,
+      "std_dev": 0.0,
+      "min": 74.82521300315257,
+      "max": 74.82521300315257,
+      "unit": "heart_rate.variability"
+    },
+    "respiratory_rate": {
+      "total_entries": 41,
+      "days_with_data": 1,
+      "mean": 17.536585365853657,
+      "median": 17.536585365853657,
+      "std_dev": 0.0,
+      "min": 17.536585365853657,
+      "max": 17.536585365853657,
+      "unit": "breaths_per_minute"
+    },
+    "heart_rate": {
+      "total_entries": 989,
+      "days_with_data": 1,
+      "mean": 89.28049719321595,
+      "median": 89.28049719321595,
+      "std_dev": 0.0,
+      "min": 89.28049719321595,
+      "max": 89.28049719321595,
+      "unit": "heart_rate"
+    },
+    "heart_rate_resting": {
+      "total_entries": 1,
+      "days_with_data": 1,
+      "mean": 52.0,
+      "median": 52.0,
+      "std_dev": 0.0,
+      "min": 52.0,
+      "max": 52.0,
+      "unit": "heart_rate.resting"
+    },
+    "steps": {
+      "total_entries": 1,
+      "days_with_data": 1,
+      "mean": 1205.0,
+      "median": 1205.0,
+      "std_dev": 0.0,
+      "min": 1205.0,
+      "max": 1205.0,
+      "unit": "steps"
+    }
+  },
+  "questionnaire_responses": {
+    "total_responses": 0,
+    "slider": {},
+    "histogram": {},
+    "days_with_responses": 0
+  }
+}

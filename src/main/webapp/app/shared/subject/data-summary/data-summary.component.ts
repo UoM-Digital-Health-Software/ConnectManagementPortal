@@ -81,7 +81,7 @@ export class DataSummaryComponent implements OnInit {
 
         questionnaire: barGraph,
         heart_rate: lineGraph("Higher heart rate", "Lower heart rate"),
-        hrv: lineGraph("Higher variability", "Low variability"),
+        heart_rate_variability: lineGraph("Higher variability", "Low variability"),
 
         steps: barGraph,
         activity: lineGraph("Higher activity", "Lower activity"),
@@ -554,10 +554,27 @@ export class DataSummaryComponent implements OnInit {
             );
 
 
-            //TODO: delete, for testing only
-            this.averages["hrv"] = (Number(heartRateTotal) / numberOfValues).toFixed(
+
+        }
+
+        let hrv = this.data['heart_rate_variability'];
+        if (hrv && hrv.length > 0) {
+            var heartRateTotal = hrv.reduce(
+                (acc, num) => Number(acc) + Number(num),
+                0
+            );
+
+            let numberOfValues = 0;
+            hrv.forEach((value) => {
+                numberOfValues += value > 0 ? 1 : 0;
+            })
+
+            this.averages['heart_rate_variability'] = (Number(heartRateTotal) / numberOfValues).toFixed(
                 1
             );
+
+
+
         }
     }
 

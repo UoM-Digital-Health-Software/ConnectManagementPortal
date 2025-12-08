@@ -1,5 +1,6 @@
 package org.radarbase.management.config
 
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.radarbase.management.ManagementPortalTestApp
 import org.springframework.boot.test.context.SpringBootTest
@@ -18,6 +19,10 @@ abstract class BasePostgresIntegrationTest {
 
         private val container = PostgresTestContainer.container
 
+        @BeforeAll
+        fun checkDatabase() {
+            println("✅ Database URL: " + container.jdbcUrl)
+        }
 
         @JvmStatic
         @DynamicPropertySource
