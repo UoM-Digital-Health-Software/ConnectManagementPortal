@@ -40,4 +40,8 @@ interface PdfSummaryRequestRepository : JpaRepository<PdfSummaryRequest, Long?>,
     fun findLatestPerSubject(): List<PdfSummaryRequest>
 
 
+    fun findFirstBySubjectOrderByRequestedOnDesc(subject: Subject): PdfSummaryRequest?
+
+
+
 }

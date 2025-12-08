@@ -1,6 +1,10 @@
 # Build stage
 FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk as builder
 
+# Accept GitHub token from build args
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN=${GITHUB_TOKEN}
+
 # Install NodeJS and Yarn
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
      && apt-get update && apt-get install -y \

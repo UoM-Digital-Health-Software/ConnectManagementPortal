@@ -273,6 +273,9 @@ Once you build the project, you will find these images in `build/www/assets/imag
 
 ## Development
 
+
+
+
 Before you can build this project, you must install and configure the following dependencies on your machine:
 
 1. [Node.js][]: We use Node to run a development web server and build the project.
@@ -459,6 +462,119 @@ The resulting file can be imported into the [Swagger editor][], or used with [Sw
 [Swagger editor]: https://editor.swagger.io/
 [Swagger codegen]: https://swagger.io/swagger-codegen/
 [OAuth2 spec]: https://tools.ietf.org/html/rfc6749#section-9
+
+
+# RP / ActiNow custom changes made by DHS team 
+
+## How to set up for local development 
+
+Make sure you run Node <16.*.* 
+
+Tested on Java 17 
+
+
+### DATABASE
+
+1]  Install and run postgres
+
+2] Create a user "radarbase" with password "radarbase"
+
+3] Create a database called managementportal
+
+4]  Then 
+
+`\c managamentportal`
+
+5] Then assign schema public to radarbase user 
+
+`GRANT USAGE,CREATE on SCHEMA public TO radarbase;`
+
+6] Assign owner to the database: 
+
+`ALTER DATABASE managementportal OWNER TO radarbase;`
+
+7] Assign the DB to radarbase user
+
+`GRANT CONNECT ON DATABASE managementportal TO radarbase;
+`
+
+
+Firstly follow QuickStart section of the README, then come back here for the rest: 
+
+
+### **BACKEND** 
+
+1] Run identity stack in Docker:
+
+`docker-compose -f ./src/main/docker/non_managementportal/docker-compose.yml up -d`
+
+2] Add this in application-prod.yaml under managementportal/identity (for adminEmail choose whatever email you want) :
+
+```
+
+    adminEmail: jindrichgorner@gmail.com
+    serverUrl: http://127.0.0.1:4433
+    serverAdminUrl: http://127.0.0.1:4434
+    loginUrl: http://127.0.0.1:3000
+    
+```
+    
+    
+Also change baseUrl and managementPortal to:
+
+```
+    baseUrl: http://127.0.0.1:8080/managementportal # Modify according to your server's URL
+    managementPortalBaseUrl: http://127.0.0.1:8080/managementportal
+    privacyPolicyUrl: http://info.thehyve.nl/radar-cns-privacy-policy
+
+```     
+    
+    
+
+4] Run the backend 
+
+`./gradlew bootRun -Pprod`
+
+
+### RESET CREDENTIALS 
+
+
+1] Visit, click Account Recovery, put the email from above there 
+
+`http://localhost:3000/welcome`
+
+2] Open (this will open email catcher and you should be ablet to see the email to reset the passowrd there) 
+
+`http://localhost:4436/#`
+
+3] Reset the password and setup 2fa by clicking the recovery url in the email body 
+
+4] Go to the managementportal database -> open table radar_user and change "login" to the email you provided above.  
+
+5] Now you should be able to log in at: 
+
+`http://localhost:8080/managementportal/#/managementportal/`
+
+
+## How to create a docker image 
+
+```
+ docker buildx build   -f "Dockerfile"   --tag <github_account>/managementportal:<image_version>   --platform linux/arm64,linux/amd64   --push   --build-arg GITHUB_TOKEN="<github_token>"   .
+```
+
+
+<github_account> - this is the name of the Github account you have set up 
+
+<image_version> - arbitrary version assigned to this specific image 
+
+<github_token> - token created on Github that is able to read packages 
+
+
+As an example, this might create an image called henrygorner/managmenetportal/notificatio_test 
+
+Set up AWS CLI access (instructions in CONNECT repo - CONNECT/mobile/CONNET_DOCS/deployments_aws.md 
+
+
 
 
 

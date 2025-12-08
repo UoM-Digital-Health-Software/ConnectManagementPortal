@@ -6,12 +6,13 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3AsyncClient
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.radarbase.management.repository.MetricAveragesRepository
 import org.springframework.core.io.ClassPathResource
 import org.radarbase.management.domain.PdfSummaryRequest
 import org.radarbase.management.domain.Subject
 import org.radarbase.management.domain.User
 import org.radarbase.management.repository.PdfSummaryRequestRepository
+import org.radarbase.management.repository.QueryParticipantRepository
+import org.radarbase.management.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -101,13 +102,11 @@ data class HistogramResponse(
 
 @Service
 @Transactional
-class AWSService(
-    @Autowired private val metricAveragesRepository: MetricAveragesRepository,
-    @Autowired private val subjectService: SubjectService,
-    @Autowired  private val metricAverageService: MetricAverageService,
-      @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-    @Autowired private val mailService: MailService
-
+open class AWSService(
+    @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
+    @Autowired private val mailService: MailService,
+    @Autowired private val queryParticipantRepository: QueryParticipantRepository,
+    @Autowired private val userRepository : UserRepository
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private var s3AsyncClient: S3AsyncClient? = null
@@ -115,24 +114,8 @@ class AWSService(
     private var folderPath = "summary-data/"
     var region = Region.of("eu-west-2")
 
-
-//Map<String, Map<String, Double>>
-
-
     fun createS3Client() : S3Client?  {
         val region = Region.EU_WEST_2
-//        val s3Client: S3Client? = runCatching {
-//            val client = S3Client.builder()
-//                .region(region)
-//                .credentialsProvider(DefaultCredentialsProvider.create())
-//                .build()
-//
-//            // running the listbuckets to test if credentials exists
-//            client.listBuckets()
-//            client
-//        }.getOrNull()ß
-
-
 
         val client = S3Client.builder()
             .region(region)
@@ -150,16 +133,14 @@ class AWSService(
         return LocalDate.parse(datePart, DateTimeFormatter.ISO_DATE)
     }
 
-    fun startProcessing(projectName: String, login: String, dataSource: DataSource, aggregationLevel: AggregationLevel = AggregationLevel.MONTH) : DataSummaryResult? {
+    open fun startProcessing(projectName: String, login: String, dataSource: DataSource, aggregationLevel: AggregationLevel) : DataSummaryResult? {
         val s3Client = createS3Client()
 
         val files = if (s3Client != null && dataSource == DataSource.S3) {
             listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, null)
         } else {
-            log.info("[AWS] getting files through classpath")
             listClasspathJsonFiles(folderPath, login, projectName)
         }
-
 
         if(files.isEmpty()) {
             return null;
@@ -187,14 +168,13 @@ class AWSService(
 
 
 
-
         if (matchingFolders.isEmpty()) {
             return emptyList()
         }
 
-
         val latestFolder = matchingFolders
             .maxByOrNull { extractDateFromFile(it) }!!
+
 
         if (summaryId != null && !latestFolder.contains(summaryId)) {
             return emptyList()
@@ -206,35 +186,41 @@ class AWSService(
             .build()
 
 
+
         val filesResponse = s3Client.listObjectsV2(filesRequest)
 
         return filesResponse.contents().map(S3Object::key)
             .filter { it != prefix }
     }
     fun listClasspathJsonFiles(prefix: String, userId: String, projectName: String) : List<String> {
-
-        log.info("[LOG] prefix {}", prefix)
-        log.info("[LOG] projectname {}", projectName)
         val testUserId = "a96fac6c-9431-47d6-b304-4947d42e69bc"
 
         val classLoader =  Thread.currentThread().contextClassLoader
+
+        log.info("[TEST] before resoource {}", prefix)
         val resource = classLoader.getResource(prefix) ?: return emptyList()
+        log.info("[TEST] after resoource")
+
         val allFolders = java.io.File(resource.toURI())
+        log.info("[TEST]  allFolders {} ", allFolders)
 
         val userFolders = allFolders
             .listFiles { file -> file.isDirectory }
             ?.map { it.name }
             ?.filter { it.endsWith("_$testUserId") }
             ?: emptyList()
-
-
+        log.info("[TEST]  userFolders {} ", userFolders)
 
 
         val latestFolder = userFolders?.maxByOrNull {  extractDateFromFile(it) }  ?: return emptyList()
+        log.info("[TEST]  latestFolder {} ", latestFolder)
 
+        log.info( "path is $prefix$latestFolder/$projectName/$testUserId")
         val files  = classLoader.getResource("$prefix$latestFolder/$projectName/$testUserId") ?: return emptyList()
+        log.info("[TEST]  files {} ", files)
 
         val allFiles = java.io.File(files.toURI())
+        log.info("[TEST]  allFiles {} ", allFiles)
 
         return  allFiles.list()?.map  {
             "$prefix$latestFolder/$projectName/$testUserId/$it"
@@ -259,49 +245,6 @@ class AWSService(
             false
         )
 
-    }
-
-
-
-
-    // uncomment based on dev testing
-    //@Scheduled(cron = "0 0 0/4 * * ?") every 4 hour
-    //@Scheduled(cron = "0 0 * * * ?") every hour
-    @Scheduled(cron = "0 0 0/4 * * ?")
-    fun checkIfSummaryIsReady() {
-        val s3Client = createS3Client()
-
-        val latestRequests = pdfSummaryRequestRepository.findLatestPerSubject();
-        latestRequests.forEach {
-
-            log.info("[PDF-WORKER] Checking for {}", it.summaryId)
-            if (!it.emailSent) {
-
-                val subject = it.subject
-                val login = subject?.user?.login
-                val projectName = subject?.activeProject?.projectName
-
-                var files: List<String> = listOf()
-
-                if (login != null && projectName != null) {
-                    files = if(s3Client != null) {
-                        listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, it.summaryId)
-                    } else {
-                        listClasspathJsonFiles(folderPath, login, projectName)
-                    }
-
-                } else {
-                }
-
-                if (files.isNotEmpty()) {
-                    log.info("[PDF-WORKER] Sending email for {}", subject?.externalId)
-                    sendSummaryReadyEmail(it.requestedBy, it.subject)
-                    updatePdfSummaryRequestAsCompleted(it);
-                } else {
-                    log.info("[PDF-WORKER] no files for {}", subject?.externalId)
-                }
-            }
-        }
     }
 
 
@@ -333,7 +276,6 @@ class AWSService(
             }
 
 
-            // gets the JSON from the file and reads it into a variable
             val jsonData: S3JsonData = jsonMapper.readValue(jsonString)
             val month = if (aggregationLevel == AggregationLevel.MONTH) extractMonthFromFilename(key) else extractDayFromFilename(key)
 
@@ -348,8 +290,6 @@ class AWSService(
                 ),)
 
             // puts a month in based on the file name
-            dataSummaryResult.data
-                .getOrPut(month) { dataSummaryCategory }
 
 
             // goes through the physical statistics (heart_rate , steps etc) and gets the mean value
@@ -369,7 +309,7 @@ class AWSService(
                     .getOrPut(feature) { mutableListOf() }
                     .add(mean)
 
-                // this is where it puts steps: 3.5 as an exmaple
+
                 dataSummaryCategory.physical
                              .getOrPut(feature){ mean }
 
@@ -453,6 +393,10 @@ class AWSService(
                     }
                 }
             }
+
+            val mutableData = dataSummaryResult.data.toMutableMap()
+            mutableData.getOrPut(month) { dataSummaryCategory }
+            dataSummaryResult.data = mutableData
         }
 
         return dataSummaryResult
@@ -463,11 +407,11 @@ class AWSService(
         return regex.find(filename)?.groupValues?.get(1) ?: "unknown"
     }
 
-    fun extractDayFromFilename(filename: String) : String {
+    fun extractDayFromFilename(path: String) : String {
 
+        val filename = path.substringAfterLast('/')
         val regex = Regex("""\d{4}-\d{2}-\d{2}""")
         val date = regex.find(filename)?.value
-
         return date ?: "unknown"
     }
 
@@ -479,8 +423,6 @@ class AWSService(
     }
 
     fun readClassPathJson(filePath: String) : String {
-        log.info("[LOG] filePath {}", filePath)
-
         val classLoader = Thread.currentThread().contextClassLoader
         val inputStream = classLoader.getResourceAsStream(filePath)
             ?: throw IllegalArgumentException("File not found: $filePath")
@@ -493,8 +435,11 @@ class AWSService(
         subject: Subject?,
         currentUser: User?,
         resourceFolderPath: String,
+        bucketName : String = "connect-output-storage",
+        timeFrame : String = "month",
         createdBy: String = "system",
-        local: Boolean = false
+        local: Boolean = false,
+        limit: Boolean = true
     ) : ApiResponse {
 
 
@@ -512,7 +457,7 @@ class AWSService(
 
         val existingPdfSummaries = pdfSummaryRequestRepository.findBySubject(subject)
 
-        if(existingPdfSummaries.isNotEmpty()) {
+        if(existingPdfSummaries.isNotEmpty() && limit) {
             return ApiResponse(success = false, message = "The summary has been already requested.")
         }
 
@@ -527,8 +472,13 @@ class AWSService(
             .replace("{{CREATED_BY}}", createdBy)
             .replace("{{CREATED_AT}}", createdAt)
             .replace("{{PARTICIPANTS}}", participantsYaml)
-
+            .replace("{{BUCKET_NAME}}", bucketName)
+            .replace("{{TIME_RESOLUTION}}", timeFrame)
+        log.info("[LOG] before S3")
         val s3Client =  createS3Client()
+        log.info("[LOG] after S3")
+
+
 
         if(s3Client == null) {
             val outputDir = File("src/main/resources/$resourceFolderPath")
@@ -543,6 +493,7 @@ class AWSService(
             return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
 
         } else {
+            log.info("[LOG] creating a manifest in S3")
             try {
                 val key = "run-specs/pending/manifest-$runId.yaml"
 
@@ -552,6 +503,7 @@ class AWSService(
                     .contentType("application/x-yaml")
                     .build()
 
+                log.info("[LOG] before putpobject")
 
                 s3Client.putObject(
                     request,
@@ -559,6 +511,9 @@ class AWSService(
                         yamlContent.toByteArray(StandardCharsets.UTF_8)
                     )
                 )
+
+                log.info("[LOG] after put object")
+
 
                 addPdfSummaryTrackerRecord(subject, currentUser, runId)
                 return ApiResponse(success = true, message = "Summary requested. You will be notified by email when it is ready")
@@ -596,7 +551,7 @@ class AWSService(
         return featureStatisticsMap
     }
 
-    private fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
+     fun addPdfSummaryTrackerRecord(subject: Subject,requestedBy: User, summaryId: String, ) {
         val newPdfSummaryTracker = PdfSummaryRequest()
 
         newPdfSummaryTracker.summaryId = summaryId
@@ -606,5 +561,77 @@ class AWSService(
 
         pdfSummaryRequestRepository.saveAndFlush(newPdfSummaryTracker)
     }
+
+    open fun getCurrentTime(): LocalTime = LocalTime.now()
+
+
+ //   @Scheduled(cron = "0 * * * * ?")
+ @Scheduled(cron = "0 0 0 * * ?")
+    fun requestDataSummaries() {
+       val now = getCurrentTime()
+       if (now.hour != 0) {
+           return
+       }
+
+     log.info("[requestDataSummaries] running")
+
+       val currentUser = userRepository.findOneByLogin("admin")
+       val uniqueParticipants =  queryParticipantRepository.findOnePerUniqueSubject().map { obj -> obj.subject }
+
+        for(participant in uniqueParticipants) {
+            if(participant != null) {
+                log.info("[LOG] log for participant {}", participant)
+                writeManifestToResources(participant, currentUser, "manifests/test", "connect-dev-output", "day", "worker" , false , false)
+
+            }
+        }
+
+    }
+
+
+
+
+    // @Scheduled(cron = "0 0 0/4 * * ?")
+    @Scheduled(cron = "0 30 * * * ?")
+
+
+    fun checkIfSummaryIsReady() {
+
+        log.info("[checkIfSummaryIsReady] running")
+        val s3Client = createS3Client()
+
+        val latestRequests = pdfSummaryRequestRepository.findLatestPerSubject();
+        latestRequests.forEach {
+
+            if (!it.emailSent) {
+
+                val subject = it.subject
+                val login = subject?.user?.login
+                val projectName = subject?.activeProject?.projectName
+
+                var files: List<String> = listOf()
+
+                if (login != null && projectName != null) {
+                    files = if(s3Client != null) {
+                        listS3JsonFiles(s3Client, bucketName, folderPath, login, projectName, it.summaryId)
+                    } else {
+                        listClasspathJsonFiles(folderPath, login, projectName)
+                    }
+
+                } else {
+                }
+
+                if (files.isNotEmpty()) {
+                    log.info("[PDF-WORKER] Sending email for {}", subject?.externalId)
+                    //TODO: commented out for RP, maybe we need a different column here / name
+                    //sendSummaryReadyEmail(it.requestedBy, it.subject)
+                    updatePdfSummaryRequestAsCompleted(it)
+                } else {
+                    log.info("[PDF-WORKER] no files for {}", subject?.externalId)
+                }
+            }
+        }
+    }
+
 
 }
