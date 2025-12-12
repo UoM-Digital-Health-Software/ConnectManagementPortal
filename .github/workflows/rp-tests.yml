@@ -32,6 +32,11 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}
 
+      - name: Create Firebase credentials file
+        run: |
+          mkdir -p src/main/resources/notif_config
+          echo '${{ secrets.FIREBASE_ADMIN_JSON }}' > src/main/resources/notif_config/actinow-firebase-adminsdk.json
+
       - name: Run backend tests
         run: ./gradlew test
 
