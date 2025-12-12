@@ -9,7 +9,7 @@ import { QueryParticipantService } from '../query-participant.service';
 import { SubjectPopupService } from '../subject-popup.service';
 import { QueryGroup, QueryParticipant } from 'app/shared/queries/queries.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { DeleteQueryConfirmDialogComponent } from './delete-query-confirm-dialog.component'; 
+import { DeleteQueryConfirmDialogComponent } from './delete-query-confirm-dialog.component';
 
 @Component({
     selector: 'app-query-viewer',
@@ -60,8 +60,8 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
                 let fileteredQueryGroupList = this.queryGroupList.filter(
                     (o1) =>
                         !this.assignedQueryGroups.some(
-                            (o2) => o1.id === o2.id
-                        ) && !o1.isArchived 
+                            (o2) => o1.id === o2.queryGroupId
+                        ) && !o1.isArchived
                 );
     
                 this.queryGroupList = fileteredQueryGroupList.slice();
@@ -86,7 +86,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
     removeQueryGroupFromList(queryGroupId) {
         this.queryGroupList = this.queryGroupList.filter((item) => {
             this.ifDisable = true;
-            return item.id != queryGroupId;
+            return item.queryGroupId != queryGroupId;
         });
     }
 
@@ -99,11 +99,11 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
                 //also remove any related content/participant link from the query_evaluation table
 
                 this.queryParticipantService
-                    .deleteAssignedQueryGroup(queryGroup.id, this.subject.id)
+                    .deleteAssignedQueryGroup(queryGroup.queryGroupId, this.subject.id)
                     .subscribe(() => {
                         this.queryParticipantService
                             .deleteQueryParticipantContent(
-                                queryGroup.id,
+                                queryGroup.queryGroupId,
                                 this.subject.id
                             )
                             .subscribe(() => {
@@ -112,7 +112,7 @@ export class QueryViewerComponent implements OnInit, OnDestroy {
                     });
             } else {
                 this.queryParticipantService
-                    .deleteAssignedQueryGroup(queryGroup.id, this.subject.id)
+                    .deleteAssignedQueryGroup(queryGroup.queryGroupId, this.subject.id)
                     .subscribe(() => {
                         this.afterGroupDeleted(queryGroup);
                     });

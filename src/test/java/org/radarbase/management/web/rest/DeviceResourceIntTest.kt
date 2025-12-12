@@ -44,16 +44,25 @@ import javax.servlet.ServletException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.hamcrest.Matchers.not
+import org.junit.jupiter.api.extension.ExtendWith
+import org.radarbase.management.ManagementPortalTestApp
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.post
 import java.security.Principal
 
-
+@ExtendWith(SpringExtension::class)
+@SpringBootTest(classes = [ManagementPortalTestApp::class])
+@WithMockUser
 internal class DeviceResourceIntTest(
     @Autowired private val deviceResource : DeviceResource,
     @Autowired private val pageableArgumentResolver: PageableHandlerMethodArgumentResolver,
     @Autowired private val jacksonMessageConverter: MappingJackson2HttpMessageConverter,
     @Autowired private val exceptionTranslator: ExceptionTranslator,
     @Autowired private val radarToken: RadarToken,
+    @Autowired private val notificationService: NotificationService,
+    @Autowired private val userService: UserService,
     @Autowired private val passwordService: PasswordService,
     @Autowired private val queryRepository: QueryRepository,
     @Autowired private val queryGroupRepository: QueryGroupRepository,
@@ -67,6 +76,7 @@ internal class DeviceResourceIntTest(
     @Autowired private val queryParticipantContentRepository: QueryParticipantContentRepository,
     @Autowired private val queryContentGroupRepository: QueryContentGroupRepository
 
+
 ) : BasePostgresIntegrationTest() {
 
     private lateinit var mockMvc: MockMvc
@@ -75,8 +85,8 @@ internal class DeviceResourceIntTest(
     @Autowired private  lateinit  var queryBuilderService: QueryBuilderService
 
     @Autowired private lateinit var deviceRepository: DeviceRepository
-    @MockBean
-    private lateinit var notificationService: NotificationService
+
+
     private val imageBlob = "/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAAUABQDASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAMEAQIFB//EACQQAAICAgEDBAMAAAAAAAAAAAECAwQAIRESMUEFExQiUVJh/8QAFwEAAwEAAAAAAAAAAAAAAAAAAAECA//EABkRAQEBAAMAAAAAAAAAAAAAAAABESExQf/aAAwDAQACEQMRAD8A9hsCc15BWZFm6foZASoP94ytV9Qa1ZWOONXi9kO8wfjhidAL3IOzz21klupWlb5EyMWSNkBVyD0nuNHzlCG6ayWbl1pBHS5id2hKAKACXH7D8ka1oDfNeM7cvNx2cZpFIk0SSxsGR1DKw8g9sZLRHap17qIliISLHIsigk6ZTyDkxAIII5B8YxgWTtnGMYG//9k="
 
     private val baseURL = "/api/"
@@ -91,15 +101,15 @@ internal class DeviceResourceIntTest(
 
         mockUserService = mock()
         queryBuilderService = mock()
-
+        val deviceResource = DeviceResource(
+      notificationService,
+            userService
+        )
 
         val filter = OAuthHelper.createAuthenticationFilter()
         filter.init(MockFilterConfig())
 
         SecurityContextHolder.getContext().authentication = RadarAuthentication(radarToken)
-
-
-
 
         mockMvc = MockMvcBuilders.standaloneSetup(deviceResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
@@ -110,19 +120,11 @@ internal class DeviceResourceIntTest(
             .build()
     }
 
-
-
-
-
-
-
-
-
     @Test
+    @Transactional
+    @Throws(Exception::class)
     fun `POST device - should register device when deviceDTO is valid`() {
         val deviceDTO = DeviceDTO(/* fill required fields */)
-
-
 
         val sizeBefore = deviceRepository.findAll().size
 
@@ -131,21 +133,14 @@ internal class DeviceResourceIntTest(
         deviceDTO.platform = PlatformType.IOS
 
 
-        mockMvc.post("/api/device") {
-            contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(deviceDTO)
 
-        }.andExpect {
-            status { isOk() }
-        }
-
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/api/device").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(deviceDTO))
+        ).andExpect(MockMvcResultMatchers.status().isOk())
 
         val sizeAfter = deviceRepository.findAll().size
 
         Assertions.assertThat(sizeAfter).isEqualTo(sizeBefore + 1)
     }
-
-
-
-
 }

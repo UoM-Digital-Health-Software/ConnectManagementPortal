@@ -9,7 +9,7 @@ import java.time.temporal.WeekFields
 import java.util.*
 
 @Service
-class AppConfigService(private val repository: AppConfigRepository) {
+class AppConfigService(private val repository: AppConfigRepository,     private val saltProvider: SaltProvider) {
 
     fun getMergedConfig(site: String?, userId: Long?): Map<String?, AppConfig?> {
         val configMap = mutableMapOf<String?, AppConfig?>()
@@ -42,7 +42,7 @@ class AppConfigService(private val repository: AppConfigRepository) {
 
         val rolloutPct = config[feature]?.rolloutPct?.toInt() ?: 100
 
-        val salt = getWeekSalt()
+        val salt = saltProvider.getSalt()
         val bucket = getUserBucket(userLogin, salt)
         if (bucket >= rolloutPct) return false
 

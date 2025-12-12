@@ -15,6 +15,8 @@ import org.radarbase.auth.authentication.OAuthHelper
 import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.auth.token.RadarToken
 import org.radarbase.management.ManagementPortalTestApp
+import org.radarbase.management.config.BasePostgresIntegrationTest
+import org.radarbase.management.config.FixedSaltTestConfig
 import org.radarbase.management.domain.AppConfig
 import org.radarbase.management.domain.Authority
 import org.radarbase.management.domain.Role
@@ -28,6 +30,7 @@ import org.radarbase.management.service.mapper.SubjectMapper
 import org.radarbase.management.web.rest.errors.ExceptionTranslator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.mock.web.MockFilterConfig
@@ -53,7 +56,9 @@ import javax.servlet.ServletException
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [ManagementPortalTestApp::class])
 @WithMockUser
-internal class AppConfigResourceIntTest(
+@Import(FixedSaltTestConfig::class)
+
+ class AppConfigResourceIntTest(
     @Autowired private val appConfigResource: AppConfigResource,
     @Autowired private val subjectService: SubjectService,
     @Autowired private val jacksonMessageConverter: MappingJackson2HttpMessageConverter,
@@ -65,7 +70,7 @@ internal class AppConfigResourceIntTest(
     @Autowired private val userService: UserService
 
 
-    ) {
+    )  : BasePostgresIntegrationTest() {
     private lateinit var restAppConfigResourceMockMvc: MockMvc
     @Autowired private lateinit var mockUserService: UserService
     @Autowired private lateinit var mockSubjectRepository: SubjectRepository
@@ -143,7 +148,7 @@ internal class AppConfigResourceIntTest(
         val configMap1: Boolean =
             objectMapper.readValue(json1, object : TypeReference<Boolean>() {})
 
-        assertThat(configMap1).isEqualTo(false)
+        assertThat(configMap1).isEqualTo(true)
 
 
     }

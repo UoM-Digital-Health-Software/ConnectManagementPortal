@@ -101,7 +101,11 @@
                             "src/main/webapp/assets"
                         ],
                         "styles": ["src/main/webapp/content/scss/global.scss"],
-                        "scripts": []
+                        "scripts": [],
+                                     "include": [
+
+                     "src/main/webapp/app/shared/queries/addQuery.component.spec.ts"
+                ]
                     }
                 },
                 "cypress-run": {

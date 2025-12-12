@@ -131,6 +131,10 @@ test {
     testLogging {
         exceptionFormat = 'full'
     }
+
+    tasks.withType(Test).configureEach {
+        maxParallelForks = 1
+    }
     useJUnitPlatform()
 }
 

@@ -5,17 +5,42 @@ import org.testcontainers.utility.MountableFile
 import java.util.*
 
 class KratosContainer {
-    private val KRATOS_IMAGE = "oryd/kratos:v1.0.0"
-    private val CONFIG_PATH = "/etc/config/kratos/kratos.yml" // Path inside the container where the config file will be mounted
 
-    private val kratos: GenericContainer<*> = GenericContainer(KRATOS_IMAGE)
-        .withCommand("serve -c $CONFIG_PATH --dev --watch-courier")
-        .waitingFor(Wait.forHttp("/health/ready").forPort(4434).forStatusCode(200))
-        .withCopyFileToContainer(MountableFile.forClasspathResource("kratos-config.yaml"), CONFIG_PATH)
-        .withCopyFileToContainer(MountableFile.forClasspathResource("identity.schema.user.json"), "/etc/config/kratos/identities/identity.schema.user.json")
+    private val KRATOS_IMAGE = "oryd/kratos:v1.0.0"
+    private val CONFIG_DIR = "/etc/config/kratos"
+
+    private val kratos =
+        GenericContainer(KRATOS_IMAGE)
+            .withExposedPorts(4433, 4434)
+            .withCommand("serve -c $CONFIG_DIR/kratos.yaml --dev --watch-courier")
+            .waitingFor(Wait.forHttp("/health/ready").forStatusCode(200))
+            .withLogConsumer { frame ->     System.err.println("[KRATOS] ${frame.utf8String.trim()}") }
+            .withCopyFileToContainer(
+                MountableFile.forClasspathResource("kratos.yaml"),
+                "$CONFIG_DIR/kratos.yaml"
+            )
+            .withCopyFileToContainer(
+                MountableFile.forClasspathResource("identity.schema.user.json"),
+                "$CONFIG_DIR/identities/identity.schema.user.json"
+            )
 
     fun start() {
-        kratos.setPortBindings(Arrays.asList("4433:4433", "4434:4434"))
         kratos.start()
+
+        val publicPort = kratos.getMappedPort(4433)
+        val adminPort  = kratos.getMappedPort(4434)
+
+        System.setProperty(
+            "managementportal.identityServer.serverUrl",
+            "http://localhost:$publicPort"
+        )
+
+        System.setProperty(
+            "managementportal.identityServer.serverAdminUrl",
+            "http://localhost:$adminPort"
+        )
+
+        println("Kratos public: http://localhost:$publicPort")
+        println("Kratos admin:  http://localhost:$adminPort")
     }
 }

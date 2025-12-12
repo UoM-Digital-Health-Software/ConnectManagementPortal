@@ -13,6 +13,7 @@ export interface QueryGroup {
     updatedBy?: Subject;
     isArchived?: boolean;
     canEdit?: boolean;
+    queryGroupId?: any;
 }
 
 export interface QueryParticipant {
@@ -41,15 +42,6 @@ export interface QueryDTO {
     entity?: optionalString;
 }
 
-export interface QueryGroup {
-    id?: any;
-    name?: string;
-    description?: string;
-    createdDate?: Date;
-    updatedDate?: Date;
-    createdBy?: Subject;
-    updatedBy?: Subject;
-}
 
 export interface QueryParticipant {
     id?: any;

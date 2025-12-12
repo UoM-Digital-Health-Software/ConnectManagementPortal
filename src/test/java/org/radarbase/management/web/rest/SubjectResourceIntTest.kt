@@ -36,6 +36,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.mock.web.MockFilterConfig
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -57,6 +58,7 @@ import javax.servlet.ServletException
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [ManagementPortalTestApp::class])
 @WithMockUser
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SubjectResourceIntTest(
     @Autowired private val subjectResource: SubjectResource,
     @Autowired private val subjectRepository: SubjectRepository,
@@ -397,7 +399,7 @@ public class SubjectResourceIntTest(
         restSubjectMockMvc.perform(
                 MockMvcRequestBuilders.get(
                     "/api/subjects/{login}/sources?sort=id,desc",
-                    subjectDto.login
+                    subjectLogin
                 )
             ).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -676,7 +678,7 @@ public class SubjectResourceIntTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Please wait 24 hours before requesting another summary"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The summary has been already requested."))
 
 
 

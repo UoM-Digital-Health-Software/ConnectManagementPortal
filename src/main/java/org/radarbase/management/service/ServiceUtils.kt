@@ -18,9 +18,9 @@ object QueryEvaluationOptions {
     var source = DataSource.CLASSPATH
     var minimumExpectedData = 0.3
     var aggregationLevel = AggregationLevel.DAY
-    val resetThresholdDays = 2
+    var resetThresholdDays = 2
     //TODO:  currently set for testing prposes, change to 7 for deployment
-    val minNotificationIntervalDays = 1
+    var minNotificationIntervalDays = 1
 
 
 }
