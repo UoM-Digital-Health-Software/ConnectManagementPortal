@@ -128,20 +128,24 @@ class QueryEvaluationServiceWorkerTest(
 
         return queryGroup
     }
-    private fun createParticipant(id: Long = 1L, sendEmail: Boolean = true): Subject {
-        val project = Project().apply { projectName = "Test Project" }
+    private fun createParticipant(id: Long = 1L): Subject {
+        val authority = Authority().apply {
+            name = RoleAuthority.PARTICIPANT.authority
+        }
 
-        val user = User()
-        var role = Role(Authority(RoleAuthority.PARTICIPANT))
-        role.project = project
+        val project = Project().apply {
+            projectName = "Test Project"
+        }
 
-        user.setLogin("user$id")
-        user?.roles
-            ?.firstOrNull { r -> r.authority?.name == RoleAuthority.PARTICIPANT.authority }
-            ?.project
+        val role = Role().apply {
+            this.authority = authority
+            this.project = project
+        }
 
-
-        user.roles = mutableSetOf(role)
+        val user = User().apply {
+            setLogin("user$id")
+            roles = mutableSetOf(role)
+        }
 
         return Subject().apply {
             this.id = id
