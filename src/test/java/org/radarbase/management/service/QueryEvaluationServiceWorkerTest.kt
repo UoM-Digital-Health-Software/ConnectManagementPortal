@@ -26,6 +26,7 @@ import org.mockito.kotlin.*
 import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.management.domain.Role
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import java.time.*
 
@@ -57,15 +58,16 @@ class QueryEvaluationServiceWorkerTest(
 
 
     @SpyBean
-    private lateinit var queryParticipantRepository : QueryParticipantRepository
-    @SpyBean
-    private lateinit var pdfSummaryRequestRepository : PdfSummaryRequestRepository
-    @SpyBean
-    private  lateinit var queryContentService: QueryContentService
-
-  //  lateinit var queryEValuationServiceMock: QueryEValuationService
-    @SpyBean
     lateinit var queryEValuationServiceMock: QueryEValuationService
+
+    @MockBean
+    lateinit var queryContentService: QueryContentService
+
+    @SpyBean
+    lateinit var queryParticipantRepository: QueryParticipantRepository
+
+    @SpyBean
+    lateinit var pdfSummaryRequestRepository: PdfSummaryRequestRepository
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
         val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
