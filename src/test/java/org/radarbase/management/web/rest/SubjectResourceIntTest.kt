@@ -31,6 +31,8 @@ import org.radarbase.management.web.rest.errors.ExceptionTranslator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.actuate.audit.AuditEventRepository
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -79,34 +81,17 @@ public class SubjectResourceIntTest(
     @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository
 ) : BasePostgresIntegrationTest() {
     private lateinit var restSubjectMockMvc: MockMvc
-    @Autowired private lateinit var mockUserService: UserService
+    @MockBean
+    lateinit var userService: UserService
     @BeforeEach
     @Throws(ServletException::class)
     fun setUp() {
-        mockUserService = mock()
-        MockitoAnnotations.openMocks(this)
 
-
-        val subjectResourceMock = SubjectResource(
-                subjectService,
-                subjectRepository,
-                subjectMapper,
-                projectRepository,
-                sourceTypeService,
-                eventRepository,
-                 revisionService,
-                sourceService,
-                authService,
-                connectDataLogRepository,
-                roleRepository,
-                awsService,
-                mockUserService
-        )
 
         val filter = OAuthHelper.createAuthenticationFilter()
         filter.init(MockFilterConfig())
         restSubjectMockMvc =
-            MockMvcBuilders.standaloneSetup(subjectResourceMock).setCustomArgumentResolvers(pageableArgumentResolver)
+            MockMvcBuilders.standaloneSetup(subjectResource).setCustomArgumentResolvers(pageableArgumentResolver)
                 .setControllerAdvice(exceptionTranslator).setMessageConverters(jacksonMessageConverter)
                 .addFilter<StandaloneMockMvcBuilder>(filter) // add the oauth token by default to all requests for this mockMvc
                 .defaultRequest<StandaloneMockMvcBuilder>(
@@ -235,7 +220,7 @@ public class SubjectResourceIntTest(
         val subjectList = subjectRepository.findAll()
 
         Assertions.assertThat(subjectList).hasSize(databaseSizeBeforeUpdate)
-        val testSubject = subjectList[subjectList.size - 1]
+        val testSubject = subjectRepository.findById(subjectDto!!.id!!).get()
         Assertions.assertThat(testSubject.externalLink).isEqualTo(SubjectServiceTest.UPDATED_EXTERNAL_LINK)
         Assertions.assertThat(testSubject.externalId).isEqualTo(SubjectServiceTest.UPDATED_ENTERNAL_ID)
         Assertions.assertThat(testSubject.removed).isEqualTo(SubjectServiceTest.UPDATED_REMOVED)
@@ -638,7 +623,7 @@ public class SubjectResourceIntTest(
         user.langKey = "en"
         user.roles = roles
         user.password = "\$2a\$10\$6.DGYBLII7NCgDoP2iTM2OKe0JS1.fupultHlGIZxx2kHCaxaDA2G"
-        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+        whenever(userService.getUserWithAuthorities()).doReturn(user)
 
         userRepository.saveAndFlush(user)
 
