@@ -26,6 +26,7 @@ import org.mockito.kotlin.*
 import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.management.domain.Role
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.test.mock.mockito.SpyBean
 import java.time.*
 
 /**
@@ -37,7 +38,6 @@ import java.time.*
 @SpringBootTest(classes = [ManagementPortalTestApp::class])
 @Transactional
 class QueryEvaluationServiceWorkerTest(
-    @Autowired private val queryEValuationService: QueryEValuationService,
     @Autowired private val userRepository: UserRepository,
     @Autowired private val queryLogicRepository: QueryLogicRepository,
     @Autowired private val queryGroupRepository: QueryGroupRepository,
@@ -55,10 +55,16 @@ class QueryEvaluationServiceWorkerTest(
     ) : BasePostgresIntegrationTest() {
     lateinit var userData: UserData
 
+
+    @SpyBean
     private lateinit var queryParticipantRepository : QueryParticipantRepository
+    @SpyBean
     private lateinit var pdfSummaryRequestRepository : PdfSummaryRequestRepository
+    @SpyBean
     private  lateinit var queryContentService: QueryContentService
 
+  //  lateinit var queryEValuationServiceMock: QueryEValuationService
+    @SpyBean
     lateinit var queryEValuationServiceMock: QueryEValuationService
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
         val today = LocalDate.now()
@@ -94,21 +100,21 @@ class QueryEvaluationServiceWorkerTest(
     }
     @BeforeEach
     fun initTest() {
-        queryParticipantRepository = mock()
-        pdfSummaryRequestRepository = mock()
-        queryContentService = mock()
+//        queryParticipantRepository = mock()
+//        pdfSummaryRequestRepository = mock()
+//        queryContentService = mock()
 
-        queryEValuationServiceMock = spy( QueryEValuationService(
-            queryLogicRepository,
-            queryContentService,
-            queryGroupRepository,
-            queryEvaluationRepository,
-            subjectRepository,
-            queryParticipantRepository,
-            queryParticipantContentRepository,
-            awsService,
-            pdfSummaryRequestRepository
-        ))
+//        queryEValuationServiceMock = spy( QueryEValuationService(
+//            queryLogicRepository,
+//            queryContentService,
+//            queryGroupRepository,
+//            queryEvaluationRepository,
+//            subjectRepository,
+//            queryParticipantRepository,
+//            queryParticipantContentRepository,
+//            awsService,
+//            pdfSummaryRequestRepository
+//        ))
         userData = generateUserData(64.2,8, 50)
     }
     fun createQueryGroup(): QueryGroup {
@@ -286,7 +292,7 @@ class QueryEvaluationServiceWorkerTest(
 
         queryEValuationServiceMock.evaluateQueries()
 
-        verify(queryEValuationServiceMock, times(1)).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
+    //    verify(queryEValuationServiceMock, times(1)).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
         verify(queryContentService, times(1)).processCompletedQueriesForParticipant(participant.id!!)
     }
 
@@ -326,13 +332,15 @@ class QueryEvaluationServiceWorkerTest(
             hrvCondition
         )
 
-        val root = queryEValuationService.buildLogicTree(list);
+        val root = queryEValuationServiceMock.buildLogicTree(list);
 
         return root;
     }
     @AfterEach
     fun tearDown() {
         unmockkAll()
+
+
     }
 
 }

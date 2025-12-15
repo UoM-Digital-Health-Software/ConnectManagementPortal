@@ -58,7 +58,6 @@ import javax.servlet.ServletException
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [ManagementPortalTestApp::class])
 @WithMockUser
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SubjectResourceIntTest(
     @Autowired private val subjectResource: SubjectResource,
     @Autowired private val subjectRepository: SubjectRepository,
@@ -231,9 +230,10 @@ public class SubjectResourceIntTest(
             MockMvcRequestBuilders.put("/api/subjects").contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(subjectDto))
         ).andExpect(MockMvcResultMatchers.status().isOk())
-
+        subjectRepository.flush()
         // Validate the Subject in the database
         val subjectList = subjectRepository.findAll()
+
         Assertions.assertThat(subjectList).hasSize(databaseSizeBeforeUpdate)
         val testSubject = subjectList[subjectList.size - 1]
         Assertions.assertThat(testSubject.externalLink).isEqualTo(SubjectServiceTest.UPDATED_EXTERNAL_LINK)
