@@ -57,16 +57,16 @@ class QueryEvaluationServiceWorkerTest(
     lateinit var userData: UserData
 
 
-    @SpyBean
+
     lateinit var queryEValuationServiceMock: QueryEValuationService
 
-    @MockBean
+
     lateinit var queryContentService: QueryContentService
 
-    @MockBean
+
     lateinit var queryParticipantRepository: QueryParticipantRepository
 
-    @MockBean
+
     lateinit var pdfSummaryRequestRepository: PdfSummaryRequestRepository
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
         val today = LocalDate.now()
@@ -102,21 +102,21 @@ class QueryEvaluationServiceWorkerTest(
     }
     @BeforeEach
     fun initTest() {
-//        queryParticipantRepository = mock()
-//        pdfSummaryRequestRepository = mock()
-//        queryContentService = mock()
+        queryParticipantRepository = mock()
+        pdfSummaryRequestRepository = mock()
+        queryContentService = mock()
 
-//        queryEValuationServiceMock = spy( QueryEValuationService(
-//            queryLogicRepository,
-//            queryContentService,
-//            queryGroupRepository,
-//            queryEvaluationRepository,
-//            subjectRepository,
-//            queryParticipantRepository,
-//            queryParticipantContentRepository,
-//            awsService,
-//            pdfSummaryRequestRepository
-//        ))
+        queryEValuationServiceMock = spy( QueryEValuationService(
+            queryLogicRepository,
+            queryContentService,
+            queryGroupRepository,
+            queryEvaluationRepository,
+            subjectRepository,
+            queryParticipantRepository,
+            queryParticipantContentRepository,
+            awsService,
+            pdfSummaryRequestRepository
+        ))
         userData = generateUserData(64.2,8, 50)
     }
     fun createQueryGroup(): QueryGroup {
