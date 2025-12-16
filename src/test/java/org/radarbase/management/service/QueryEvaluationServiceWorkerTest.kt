@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 import org.radarbase.management.ManagementPortalTestApp
 import org.radarbase.management.config.BasePostgresIntegrationTest
 import org.radarbase.management.domain.*
@@ -35,9 +36,7 @@ import java.time.*
  *
  * @see SubjectService
  */
-@ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [ManagementPortalTestApp::class])
-@Transactional
+
 class QueryEvaluationServiceWorkerTest(
     @Autowired private val userRepository: UserRepository,
     @Autowired private val queryLogicRepository: QueryLogicRepository,
@@ -61,6 +60,8 @@ class QueryEvaluationServiceWorkerTest(
     lateinit var queryEValuationServiceMock: QueryEValuationService
 
 
+
+    @MockBean
     lateinit var queryContentService: QueryContentService
 
 
@@ -104,7 +105,7 @@ class QueryEvaluationServiceWorkerTest(
     fun initTest() {
         queryParticipantRepository = mock()
         pdfSummaryRequestRepository = mock()
-        queryContentService = mock()
+
 
         queryEValuationServiceMock = spy( QueryEValuationService(
             queryLogicRepository,
@@ -290,8 +291,10 @@ class QueryEvaluationServiceWorkerTest(
         whenever(queryParticipantRepository.findAll()).thenReturn(listOf(queryParticipant))
 
         val pdfSummary = PdfSummaryRequest().apply { emailSent = true }
-        whenever(pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant))
-            .thenReturn(pdfSummary)
+        whenever(
+            pdfSummaryRequestRepository
+                .findFirstBySubjectOrderByRequestedOnDesc(any())
+        ).thenReturn(pdfSummary)
         val result = mutableMapOf("Group1" to true)
         doReturn(result).whenever(queryEValuationServiceMock).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
         doReturn(true).whenever(queryContentService).processCompletedQueriesForParticipant(participant.id!!)
