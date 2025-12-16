@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import org.springframework.scheduling.annotation.Scheduled
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 data class DataPoint(
@@ -295,8 +296,8 @@ public class QueryEValuationService(
 
     @Scheduled(cron = "0 0 5 * * ?")
     fun evaluateQueries() {
-
-        val now = TimeUtils.getCurrentTime()
+        log.info("[evaluateQueries] before time ")
+        val now = TimeUtils.getCurrentTime(ZoneId.of("Europe/London"))
         if (now.hour != 5) {
             return
         }
@@ -309,14 +310,14 @@ public class QueryEValuationService(
             val queryGroup  = queryParticipant.queryGroup
             log.info("[evaluateQueries] participant {}", participant)
             log.info("[evaluateQueries] queryGroup {}", queryGroup)
-
+            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant!!)
+            log.info("[evaluateQueries] latestPDFSummary {}", latestPDFSummary)
 
             if(participant == null  || queryGroup == null ) {
                 continue
             }
 
-            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant)
-            log.info("[evaluateQueries] latestPDFSummary {}", latestPDFSummary)
+
             if(latestPDFSummary?.emailSent == true)  {
                 val project = participant.activeProject!!.projectName!!
                 testLogicEvaluation(participant, project, null);
