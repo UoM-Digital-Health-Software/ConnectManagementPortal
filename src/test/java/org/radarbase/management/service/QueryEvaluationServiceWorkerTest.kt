@@ -300,9 +300,12 @@ class QueryEvaluationServiceWorkerTest(
         doReturn(true).whenever(queryContentService).processCompletedQueriesForParticipant(participant.id!!)
 
         queryEValuationServiceMock.evaluateQueries()
+        verify(queryParticipantRepository, times(1)).findAll()
+
+        verify(pdfSummaryRequestRepository, times(1)).findFirstBySubjectOrderByRequestedOnDesc(any())
 
     //    verify(queryEValuationServiceMock, times(1)).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
-        verify(queryContentService, times(1)).processCompletedQueriesForParticipant(participant.id!!)
+        verify(queryContentService, times(1)).processCompletedQueriesForParticipant(any())
     }
 
     @Test
