@@ -310,12 +310,12 @@ public class QueryEValuationService(
             val queryGroup  = queryParticipant.queryGroup
             log.info("[evaluateQueries] participant {}", participant)
             log.info("[evaluateQueries] queryGroup {}", queryGroup)
-            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant!!)
-            log.info("[evaluateQueries] latestPDFSummary {}", latestPDFSummary)
+     
 
             if(participant == null  || queryGroup == null ) {
                 continue
             }
+            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant!!)
 
 
             if(latestPDFSummary?.emailSent == true)  {
