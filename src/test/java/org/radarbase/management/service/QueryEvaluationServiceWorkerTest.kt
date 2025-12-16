@@ -63,10 +63,10 @@ class QueryEvaluationServiceWorkerTest(
     @MockBean
     lateinit var queryContentService: QueryContentService
 
-    @SpyBean
+    @MockBean
     lateinit var queryParticipantRepository: QueryParticipantRepository
 
-    @SpyBean
+    @MockBean
     lateinit var pdfSummaryRequestRepository: PdfSummaryRequestRepository
     fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
         val today = LocalDate.now()

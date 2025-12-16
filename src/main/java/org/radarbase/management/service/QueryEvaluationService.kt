@@ -264,7 +264,7 @@ public class QueryEValuationService(
 
         newQueryEvaluation.queryGroup = queryGroup
         newQueryEvaluation.subject = subject
-        newQueryEvaluation.createdDate = ZonedDateTime.now()
+        newQueryEvaluation.createdDate        = ZonedDateTime.now()
         newQueryEvaluation.result = result
         newQueryEvaluation.notificationScheduled = false
 
@@ -302,17 +302,21 @@ public class QueryEValuationService(
         }
         log.info("[evaluateQueries] running")
         val queryParticipantList =  queryParticipantRepository.findAll()
-
+        log.info("[evaluateQueries] queryParticipantList {}", queryParticipantList.size)
         for(queryParticipant  in queryParticipantList) {
 
             val participant = queryParticipant.subject
             val queryGroup  = queryParticipant.queryGroup
+            log.info("[evaluateQueries] participant {}", participant)
+            log.info("[evaluateQueries] queryGroup {}", queryGroup)
+
 
             if(participant == null  || queryGroup == null ) {
                 continue
             }
 
             val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant)
+            log.info("[evaluateQueries] latestPDFSummary {}", latestPDFSummary)
             if(latestPDFSummary?.emailSent == true)  {
                 val project = participant.activeProject!!.projectName!!
                 testLogicEvaluation(participant, project, null);
