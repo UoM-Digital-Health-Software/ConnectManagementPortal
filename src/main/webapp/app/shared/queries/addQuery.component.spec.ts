@@ -129,7 +129,7 @@ describe('AddQueryComponent', () => {
         mockQueryService.getEntities.and.returnValue(of(entitiesMock));
 
         spyOn(AddQueryComponent.prototype, 'addQuestionnaireItemsToQueryBuilder');
-        spyOn(AddQueryComponent.prototype, 'addDelusionsToQueryBuilder');
+      //  spyOn(AddQueryComponent.prototype, 'addDelusionsToQueryBuilder');
 
         const comp = new AddQueryComponent(
             mockAlertService,
@@ -151,7 +151,7 @@ describe('AddQueryComponent', () => {
         expect(comp.config.fields).toEqual(jasmine.objectContaining(physicalTypesMock));
 
         expect(comp.addQuestionnaireItemsToQueryBuilder).toHaveBeenCalled();
-        expect(comp.addDelusionsToQueryBuilder).toHaveBeenCalled();
+      //  expect(comp.addDelusionsToQueryBuilder).toHaveBeenCalled();
         expect(comp.isLoaded).toBeTrue();
     });
 

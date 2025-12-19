@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import org.springframework.scheduling.annotation.Scheduled
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 data class DataPoint(
@@ -264,7 +265,7 @@ public class QueryEValuationService(
 
         newQueryEvaluation.queryGroup = queryGroup
         newQueryEvaluation.subject = subject
-        newQueryEvaluation.createdDate = ZonedDateTime.now()
+        newQueryEvaluation.createdDate        = ZonedDateTime.now()
         newQueryEvaluation.result = result
         newQueryEvaluation.notificationScheduled = false
 
@@ -295,24 +296,28 @@ public class QueryEValuationService(
 
     @Scheduled(cron = "0 0 5 * * ?")
     fun evaluateQueries() {
-
-        val now = TimeUtils.getCurrentTime()
+        log.info("[evaluateQueries] before time ")
+        val now = TimeUtils.getCurrentTime(ZoneId.of("Europe/London"))
         if (now.hour != 5) {
             return
         }
         log.info("[evaluateQueries] running")
         val queryParticipantList =  queryParticipantRepository.findAll()
-
+        log.info("[evaluateQueries] queryParticipantList {}", queryParticipantList.size)
         for(queryParticipant  in queryParticipantList) {
 
             val participant = queryParticipant.subject
             val queryGroup  = queryParticipant.queryGroup
+            log.info("[evaluateQueries] participant {}", participant)
+            log.info("[evaluateQueries] queryGroup {}", queryGroup)
+     
 
             if(participant == null  || queryGroup == null ) {
                 continue
             }
+            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant!!)
 
-            val latestPDFSummary = pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant)
+
             if(latestPDFSummary?.emailSent == true)  {
                 val project = participant.activeProject!!.projectName!!
                 testLogicEvaluation(participant, project, null);

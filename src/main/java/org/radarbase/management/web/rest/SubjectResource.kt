@@ -710,7 +710,7 @@ class SubjectResource(
                 subject = subject,
                 currentUser = currentUser,
                 createdBy = it.email!!,
-                local = false
+                local = QueryEvaluationOptions.source == DataSource.CLASSPATH
             )
             return ResponseEntity.ok(response);
 

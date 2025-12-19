@@ -48,11 +48,11 @@ class AWSServiceTest(
     private lateinit var awsService: AWSService
 
 
-    private val pdfSummaryRequestRepositoryMock: PdfSummaryRequestRepository = mock()
+    private lateinit var pdfSummaryRequestRepositoryMock: PdfSummaryRequestRepository
 
-    private val userRepositoryMock : UserRepository = mock()
+    private lateinit var userRepositoryMock : UserRepository
 
-    private val queryParticipantRepositoryMock: QueryParticipantRepository = mock()
+    private lateinit var queryParticipantRepositoryMock: QueryParticipantRepository
 
 
     private val bucketName = "test-bucket"
@@ -61,6 +61,12 @@ class AWSServiceTest(
     @BeforeEach
     @Throws(ServletException::class)
     fun setUp() {
+       pdfSummaryRequestRepositoryMock = mock()
+
+         userRepositoryMock  = mock()
+
+         queryParticipantRepositoryMock = mock()
+
         awsService =
             spy(AWSService(
                 pdfSummaryRequestRepositoryMock,

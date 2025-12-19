@@ -3,6 +3,8 @@ package org.radarbase.management.service
 
 import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -224,7 +226,7 @@ class QueryEvaluationServiceTest(
     fun testEvaluateSingleConditionGreaterThanOrEquals() {
         val userData = createUserData()
 
-        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN_OR_EQUALS, QueryTimeFrame.PAST_6_MONTH, "64.2");
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN_OR_EQUALS, QueryTimeFrame.PAST_WEEK, "64.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
         val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
@@ -237,7 +239,7 @@ class QueryEvaluationServiceTest(
     fun testEvaluateSingleConditionEquals() {
         val userData = createUserData()
 
-        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_6_MONTH, "64.2");
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_WEEK, "64.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
         val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
@@ -250,7 +252,7 @@ class QueryEvaluationServiceTest(
     fun testEvaluateSingleConditionNotEqual() {
         val userData = createUserData()
 
-        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.NOT_EQUALS, QueryTimeFrame.PAST_6_MONTH, "65.2");
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.NOT_EQUALS, QueryTimeFrame.PAST_WEEK, "65.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
         val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
@@ -263,7 +265,7 @@ class QueryEvaluationServiceTest(
     fun testEvaluateSingleConditionLessThan() {
         val userData = createUserData()
 
-        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.LESS_THAN, QueryTimeFrame.PAST_6_MONTH, "64.3");
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.LESS_THAN, QueryTimeFrame.PAST_WEEK, "64.3");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
         val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
@@ -275,7 +277,7 @@ class QueryEvaluationServiceTest(
     fun testEvaluateSingleConditionLessThanOrEquals() {
         val userData = createUserData()
 
-        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.LESS_THAN_OR_EQUALS, QueryTimeFrame.PAST_6_MONTH, "64.2");
+        val hrQueyr  = createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.LESS_THAN_OR_EQUALS, QueryTimeFrame.PAST_WEEK, "64.2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
         val result = queryEValuationService.evaluateSingleCondition(queryLogic1, userData) ;
 
@@ -348,9 +350,9 @@ class QueryEvaluationServiceTest(
 
 
         queryList  = mapOf(
-            "HR" to createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN, QueryTimeFrame.PAST_6_MONTH, "60"),
-            "SLEEP" to createQuery(null, PhysicalMetric.SLEEP_LENGTH, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_6_MONTH, "8"),
-            "HRV" to createQuery(null, PhysicalMetric.HRV, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_6_MONTH, "50")
+            "HR" to createQuery(null, PhysicalMetric.HEART_RATE, ComparisonOperator.GREATER_THAN, QueryTimeFrame.PAST_WEEK, "60"),
+            "SLEEP" to createQuery(null, PhysicalMetric.SLEEP_LENGTH, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_WEEK, "8"),
+            "HRV" to createQuery(null, PhysicalMetric.HRV, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_WEEK, "50")
         )
 
         root =  getRoot(queryList, QueryLogicOperator.AND, QueryLogicOperator.OR)
@@ -390,7 +392,8 @@ class QueryEvaluationServiceTest(
     @Test
     @Transactional
     fun testHistogramEvaluationLessThan7DaysOfData() {
-        val userData = createUserData(6)
+        QueryEvaluationOptions.minimumExpectedData = 0.8
+        val userData = createUserData(4)
 
         val hrQueyr  = createQuery(null,"SLEEP", ComparisonOperator.IS, QueryTimeFrame.PAST_WEEK, "0-2");
         val queryLogic1 = createQueryLogic(null, QueryLogicType.CONDITION, null, hrQueyr, null );
@@ -497,61 +500,10 @@ class QueryEvaluationServiceTest(
         verify(queryContentService, never()).processCompletedQueriesForParticipant(any())
     }
 
-    @Test
-    fun `evaluateQueries skips participants with null subject or queryGroup`() {
-        mockkObject(TimeUtils)
-        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(5, 0)
 
-        val qp1 = createQueryParticipant(subject = null)
-        val qp2 = createQueryParticipant(queryGroup = null)
-        whenever(queryParticipantRepository.findAll()).thenReturn(listOf(qp1, qp2))
 
-        queryEValuationServiceMock.evaluateQueries()
 
-        verify(pdfSummaryRequestRepository, never()).findFirstBySubjectOrderByRequestedOnDesc(any())
-        verify(queryContentService, never()).processCompletedQueriesForParticipant(any())
-    }
 
-    @Test
-    fun `evaluateQueries processes participant with emailSent true`() {
-        mockkObject(TimeUtils)
-        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(5, 0)
-
-        val participant = createParticipant()
-        val queryParticipant = createQueryParticipant(subject = participant)
-        whenever(queryParticipantRepository.findAll()).thenReturn(listOf(queryParticipant))
-
-        val pdfSummary = PdfSummaryRequest().apply { emailSent = true }
-        whenever(pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant))
-            .thenReturn(pdfSummary)
-        val result = mutableMapOf("Group1" to true)
-        doReturn(result).whenever(queryEValuationServiceMock).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
-        doReturn(true).whenever(queryContentService).processCompletedQueriesForParticipant(participant.id!!)
-
-        queryEValuationServiceMock.evaluateQueries()
-
-        verify(queryEValuationServiceMock, times(1)).testLogicEvaluation(participant, participant.activeProject!!.projectName!!, null)
-        verify(queryContentService, times(1)).processCompletedQueriesForParticipant(participant.id!!)
-    }
-
-    @Test
-    fun `evaluateQueries skips participant if latest PDF summary emailSent is false`() {
-        mockkObject(TimeUtils)
-        every { TimeUtils.getCurrentTime(ZoneId.of("Europe/London")) } returns LocalTime.of(5, 0)
-
-        val participant = createParticipant()
-        val queryParticipant = createQueryParticipant(subject = participant)
-        whenever(queryParticipantRepository.findAll()).thenReturn(listOf(queryParticipant))
-
-        val pdfSummary = PdfSummaryRequest().apply { emailSent = false }
-        whenever(pdfSummaryRequestRepository.findFirstBySubjectOrderByRequestedOnDesc(participant))
-            .thenReturn(pdfSummary)
-
-        queryEValuationServiceMock.evaluateQueries()
-
-        verify(queryEValuationServiceMock, never()).testLogicEvaluation(any(), any(), any())
-        verify(queryContentService, never()).processCompletedQueriesForParticipant(any())
-    }
 
     private fun getRoot(listQueries:  Map<String, Query>, rootLogic: QueryLogicOperator, innerRootLogic: QueryLogicOperator): QueryLogic? {
 

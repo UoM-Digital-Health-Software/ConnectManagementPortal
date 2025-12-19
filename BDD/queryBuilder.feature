@@ -96,7 +96,7 @@ Scenario: Adding a text section to the content group
    Given the user is adding a new content group 
    And the user has clicked "Add Text" button 
    Then a heading field is displayed 
-   And and a text editor is displayed 
+   And  a text editor is displayed 
    And there is a "Delete" button for that particular item 
 
 

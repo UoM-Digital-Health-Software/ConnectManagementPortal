@@ -480,7 +480,7 @@ open class AWSService(
 
 
 
-        if(s3Client == null) {
+        if(s3Client == null || local == true ) {
             val outputDir = File("src/main/resources/$resourceFolderPath")
 
             if (!outputDir.exists()) {

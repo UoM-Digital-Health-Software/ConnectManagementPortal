@@ -37,7 +37,8 @@ class QueryResource(
     @Autowired private val queryEValuationService: QueryEValuationService,
     @Autowired private val queryContentService: QueryContentService,
     @Autowired private val subjectRepository: SubjectRepository,
-    @Autowired private val questionnaireItemsLoader: QuestionnaireItemsLoader
+    @Autowired private val questionnaireItemsLoader: QuestionnaireItemsLoader,
+    @Autowired private val notificationService: NotificationService
 
 ) {
     @PostMapping("querylogic")
@@ -139,9 +140,15 @@ class QueryResource(
             val subject = subjectRepository.findById(subjectId).get();
             val project = subject!!.activeProject!!.projectName!!;
             //TODO: get queryGroup based on assigned query once the PR for that is completed
-            val result = queryEValuationService.testLogicEvaluation(subject, project, userData);
+           val result = queryEValuationService.testLogicEvaluation(subject, project, userData);
 
             queryContentService.processCompletedQueriesForParticipant(subjectId);
+//           val notification = NotificationDTO()
+//            notification.body = "Click here to read more"
+//            notification.route = "/queryContent/114801"
+//            notification.title = "How to relax"
+//
+//            notificationService.sendNotificationToAll(notification);
 
             ResponseEntity.ok(result)
         } else {

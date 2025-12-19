@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api")
 class AppConfigResource(@Autowired  private val service: AppConfigService,
                         @Autowired  private val userService: UserService,
-                        @Autowired private val subjectRepository: SubjectRepository) {
+                        @Autowired private val subjectRepository: SubjectRepository,
+    ) {
 
     @GetMapping("/app-config/{feature}")
     fun getConfig( @PathVariable feature: String?): Boolean {

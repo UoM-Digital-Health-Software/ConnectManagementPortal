@@ -31,11 +31,14 @@ import org.radarbase.management.web.rest.errors.ExceptionTranslator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.actuate.audit.AuditEventRepository
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.mock.web.MockFilterConfig
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -78,34 +81,17 @@ public class SubjectResourceIntTest(
     @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository
 ) : BasePostgresIntegrationTest() {
     private lateinit var restSubjectMockMvc: MockMvc
-    @Autowired private lateinit var mockUserService: UserService
+    @MockBean
+    lateinit var userService: UserService
     @BeforeEach
     @Throws(ServletException::class)
     fun setUp() {
-        mockUserService = mock()
-        MockitoAnnotations.openMocks(this)
 
-
-        val subjectResourceMock = SubjectResource(
-                subjectService,
-                subjectRepository,
-                subjectMapper,
-                projectRepository,
-                sourceTypeService,
-                eventRepository,
-                 revisionService,
-                sourceService,
-                authService,
-                connectDataLogRepository,
-                roleRepository,
-                awsService,
-                mockUserService
-        )
 
         val filter = OAuthHelper.createAuthenticationFilter()
         filter.init(MockFilterConfig())
         restSubjectMockMvc =
-            MockMvcBuilders.standaloneSetup(subjectResourceMock).setCustomArgumentResolvers(pageableArgumentResolver)
+            MockMvcBuilders.standaloneSetup(subjectResource).setCustomArgumentResolvers(pageableArgumentResolver)
                 .setControllerAdvice(exceptionTranslator).setMessageConverters(jacksonMessageConverter)
                 .addFilter<StandaloneMockMvcBuilder>(filter) // add the oauth token by default to all requests for this mockMvc
                 .defaultRequest<StandaloneMockMvcBuilder>(
@@ -229,11 +215,12 @@ public class SubjectResourceIntTest(
             MockMvcRequestBuilders.put("/api/subjects").contentType(TestUtil.APPLICATION_JSON_UTF8)
                 .content(TestUtil.convertObjectToJsonBytes(subjectDto))
         ).andExpect(MockMvcResultMatchers.status().isOk())
-
+        subjectRepository.flush()
         // Validate the Subject in the database
         val subjectList = subjectRepository.findAll()
+
         Assertions.assertThat(subjectList).hasSize(databaseSizeBeforeUpdate)
-        val testSubject = subjectList[subjectList.size - 1]
+        val testSubject = subjectRepository.findById(subjectDto!!.id!!).get()
         Assertions.assertThat(testSubject.externalLink).isEqualTo(SubjectServiceTest.UPDATED_EXTERNAL_LINK)
         Assertions.assertThat(testSubject.externalId).isEqualTo(SubjectServiceTest.UPDATED_ENTERNAL_ID)
         Assertions.assertThat(testSubject.removed).isEqualTo(SubjectServiceTest.UPDATED_REMOVED)
@@ -397,7 +384,7 @@ public class SubjectResourceIntTest(
         restSubjectMockMvc.perform(
                 MockMvcRequestBuilders.get(
                     "/api/subjects/{login}/sources?sort=id,desc",
-                    subjectDto.login
+                    subjectLogin
                 )
             ).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
@@ -636,7 +623,7 @@ public class SubjectResourceIntTest(
         user.langKey = "en"
         user.roles = roles
         user.password = "\$2a\$10\$6.DGYBLII7NCgDoP2iTM2OKe0JS1.fupultHlGIZxx2kHCaxaDA2G"
-        whenever(mockUserService.getUserWithAuthorities()).doReturn(user)
+        whenever(userService.getUserWithAuthorities()).doReturn(user)
 
         userRepository.saveAndFlush(user)
 
@@ -676,7 +663,7 @@ public class SubjectResourceIntTest(
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Please wait 24 hours before requesting another summary"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The summary has been already requested."))
 
 
 

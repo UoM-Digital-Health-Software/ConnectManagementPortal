@@ -287,7 +287,7 @@ internal class QueryEvaluationResourceIntTest(
     @Transactional
     @Throws(Exception::class)
     fun evaluateQuery() {
-
+        QueryEvaluationOptions.minimumExpectedData = 0.0
        var queryEvaluationSize = queryEvaluationRepository.findAll().size;
 
         var subject = subjectRepository.findAll()[0]

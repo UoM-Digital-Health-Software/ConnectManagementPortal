@@ -6,7 +6,6 @@ import org.radarbase.management.domain.*
 import org.radarbase.management.domain.enumeration.PlatformType
 import org.radarbase.management.repository.ContentNotificationRepository
 import org.radarbase.management.repository.DeviceRepository
-import org.radarbase.management.repository.MetaTokenRepository
 import org.radarbase.management.repository.UserRepository
 import org.radarbase.management.service.dto.DeviceDTO
 import org.radarbase.management.service.dto.NotificationDTO

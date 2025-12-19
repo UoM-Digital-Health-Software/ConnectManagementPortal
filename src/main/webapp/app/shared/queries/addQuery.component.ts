@@ -156,8 +156,18 @@ export class AddQueryComponent {
             this.delusions = questionnareTypes['delusions'] as Question[];
 
             this.addQuestionnaireItemsToQueryBuilder();
-            this.addDelusionsToQueryBuilder();
-            this.config.entities = { ...entities };
+         // this.addDelusionsToQueryBuilder();  --- deleted for now as the sumamrising does not support individual questions
+
+            const excludedQueryItems = ["QUESTIONNAIRE_SLIDER", "QUESTIONNAIRE_DELUSIONS"];
+            const result: any = {};
+                for (const key in entities) {
+                    if (!excludedQueryItems.includes(key)) {
+                        result[key] = entities[key];
+                    }
+            }
+
+            this.config.entities = { ...result };
+
             this.config.fields = { ...this.config.fields, ...physicalTypes };
 
             this.isLoaded = true;

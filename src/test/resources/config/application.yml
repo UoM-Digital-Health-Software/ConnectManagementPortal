@@ -108,3 +108,12 @@ managementportal:
       serverUrl: http://127.0.0.1:4433
       serverAdminUrl: http://127.0.0.1:4434
       admin-email: admin@localhost
+
+
+logging:
+  level:
+    root: INFO
+    org.radarbase.management: DEBUG
+    org.springframework: WARN
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

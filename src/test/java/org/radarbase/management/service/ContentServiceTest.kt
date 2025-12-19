@@ -63,8 +63,8 @@ class ContentServiceTest(
 
     private lateinit var queryContentServiceMock: QueryContentService
 
-    private val contentNotificationRepositoryMock: ContentNotificationRepository = mock()
-    private val notificationService: NotificationService = mock()
+    private lateinit var contentNotificationRepositoryMock: ContentNotificationRepository
+    private lateinit var notificationService: NotificationService
 
     private fun createNotification(sent: Boolean = false): ContentNotification {
         val user = User()
@@ -80,6 +80,9 @@ class ContentServiceTest(
     }
     @BeforeEach
     fun initTest() {
+        contentNotificationRepositoryMock = mock()
+        notificationService = mock()
+
         queryContentServiceMock =
             spy(QueryContentService(
                 contentRepository,
@@ -193,7 +196,7 @@ class ContentServiceTest(
     @Test
     @Transactional
     fun testShouldSendNotification() {
-
+        QueryEvaluationOptions.minNotificationIntervalDays = 7
 
         val lastSendNotification = ZonedDateTime.now()
 
