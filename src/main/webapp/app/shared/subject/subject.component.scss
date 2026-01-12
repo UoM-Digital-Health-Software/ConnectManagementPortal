@@ -150,3 +150,17 @@ margin-bottom: 4px;
 .none-available {
     color: #bebebe;
 }
+
+.table-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.cell-true {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.cell-false {
+    color: #c62828;
+    font-weight: 600;
+}
