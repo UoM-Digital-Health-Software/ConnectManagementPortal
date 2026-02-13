@@ -46,6 +46,13 @@ jobs:
           docker info
 
 
+      - name: Configure Testcontainers for CI
+        run: |
+          echo "DOCKER_HOST=unix:///var/run/docker.sock" >> $GITHUB_ENV
+          echo "TESTCONTAINERS_RYUK_DISABLED=true" >> $GITHUB_ENV
+
+
+
       - name: Run backend tests
         run: ./gradlew test
 
