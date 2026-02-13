@@ -174,7 +174,7 @@ Desktop.ini
 /public
 
 ## Yarn 2
-.yarnrc.yml
+
 .yarn/*
 !.yarn/patches
 !.yarn/releases
