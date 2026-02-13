@@ -3,7 +3,6 @@ import org.radarbase.management.domain.*
 import org.radarbase.management.domain.enumeration.QueryLogicType
 import org.radarbase.management.domain.enumeration.QueryTimeFrame
 import org.radarbase.management.repository.*
-import org.radarbase.management.service.dto.QueryEvaluationDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -291,16 +290,6 @@ public class QueryEValuationService(
 
 
         return root;
-    }
-
-    fun getEvaluationForParticipant(participant: Subject):  List<QueryEvaluationDTO> {
-        val allEvaluations = queryEvaluationRepository.findBySubject(participant)
-
-        var result = allEvaluations.map { queryEvaluation ->
-            QueryEvaluationDTO(queryGroupName = queryEvaluation.queryGroup?.name, evaluationDate = queryEvaluation.createdDate, result = queryEvaluation.result, notificationScheduled = queryEvaluation.notificationScheduled)
-        }
-        result = result.sortedByDescending { it.evaluationDate }
-        return result
     }
 
 

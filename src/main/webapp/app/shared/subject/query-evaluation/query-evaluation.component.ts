@@ -16,7 +16,6 @@ import { Observable, Subscription } from 'rxjs';
 @Component({
     selector: 'jhi-query-evaluation',
     templateUrl: './query-evaluation.component.html',
-      styleUrls: ['../subject.component.scss']
 })
 
 export class QueryEvaluationDialogComponent implements OnInit, OnDestroy {
@@ -41,8 +40,11 @@ export class QueryEvaluationDialogComponent implements OnInit, OnDestroy {
     ngOnInit() {
         if (this.subject.id !== null) {
 
-            this.subjectService.findEvalautionsPerParticipant(this.subject.login).subscribe((response: HttpResponse<any>) => {
-                this.dataLogs = response.body
+            this.subjectService.findDataLogs(this.subject.login).subscribe((response: HttpResponse<any>) => {
+                  this.dataLogs = response.body.reduce(function(acc, cur, i) {
+                                    acc[cur.groupingType] = new Date(cur.time).toDateString();
+                                    return acc;
+                                  }, {});
             });
         }
     }

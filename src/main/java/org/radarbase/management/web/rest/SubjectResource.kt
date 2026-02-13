@@ -67,7 +67,6 @@ class SubjectResource(
     @Autowired private val roleRepository: RoleRepository,
     @Autowired private val awsService: AWSService,
     @Autowired private val userService: UserService,
-    @Autowired private val queryEValuationService: QueryEValuationService
 ) {
 
     /**
@@ -719,32 +718,6 @@ class SubjectResource(
 
         return ResponseEntity.ok(null);
     }
-
-
-    @GetMapping("/subjects/{login:" + Constants.ENTITY_ID_REGEX + "}/queryevaluation")
-    @Timed
-    @Throws (
-        NotAuthorizedException::class
-    )
-    fun getQueryEvaluation(@PathVariable login: String) : ResponseEntity<*> {
-        val subject = subjectRepository.findOneWithEagerBySubjectLogin(login)
-
-        if(subject == null) {
-            return ResponseEntity.badRequest().body("Participant not found")
-        }
-
-        val currentUser = userService.getUserWithAuthorities()
-
-        currentUser?.let {
-            val response =  queryEValuationService.getEvaluationForParticipant(subject)
-            return ResponseEntity.ok(response);
-
-        }
-
-        return ResponseEntity.ok(null);
-    }
-
-
 
 
     @GetMapping("/subjects/externalId")    @Timed

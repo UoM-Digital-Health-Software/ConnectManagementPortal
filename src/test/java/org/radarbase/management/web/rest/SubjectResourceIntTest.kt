@@ -14,11 +14,11 @@ import org.radarbase.auth.authentication.OAuthHelper
 import org.radarbase.auth.authorization.RoleAuthority
 import org.radarbase.auth.token.RadarToken
 import org.radarbase.management.ManagementPortalTestApp
-import org.radarbase.management.QueryUtil
 import org.radarbase.management.config.BasePostgresIntegrationTest
-import org.radarbase.management.domain.*
+import org.radarbase.management.domain.Authority
 import org.radarbase.management.domain.Role
-import org.radarbase.management.domain.enumeration.*
+import org.radarbase.management.domain.Subject
+import org.radarbase.management.domain.User
 import org.radarbase.management.repository.*
 import org.radarbase.management.service.*
 import org.radarbase.management.service.dto.MinimalSourceDetailsDTO
@@ -47,7 +47,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
@@ -71,13 +70,15 @@ public class SubjectResourceIntTest(
     @Autowired private val jacksonMessageConverter: MappingJackson2HttpMessageConverter,
     @Autowired private val pageableArgumentResolver: PageableHandlerMethodArgumentResolver,
     @Autowired private val exceptionTranslator: ExceptionTranslator,
+        @Autowired private val projectRepository: ProjectRepository,
+    @Autowired private val eventRepository: AuditEventRepository,
+    @Autowired private val revisionService: RevisionService,
+    @Autowired private val authService: AuthService,
+    @Autowired private val connectDataLogRepository: ConnectDataLogRepository,
     @Autowired private val roleRepository: RoleRepository,
+    @Autowired private val awsService: AWSService,
     @Autowired private val userRepository: UserRepository,
-    @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-    @Autowired private val queryEvaluationRepository: QueryEvaluationRepository,
-    @Autowired private val queryGroupRepository: QueryGroupRepository,
-    @Autowired private val queryRepository: QueryRepository ,
-    @Autowired private val queryLogicRepository: QueryLogicRepository
+    @Autowired private val pdfSummaryRequestRepository: PdfSummaryRequestRepository
 ) : BasePostgresIntegrationTest() {
     private lateinit var restSubjectMockMvc: MockMvc
     @MockBean
@@ -663,64 +664,8 @@ public class SubjectResourceIntTest(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$.success").value("false"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("The summary has been already requested."))
-    }
 
-    @Test
-    @Transactional
-    @Throws(Exception::class)
-    fun testGetEvaluationLogsForSubject() {
 
-        val token = mock<RadarToken>()
-        val roles: MutableSet<Role> = HashSet()
-        var role = Role()
-        val authority = Authority()
-        authority.name = RoleAuthority.SYS_ADMIN.authority
-        role.authority = authority
-
-        role = roleRepository.saveAndFlush(role)
-        roles.add(role)
-        val user = User()
-        user.setLogin("test")
-        user.firstName = "john"
-        user.lastName = "doe"
-        user.email = "john.doe@jhipster.com"
-        user.langKey = "en"
-        user.roles = roles
-        user.password = "\$2a\$10\$6.DGYBLII7NCgDoP2iTM2OKe0JS1.fupultHlGIZxx2kHCaxaDA2G"
-        whenever(userService.getUserWithAuthorities()).doReturn(user)
-
-        userRepository.saveAndFlush(user)
-
-        QueryEvaluationOptions.minimumExpectedData = 0.0
-        var queryEvaluationSize = queryEvaluationRepository.findAll().size;
-
-        var subject = subjectRepository.findAll()[0]
-
-        val queryGroup = QueryUtil.createQueryGroup(userRepository, queryGroupRepository);
-
-        val query = QueryUtil.createQuery(queryGroup, PhysicalMetric.HEART_RATE, ComparisonOperator.EQUALS, QueryTimeFrame.PAST_YEAR, "55", queryRepository);
-
-        val parentQueryLogic = QueryUtil.createQueryLogic(queryGroup, QueryLogicType.LOGIC, QueryLogicOperator.AND, null,null, queryLogicRepository);
-        QueryUtil.createQueryLogic(queryGroup, QueryLogicType.CONDITION, null, query,parentQueryLogic, queryLogicRepository);
-
-        var queryEvaluationRow =  QueryEvaluation()
-
-        queryEvaluationRow.subject = subject
-        queryEvaluationRow.result = true
-        queryEvaluationRow.queryGroup = queryGroup
-        queryEvaluationRow.notificationScheduled = false
-        queryEvaluationRow.createdDate = ZonedDateTime.now()
-
-        queryEvaluationRepository.saveAndFlush(queryEvaluationRow)
-
-        restSubjectMockMvc.perform(
-            MockMvcRequestBuilders.get("/api/subjects/{login}/queryevaluation", subject.user?.login)
-                .accept(MediaType.APPLICATION_JSON)
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[*].queryGroupName").value("TestQueryGroup"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[*].result").value(true))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.[*].notificationScheduled").value(false))
 
     }
 }
