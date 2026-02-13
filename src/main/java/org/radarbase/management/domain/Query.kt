@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.hibernate.envers.Audited
 import org.radarbase.management.domain.enumeration.ComparisonOperator
+import org.radarbase.management.domain.enumeration.QueryReferenceType
 import org.radarbase.management.domain.enumeration.QueryTimeFrame
 import org.radarbase.management.domain.support.AbstractEntityListener
 import org.radarbase.management.domain.support.ComparisonOperatorConverter
+import org.radarbase.management.domain.support.QueryReferenceTypeConverter
 import org.radarbase.management.domain.support.QueryTimeFrameConverter
 import java.io.Serializable
 import javax.persistence.*
@@ -50,6 +52,16 @@ class Query : AbstractEntity(), Serializable {
     @Convert(converter = QueryTimeFrameConverter::class)
     @Column(name = "time_frame")
     var timeFrame: QueryTimeFrame? = null
+
+
+    @Convert(converter = QueryReferenceTypeConverter::class)
+    @Column(name = "reference_type")
+    var referenceType: QueryReferenceType? = null
+
+
+    @Convert(converter = QueryTimeFrameConverter::class)
+    @Column(name = "rolling_window")
+    var rollingWindow: QueryTimeFrame? = null
 
     override fun toString(): String {return ("Query{"
             + "queryGroupName='" + queryGroup?.name + '\''
