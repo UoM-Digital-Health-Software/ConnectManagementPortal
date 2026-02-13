@@ -110,7 +110,6 @@ class QueryEvaluationServiceWorkerTest(
         queryEValuationServiceMock = spy( QueryEValuationService(
             queryLogicRepository,
             queryContentService,
-            queryGroupRepository,
             queryEvaluationRepository,
             subjectRepository,
             queryParticipantRepository,

@@ -88,6 +88,8 @@ export class AddQueryComponent {
         fields: {},
     };
 
+
+    public validationErrors: String[]  = []
     public currentConfig: QueryBuilderConfig;
     public allowRuleset: boolean = true;
     public allowCollapse: boolean;
@@ -331,16 +333,21 @@ export class AddQueryComponent {
         }
     }
 
-    convertTimeFrame(value: string) {
+    convertTimeFrame(value: any) {
         switch (value) {
-            case '6_months':
+            case 180:
                 return 'PAST_6_MONTH';
-            case '1_months':
+            case 30:
                 return 'PAST_MONTH';
-            case '1_years':
+            case 365:
                 return 'PAST_YEAR';
-            case '1_weeks':
+            case 7:
                 return 'PAST_WEEK';
+            case 60:
+                return 'PAST_3_MONTH';
+            case 1:
+                return "TODAY";
+
             default:
                 return null;
         }
@@ -359,6 +366,9 @@ export class AddQueryComponent {
                 timeFrame: this.convertTimeFrame(query.timeFame),
                 value: query.value,
                 entity: query.entity,
+                referenceType: query.referenceType,
+                rollingWindow: this.convertTimeFrame(query.rollingWindow)
+
             };
 
             return {
@@ -368,7 +378,10 @@ export class AddQueryComponent {
     }
 
     validateQueryRules(rules: any[]): boolean {
-        for (const rule of rules) {
+        this.validationErrors = []
+
+        for (const [index, rule] of rules.entries()) {
+            rule.invalid = false;
             if (rule.rules && Array.isArray(rule.rules)) {
                 if (!this.validateQueryRules(rule.rules)) {
                     return false;
@@ -381,7 +394,19 @@ export class AddQueryComponent {
                     rule.timeFame === undefined ||
                     rule.timeFame === null
                 ) {
+                    rule.invalid = true
+                     this.validationErrors.push(`The rule needs to have a value and a timeframe assigned`)
+
                     return false;
+                }
+
+
+                if (rule.referenceType == "rolling_avg") {
+                    if (rule.rollingWindow < rule.timeFame) {
+                        rule.invalid = true
+                        this.validationErrors.push(`Rolling window timeframe cannot be smaller than the actual timeframe`)
+                        return false
+                    }
                 }
             }
         }

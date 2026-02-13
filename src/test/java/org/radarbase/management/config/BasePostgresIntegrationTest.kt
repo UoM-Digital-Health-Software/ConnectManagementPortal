@@ -17,8 +17,7 @@ abstract class BasePostgresIntegrationTest {
 
     companion object {
 
-        private val container = PostgresTestContainer.container
-
+        private val container by lazy { PostgresTestContainer.container }
         @BeforeAll
         fun checkDatabase() {
             println("✅ Database URL: " + container.jdbcUrl)
