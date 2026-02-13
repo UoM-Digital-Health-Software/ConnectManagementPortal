@@ -6,9 +6,7 @@ import org.radarbase.management.domain.Query
 import org.radarbase.management.domain.QueryGroup
 import org.radarbase.management.domain.QueryLogic
 import org.radarbase.management.domain.User
-import org.radarbase.management.domain.enumeration.QueryBuilderEntities
-import org.radarbase.management.domain.enumeration.QueryLogicType
-import org.radarbase.management.domain.enumeration.physicalMetricExists
+import org.radarbase.management.domain.enumeration.*
 import org.radarbase.management.repository.QueryGroupRepository
 import org.radarbase.management.repository.QueryLogicRepository
 import org.radarbase.management.repository.QueryRepository
@@ -60,7 +58,13 @@ public class QueryBuilderService(
         newQuery.value = query.value
         newQuery.timeFrame = query.timeFrame
 
+        newQuery.referenceType = QueryReferenceType.fromSymbol(query.referenceType)
+
+
+        newQuery.rollingWindow  = query.rollingWindow
+
         newQuery.entity = query.entity.toString();
+
 
         if(!validateQuery(query.entity, query.field))  {
             throw IllegalArgumentException("Invalid query: entity ${query.entity}, field ${query.field}")
@@ -247,9 +251,11 @@ public class QueryBuilderService(
             queryLogicDTO.condition = builder.entity.logicOperator.toString().lowercase(Locale.getDefault())
             queryLogicDTO.field = query?.field.toString().lowercase(Locale.getDefault())
             queryLogicDTO.operator = query?.operator?.symbol
-            queryLogicDTO.timeFame = query?.timeFrame?.symbol
+            queryLogicDTO.timeFame = query?.timeFrame?.length
             queryLogicDTO.value = query?.value
             queryLogicDTO.entity = query?.entity
+            queryLogicDTO.referenceType = query?.referenceType?.symbol
+            queryLogicDTO.rollingWindow = query?.rollingWindow?.length
 
             if(builder.children.size > 0) {
                 queryLogicDTO.rules = builder.children.map { toDto(it) }

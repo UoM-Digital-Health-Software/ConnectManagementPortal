@@ -26,4 +26,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20260128150000_update-add-reference-query" author="Jindrich Gorner">
+        <addColumn tableName="query">
+            <column name="reference_type" type="varchar(50)" >
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="rolling_window" type="varchar(32)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
