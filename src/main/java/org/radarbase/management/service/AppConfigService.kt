@@ -1,15 +1,24 @@
 package org.radarbase.management.service
-
+import org.springframework.expression.spel.standard.SpelExpressionParser
+import org.springframework.expression.spel.support.StandardEvaluationContext
 import org.radarbase.management.domain.AppConfig
+import org.radarbase.management.domain.CacheSizeLog
+import org.radarbase.management.domain.User
 import org.radarbase.management.repository.AppConfigRepository
+import org.radarbase.management.repository.CacheSizeLogRepository
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.temporal.WeekFields
 import java.util.*
 
 @Service
-class AppConfigService(private val repository: AppConfigRepository) {
+class AppConfigService(private val repository: AppConfigRepository, private val cacheSizeLoRepository: CacheSizeLogRepository) {
 
     fun getMergedConfig(site: String?, userId: Long?): Map<String?, AppConfig?> {
         val configMap = mutableMapOf<String?, AppConfig?>()
@@ -47,7 +56,9 @@ class AppConfigService(private val repository: AppConfigRepository) {
         if (bucket >= rolloutPct) return false
 
         val conditionalExpr = config[feature]?.conditional
-        if (!evaluateConditional(conditionalExpr, context)) return false
+        if (!evaluateConditional(conditionalExpr, context)) {
+            return false
+        }
 
         return true
     }
@@ -69,18 +80,46 @@ class AppConfigService(private val repository: AppConfigRepository) {
         return "week${now.year}_$week"
     }
 
-    private fun evaluateConditional(expr: String?, context: Map<String, Any>): Boolean {
+    fun evaluateConditional(expr: String?, context: Map<String, Any>): Boolean {
         if (expr.isNullOrBlank()) return true
-        var replaced = expr
+
+        val parser = SpelExpressionParser()
+        val ctx = StandardEvaluationContext()
+
         context.forEach { (k, v) ->
-            replaced = replaced!!.replace("\b$k\b".toRegex(), v.toString())
+            ctx.setVariable(k, v)
         }
+
         return try {
-            val engine = javax.script.ScriptEngineManager().getEngineByName("nashorn")
-            engine.eval(replaced) as Boolean
+            parser.parseExpression(expr).getValue(ctx, Boolean::class.java) ?: false
         } catch (e: Exception) {
             false
         }
+    }
+
+
+
+    @Transactional
+    fun logCacheSize(user: User, size: Int) {
+
+
+            val todayStartUtc = ZonedDateTime.now(ZoneOffset.UTC)
+                .toLocalDate()
+                .atStartOfDay(ZoneOffset.UTC)
+
+
+            val exists = cacheSizeLoRepository.existsByUserIdAndCreatedOn(user.id!!, todayStartUtc)
+
+            if(!exists) {
+                val newCacheSizeLog  = CacheSizeLog()
+                newCacheSizeLog.userId = user.id
+                newCacheSizeLog.createdOn = todayStartUtc
+                newCacheSizeLog.value = size.toLong()
+                cacheSizeLoRepository.saveAndFlush(newCacheSizeLog)
+            } else {
+                log.info("today already saved")
+            }
+
     }
 
 
