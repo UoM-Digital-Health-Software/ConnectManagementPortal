@@ -15,29 +15,29 @@ import javax.persistence.*
  class AppConfig {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0
+    var id: Long = 0
 
-    val site: String? = null
+    var site: String? = null
 
     @Column(name = "user_id")
-    val userId: Long? = null
+    var userId: Long? = null
 
-    val key: String? = null
-    val value: String? = null
+    var key: String? = null
+    var value: String? = null
 
     @Enumerated(EnumType.STRING)
-    val type: AppConfigType? = null
+    var type: AppConfigType? = null
 
     @Column(name = "rollout_pct")
-    val rolloutPct: Int? = null
+    var rolloutPct: Int? = null
 
     @Column(name = "rollout_version")
-    val rolloutVersion: String? = null
+    var rolloutVersion: String? = null
 
     @Column(name = "conditional")
-    val conditional: String? = null
+    var conditional: String? = null
 
     @Column(name = "created_at")
-    val createdAt: Instant? = null
+    var createdAt: Instant? = null
 
  }

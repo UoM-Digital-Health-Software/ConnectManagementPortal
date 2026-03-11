@@ -13,5 +13,6 @@ interface EntityName {
         const val PROJECT = "project"
         const val REVISION = "revision"
         const val GROUP = "group"
+        const val CACHESIZELOG = "cacheSizeLog"
     }
 }
