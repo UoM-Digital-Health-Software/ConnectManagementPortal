@@ -53,5 +53,8 @@
     <include file="classpath:config/liquibase/changelog/20250926150000_add_pdf_summary_tracker.xml" relativeToChangelogFile="false"/>
 
     <include file="classpath:config/liquibase/changelog/20260223150000_add_cache_size_log.xml" relativeToChangelogFile="false"/>
+
+    <include file="classpath:config/liquibase/changelog/20260410150000_add_index_conncect_data_log.xml" relativeToChangelogFile="false"/>
+
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>
