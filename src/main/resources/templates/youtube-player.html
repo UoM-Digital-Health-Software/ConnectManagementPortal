@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; frame-src https://www.youtube.com; script-src 'self' https://www.youtube.com https://s.ytimg.com 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <title>Video Player</title>
+    <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<iframe
+        id="ytplayer"
+        type="text/html"
+        th:src="'https://www.youtube.com/embed/' + ${videoId} + '?enablejsapi=1&origin=' + ${origin} + '&playsinline=1&rel=0&webview=1'"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+        allowfullscreen>
+</iframe>
+</body>
+</html>
