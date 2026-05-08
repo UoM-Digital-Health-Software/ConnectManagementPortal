@@ -10,12 +10,17 @@ import javax.persistence.Converter
 class QueryTimeFrameConverter : AttributeConverter<QueryTimeFrame, String> {
 
     override fun convertToDatabaseColumn(attribute: QueryTimeFrame?): String? {
-        return attribute?.symbol.toString()
+
+        if (attribute == null) {
+            return null
+        }
+
+        return attribute.length.toString()
     }
 
     override fun convertToEntityAttribute(dbData: String?): QueryTimeFrame? {
-        return dbData?.let { symbol ->
-            QueryTimeFrame.fromSymbol(symbol)
+        return dbData?.let { length ->
+            QueryTimeFrame.fromSymbol(length.toInt() )
         }
     }
 }

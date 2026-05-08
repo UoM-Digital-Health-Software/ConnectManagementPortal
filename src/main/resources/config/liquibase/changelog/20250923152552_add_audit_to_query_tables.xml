@@ -12,7 +12,7 @@
             <column name="revtype" type="SMALLINT"/>
             <column name="revend" type="INTEGER"/>
             <column name="revend_tstmp" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            
+
             <column name="can_edit" type="BOOLEAN"/>
             <column name="can_edit_mod" type="BOOLEAN"/>
             <column name="description" type="VARCHAR(255)"/>
@@ -29,11 +29,11 @@
             <column name="created_by_mod" type="BOOLEAN"/>
             <column name="updated_by" type="BIGINT"/>
             <column name="updated_by_mod" type="BOOLEAN"/>
-            
-            <column name="queries_mod" type="BOOLEAN"/> 
-            <column name="query_content_mod" type="BOOLEAN"/> 
-            <column name="query_participants_mod" type="BOOLEAN"/> 
-            <column name="query_logics_mod" type="BOOLEAN"/> 
+
+            <column name="queries_mod" type="BOOLEAN"/>
+            <column name="query_content_mod" type="BOOLEAN"/>
+            <column name="query_participants_mod" type="BOOLEAN"/>
+            <column name="query_logics_mod" type="BOOLEAN"/>
             <column name="query_content_groups_mod" type="BOOLEAN"/>
 
 
@@ -70,10 +70,17 @@
         <column name="value_mod" type="BOOLEAN"/>
         <column name="time_frame" type="VARCHAR(255)"/>
         <column name="time_frame_mod" type="BOOLEAN"/>
-    
+
         <column name="field_mod" type="BOOLEAN"/>
         <column name="operator_mod" type="BOOLEAN"/>
         <column name="query_group_mod" type="BOOLEAN"/>
+
+        <column name="reference_type" type="VARCHAR(255)"/>
+        <column name="reference_type_mod" type="BOOLEAN"/>
+
+        <column name="rolling_window" type="VARCHAR(255)"/>
+        <column name="rolling_window_mod" type="BOOLEAN"/>
+
     </createTable>
 
     <addPrimaryKey tableName="query_aud" columnNames="id,rev" constraintName="query_aud_pkey"/>
@@ -95,7 +102,7 @@
         <column name="revtype" type="SMALLINT"/>
         <column name="revend" type="INT"/>
         <column name="revend_tstmp" type="TIMESTAMP"/>
-        
+
         <column name="heading" type="VARCHAR(255)"/>
         <column name="heading_mod" type="BOOLEAN"/>
         <column name="text_value" type="VARCHAR(255)"/>
@@ -118,22 +125,22 @@
         <column name="query_content_group_mod" type="BOOLEAN"/>
         <column name="image_alt_text_mod" type="BOOLEAN"/>
         <column name="image_blob_mod" type="BOOLEAN"/>
-        
+
     </createTable>
 
-    <addPrimaryKey tableName="query_content_aud" 
-                   columnNames="id,rev" 
+    <addPrimaryKey tableName="query_content_aud"
+                   columnNames="id,rev"
                    constraintName="query_content_aud_pkey"/>
 
-    <addForeignKeyConstraint baseColumnNames="rev" 
+    <addForeignKeyConstraint baseColumnNames="rev"
                              baseTableName="query_content_aud"
-                             referencedColumnNames="id" 
+                             referencedColumnNames="id"
                              referencedTableName="_revisions_info"
                              constraintName="fk_query_content_aud_rev"/>
 
-    <addForeignKeyConstraint baseColumnNames="revend" 
+    <addForeignKeyConstraint baseColumnNames="revend"
                              baseTableName="query_content_aud"
-                             referencedColumnNames="id" 
+                             referencedColumnNames="id"
                              referencedTableName="_revisions_info"
                              constraintName="fk_query_content_aud_revend"/>
 </changeSet>
@@ -181,7 +188,7 @@
             <column name="revend" type="INTEGER"/>
             <column name="revend_tstmp" type="TIMESTAMP"/>
 
-          
+
             <column name="query_group_id" type="BIGINT"/>
             <column name="query_group_id_mod" type="BOOLEAN"/>
             <column name="subject_id" type="BIGINT"/>
@@ -219,7 +226,7 @@
         <column name="revtype" type="SMALLINT"/>
         <column name="revend" type="INTEGER"/>
         <column name="revend_tstmp" type="TIMESTAMP"/>
-       
+
         <column name="query_group_id" type="BIGINT"/>
         <column name="query_group_id_mod" type="BOOLEAN"/>
         <column name="type" type="VARCHAR(255)"/>
@@ -230,7 +237,7 @@
         <column name="query_id_mod" type="BOOLEAN"/>
         <column name="parent_id" type="BIGINT"/>
         <column name="parent_id_mod" type="BOOLEAN"/>
-        
+
         <column name="parent_mod" type="BOOLEAN"/>
         <column name="query_mod" type="BOOLEAN"/>
         <column name="query_group_mod" type="BOOLEAN"/>
@@ -257,7 +264,7 @@
             <column name="revtype" type="SMALLINT"/>
             <column name="revend" type="INTEGER"/>
             <column name="revend_tstmp" type="TIMESTAMP"/>
-            
+
             <column name="query_group_id" type="BIGINT"/>
             <column name="query_group_id_mod" type="BOOLEAN"/>
             <column name="subject_id" type="BIGINT"/>
@@ -273,12 +280,12 @@
             <column name="query_group_mod" type="BOOLEAN"/>
         </createTable>
 
-        <addPrimaryKey 
-            tableName="query_participant_aud" 
+        <addPrimaryKey
+            tableName="query_participant_aud"
             columnNames="id, rev"
             constraintName="pk_query_participant_aud"/>
 
-        <addForeignKeyConstraint 
+        <addForeignKeyConstraint
             baseTableName="query_participant_aud"
             baseColumnNames="rev"
             constraintName="fk_query_participant_aud_revinfo"
@@ -310,12 +317,12 @@
         <column name="query_content_group_mod" type="BOOLEAN"/>
     </createTable>
 
-    <addPrimaryKey 
-        tableName="query_participant_content_aud" 
+    <addPrimaryKey
+        tableName="query_participant_content_aud"
         columnNames="id, rev"
         constraintName="pk_query_participant_content_aud"/>
 
-    <addForeignKeyConstraint 
+    <addForeignKeyConstraint
         baseTableName="query_participant_content_aud" baseColumnNames="rev"
         constraintName="fk_query_participant_content_aud_revinfo"
         referencedTableName="_revisions_info" referencedColumnNames="id"/>
@@ -339,12 +346,12 @@
 
     </createTable>
 
-    <addPrimaryKey 
-        tableName="modules_aud" 
-        columnNames="id, rev" 
+    <addPrimaryKey
+        tableName="modules_aud"
+        columnNames="id, rev"
         constraintName="pk_modules_aud"/>
 
-    <addForeignKeyConstraint 
+    <addForeignKeyConstraint
         baseTableName="modules_aud" baseColumnNames="rev"
         referencedTableName="_revisions_info" referencedColumnNames="id"
         constraintName="fk_modules_aud_revinfo"/>

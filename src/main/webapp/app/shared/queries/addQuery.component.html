@@ -193,12 +193,24 @@
             <div
                 *ngIf="
                     contentParagraphError ||
-                    queryRulesError ||
                     contentModuleLinkError
                 "
                 class="alert alert-danger"
             >
                 <label>Please fill in all fields.</label>
+            </div>
+
+
+             <div
+                *ngIf="
+
+                    queryRulesError
+
+                "
+                class="alert alert-danger"
+            >
+
+                <label  *ngFor="let error of validationErrors; let i = index">{{error}}</label>
             </div>
 
         </div>

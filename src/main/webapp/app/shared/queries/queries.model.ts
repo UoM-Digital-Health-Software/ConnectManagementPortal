@@ -40,6 +40,8 @@ export interface QueryDTO {
     logic_operator?: optionalString;
     children?: QueryDTO[];
     entity?: optionalString;
+    referenceType?: optionalString;
+    rollingWindow?: optionalString
 }
 
 
@@ -60,6 +62,8 @@ export interface QueryString {
     rules?: QueryString[];
     condition?: string;
     entity?: string;
+    referenceType?: string;
+    rollingWindow?: number;
 }
 
 export enum ContentType {
