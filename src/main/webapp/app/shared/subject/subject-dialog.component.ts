@@ -197,7 +197,7 @@ export class SubjectDialogComponent implements OnInit, OnDestroy {
     }
 
     IDPatternCheck(ID:string){
-        var reg = /^WS2_(M|C|E|G|K|S)[A-Z]{2}[0-9]{3}$/;
+        var reg = /^WS2_(M|C|E|G|K|S|A)[A-Z]{2}[0-9]{3}$/;
         return (reg.test(ID))
     }
 

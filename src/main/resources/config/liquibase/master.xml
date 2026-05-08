@@ -58,5 +58,9 @@
     <include file="classpath:config/liquibase/changelog/20251104150000_modify_query_evaluation_column.xml" relativeToChangelogFile="false"/>
 
 
+    <include file="classpath:config/liquibase/changelog/20260223150000_add_cache_size_log.xml" relativeToChangelogFile="false"/>
+
+    <include file="classpath:config/liquibase/changelog/20260410150000_add_index_conncect_data_log.xml" relativeToChangelogFile="false"/>
+
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

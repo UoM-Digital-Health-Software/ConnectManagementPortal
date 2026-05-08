@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="20260223150000_add_cache_size_log" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="cache_size_log"/>
+            </not>
+        </preConditions>
+
+
+        <createTable tableName="cache_size_log">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id"  type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_on" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="value" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex indexName="idx_cache_size_user" tableName="cache_size_log">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_cache_size_created_on" tableName="cache_size_log">
+            <column name="created_on"/>
+        </createIndex>
+
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cache_size_log"
+                                 constraintName="fk_cache_size_log_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="radar_user"/>
+
+    </changeSet>
+
+
+
+    <changeSet id="20260223150000_add_cache_size_log_date_constraint" author="Jindrich Gorner">
+
+        <addUniqueConstraint
+                tableName="cache_size_log"
+                columnNames="user_id, created_on"
+                constraintName="uk_cache_size_user_day"/>
+
+
+    </changeSet>
+
+
+
+
+</databaseChangeLog>
