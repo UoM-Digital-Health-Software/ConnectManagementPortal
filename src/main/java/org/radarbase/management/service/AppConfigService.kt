@@ -51,7 +51,7 @@ class AppConfigService(private val repository: AppConfigRepository, private val 
 
         val rolloutPct = config[feature]?.rolloutPct?.toInt() ?: 100
 
-        val salt = saltProvider.getSalt()
+        val salt = getWeekSalt()
         val bucket = getUserBucket(userLogin, salt)
         if (bucket >= rolloutPct) return false
 
@@ -103,22 +103,22 @@ class AppConfigService(private val repository: AppConfigRepository, private val 
     fun logCacheSize(user: User, size: Int) {
 
 
-            val todayStartUtc = ZonedDateTime.now(ZoneOffset.UTC)
-                .toLocalDate()
-                .atStartOfDay(ZoneOffset.UTC)
+        val todayStartUtc = ZonedDateTime.now(ZoneOffset.UTC)
+            .toLocalDate()
+            .atStartOfDay(ZoneOffset.UTC)
 
 
-            val exists = cacheSizeLoRepository.existsByUserIdAndCreatedOn(user.id!!, todayStartUtc)
+        val exists = cacheSizeLoRepository.existsByUserIdAndCreatedOn(user.id!!, todayStartUtc)
 
-            if(!exists) {
-                val newCacheSizeLog  = CacheSizeLog()
-                newCacheSizeLog.userId = user.id
-                newCacheSizeLog.createdOn = todayStartUtc
-                newCacheSizeLog.value = size.toLong()
-                cacheSizeLoRepository.saveAndFlush(newCacheSizeLog)
-            } else {
-                log.info("today already saved")
-            }
+        if(!exists) {
+            val newCacheSizeLog  = CacheSizeLog()
+            newCacheSizeLog.userId = user.id
+            newCacheSizeLog.createdOn = todayStartUtc
+            newCacheSizeLog.value = size.toLong()
+            cacheSizeLoRepository.saveAndFlush(newCacheSizeLog)
+        } else {
+            log.info("today already saved")
+        }
 
     }
 
