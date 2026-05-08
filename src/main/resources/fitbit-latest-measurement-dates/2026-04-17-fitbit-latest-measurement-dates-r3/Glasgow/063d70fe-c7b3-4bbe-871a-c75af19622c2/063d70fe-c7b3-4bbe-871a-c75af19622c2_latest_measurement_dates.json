@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-04-17T09:25:49Z",
+  "measures": {
+    "fitbit_intraday_heart_rate": {
+      "current_source_latest_object_key": null,
+      "files_scanned": 0,
+      "last_measurement_date": null,
+      "last_valid_object_key": null,
+      "metric": "connect_fitbit_intraday_heart_rate",
+      "resolution_method": "not_found",
+      "status": "metric_not_found"
+    },
+    "fitbit_intraday_heart_rate_variability": {
+      "current_source_latest_object_key": null,
+      "files_scanned": 0,
+      "last_measurement_date": null,
+      "last_valid_object_key": null,
+      "metric": "connect_fitbit_intraday_heart_rate_variability",
+      "resolution_method": "not_found",
+      "status": "metric_not_found"
+    },
+    "fitbit_resting_heart_rate": {
+      "current_source_latest_object_key": null,
+      "files_scanned": 0,
+      "last_measurement_date": null,
+      "last_valid_object_key": null,
+      "metric": "connect_fitbit_resting_heart_rate",
+      "resolution_method": "not_found",
+      "status": "metric_not_found"
+    }
+  },
+  "participant_id": "063d70fe-c7b3-4bbe-871a-c75af19622c2",
+  "run_id": "2026-04-17-fitbit-latest-measurement-dates-r3",
+  "site": "Glasgow"
+}

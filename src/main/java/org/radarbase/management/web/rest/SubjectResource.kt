@@ -13,10 +13,6 @@ import org.radarbase.management.domain.Source
 import org.radarbase.management.domain.Subject
 import org.radarbase.management.domain.User
 import org.radarbase.management.domain.enumeration.DataGroupingType
-import org.radarbase.management.repository.ConnectDataLogRepository
-import org.radarbase.management.repository.ProjectRepository
-import org.radarbase.management.repository.RoleRepository
-import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.security.Constants
 import org.radarbase.management.security.NotAuthorizedException
 import org.radarbase.management.security.SecurityUtils
@@ -46,6 +42,7 @@ import java.util.*
 import java.util.stream.Stream
 import javax.validation.Valid
 import org.hibernate.Hibernate
+import org.radarbase.management.repository.*
 import org.springframework.data.web.PageableDefault
 
 /**
@@ -67,7 +64,9 @@ class SubjectResource(
     @Autowired private val roleRepository: RoleRepository,
     @Autowired private val awsService: AWSService,
     @Autowired private val userService: UserService,
-    @Autowired private val queryEValuationService: QueryEValuationService
+    @Autowired private val queryEValuationService: QueryEValuationService,
+    @Autowired private val measurementDatesTrackerService: LatestMeasurementDatesTrackerService,
+    @Autowired private val connectDataLogAWSRepository: ConnectDataLogAWSRepository
 ) {
 
     /**
@@ -612,6 +611,8 @@ class SubjectResource(
         return ResponseEntity.ok(result);
     }
 
+
+
     @PostMapping("/subjects/{login:" + Constants.ENTITY_ID_REGEX + "}/reportready")
     @Timed
     @Throws (
@@ -687,10 +688,10 @@ class SubjectResource(
         authService.checkScope(Permission.SUBJECT_READ)
 
 
-        val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
+        val subject = subjectRepository.findOneWithEagerBySubjectLogin(login)
         val project = subject!!.activeProject!!.projectName!!;
 
-        val monthlyStatistics =   awsService.startProcessing(project, login, QueryEvaluationOptions.source, AggregationLevel.MONTH)
+        val monthlyStatistics =   awsService.startProcessing(project, login, DataSource.S3, AggregationLevel.MONTH)
         return ResponseEntity.ok(monthlyStatistics);
     }
 
@@ -704,6 +705,7 @@ class SubjectResource(
         val subject = subjectRepository.findOneWithEagerBySubjectLogin(login);
 
         val currentUser = userService.getUserWithAuthorities()
+
 
         currentUser?.let {
            val response =  awsService.writeManifestToResources(
@@ -747,6 +749,8 @@ class SubjectResource(
 
 
 
+
+
     @GetMapping("/subjects/externalId")    @Timed
     @Throws (
         NotAuthorizedException::class
@@ -757,5 +761,51 @@ class SubjectResource(
         val allExternalIds = subjectRepository.findAllExternalIds();
 
         return ResponseEntity.ok(allExternalIds);
+    }
+
+      @PostMapping("/subjects/latestmeasurementdates")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun requestLatestDatesSummary() : ResponseEntity<*> {
+
+        val currentUser = userService.getUserWithAuthorities()
+
+
+        currentUser?.let {
+            val response =  measurementDatesTrackerService.writeLatestMeasurementsManifest(
+                resourceFolderPath = "manifests/test",
+                currentUser = currentUser,
+                createdBy = it.email!!,
+                local = false
+            )
+            return ResponseEntity.ok(response);
+
+        }
+
+        return ResponseEntity.ok(null)
+    }
+
+    @GetMapping("/subjects/latestmeasurementdates/latestdate")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun latestDatesSummaryLatest() : ResponseEntity<*> {
+        val response =  measurementDatesTrackerService.getLatestProcessedManifest()
+        return ResponseEntity.ok(response);
+    }
+
+        @GetMapping("/awsdatalogs")
+    @Timed
+    @Throws (
+        NotAuthorizedException::class
+    )
+    fun getAwsDataLogs(@RequestParam  ids: List<String>) : ResponseEntity<*> {
+        authService.checkScope(Permission.SUBJECT_READ)
+        val logs = connectDataLogAWSRepository.findLatestLogsByUserIds(ids)
+        val result = logs?.groupBy { it?.userId }
+        return ResponseEntity.ok(result);
     }
 }

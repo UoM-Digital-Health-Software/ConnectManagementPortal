@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-04-17T09:24:51Z",
+  "measures": {
+    "fitbit_intraday_heart_rate": {
+      "current_source_latest_object_key": null,
+      "files_scanned": 0,
+      "last_measurement_date": null,
+      "last_valid_object_key": null,
+      "metric": "connect_fitbit_intraday_heart_rate",
+      "resolution_method": "not_found",
+      "status": "metric_not_found"
+    },
+    "fitbit_intraday_heart_rate_variability": {
+      "current_source_latest_object_key": "output/Edinburgh/21202ad3-138f-46e2-879f-e746366dc1de/connect_fitbit_intraday_heart_rate_variability/20260415_2300.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-04-15",
+      "last_valid_object_key": "output/Edinburgh/21202ad3-138f-46e2-879f-e746366dc1de/connect_fitbit_intraday_heart_rate_variability/20260415_2300.csv.gz",
+      "metric": "connect_fitbit_intraday_heart_rate_variability",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    },
+    "fitbit_resting_heart_rate": {
+      "current_source_latest_object_key": "output/Edinburgh/21202ad3-138f-46e2-879f-e746366dc1de/connect_fitbit_resting_heart_rate/20260307_0000.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-03-07",
+      "last_valid_object_key": "output/Edinburgh/21202ad3-138f-46e2-879f-e746366dc1de/connect_fitbit_resting_heart_rate/20260307_0000.csv.gz",
+      "metric": "connect_fitbit_resting_heart_rate",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    }
+  },
+  "participant_id": "21202ad3-138f-46e2-879f-e746366dc1de",
+  "run_id": "2026-04-17-fitbit-latest-measurement-dates-r3",
+  "site": "Edinburgh"
+}

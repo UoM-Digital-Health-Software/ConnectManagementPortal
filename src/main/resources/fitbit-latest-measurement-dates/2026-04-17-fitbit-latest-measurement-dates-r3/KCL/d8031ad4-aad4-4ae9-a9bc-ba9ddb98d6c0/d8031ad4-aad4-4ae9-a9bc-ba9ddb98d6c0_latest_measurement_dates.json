@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-04-17T09:32:57Z",
+  "measures": {
+    "fitbit_intraday_heart_rate": {
+      "current_source_latest_object_key": "output/KCL/d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0/connect_fitbit_intraday_heart_rate/20260322_1200.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-03-22",
+      "last_valid_object_key": "output/KCL/d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0/connect_fitbit_intraday_heart_rate/20260322_1200.csv.gz",
+      "metric": "connect_fitbit_intraday_heart_rate",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    },
+    "fitbit_intraday_heart_rate_variability": {
+      "current_source_latest_object_key": "output/KCL/d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0/connect_fitbit_intraday_heart_rate_variability/20260322_0500.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-03-22",
+      "last_valid_object_key": "output/KCL/d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0/connect_fitbit_intraday_heart_rate_variability/20260322_0500.csv.gz",
+      "metric": "connect_fitbit_intraday_heart_rate_variability",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    },
+    "fitbit_resting_heart_rate": {
+      "current_source_latest_object_key": "output/KCL/d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0/connect_fitbit_resting_heart_rate/20260322_0000.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-03-22",
+      "last_valid_object_key": "output/KCL/d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0/connect_fitbit_resting_heart_rate/20260322_0000.csv.gz",
+      "metric": "connect_fitbit_resting_heart_rate",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    }
+  },
+  "participant_id": "d8031ad4-aad4-4ae9-a9bc-ba9ddb98d6c0",
+  "run_id": "2026-04-17-fitbit-latest-measurement-dates-r3",
+  "site": "KCL"
+}

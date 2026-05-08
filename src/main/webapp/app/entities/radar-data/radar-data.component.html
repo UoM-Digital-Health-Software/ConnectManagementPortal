@@ -1,8 +1,40 @@
+<jhi-alert></jhi-alert>
 <div *ngIf="allProjects$ | async as projects">
-
 
     <div class="padding-bottom">
     <label  for="field_clientApp">Select a project</label>
+
+    <div class="flex">
+            <div>
+    <label class="switch">
+        <input type="checkbox" [(ngModel)]="isAWS"
+            (change)="onToggleChange()"> <span class="slider round">use AWS</span>
+        </label>
+
+    </div>
+
+
+
+    <div class="flex-column">
+            <button
+            class="btn btn-success"
+            type="button"
+               (click)="requestSummary()"
+
+            replaceUrl="true"
+        >
+            <span class="fa"></span>
+            <span class="hidden-md-down">Request summary</span>
+        </button>
+        <label>Last summary on: </label>
+        <label>{{ latestDate}}</label>
+
+    </div>
+
+    </div>
+
+
+
     <select class="form-control" id="field_clientApp" name="client" (change)="selectedProjectName$.next($event.target.value)"
             (change)="changeProject" required>
         <option [ngValue]="null" selected></option>
@@ -12,62 +44,108 @@
     </div>
 
 
-
 <div *ngIf="projectWithSubjects$ | async as prn">
 
             <h4>{{prn.project.projectName}}</h4>
 
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Subject id</th>
-                            <th>Participant id</th>
-                            <th>Android Phone</th>
-                            <th>Health Connect</th>
-                            <th>iOS Phone</th>
-                            <th>iOS Health Kit</th>
-                            <th>iOS Sensor Kit</th>
-                            <th>Fitbit</th>
-                            <th>Questionnaire</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            *ngFor="
-                                let subject of visibleSubjectsMap[
-                                    prn.project.projectName
-                                ]
-                            "
-                        >
-                            <td>{{ subject.login }}</td>
-                            <td>{{ subject.externalId }}</td>
-                            <td>
-                                {{ subject.dataLogs?.['PASSIVE_ANDROID_PHONE'] || '-' }}
-                            </td>
-                            <td>
-                                {{ subject.dataLogs?.['PASSIVE_GOOGLE_CONNECT'] || '-' }}
-                            </td>
-                            <td>
-                                {{ subject.dataLogs?.['PASSIVE_IOS_PHONE'] || '-' }}
-                            </td>
-                            <td>
-                                {{ subject.dataLogs?.['PASSIVE_HEALTH_KIT'] || '-' }}
-                            </td>
-                            <td>
-                                {{ subject.dataLogs?.['PASSIVE_SENSOR_KIT'] || '-' }}
-                            </td>
-                            <td>
-                                {{ subject.dataLogs?.['PASSIVE_FITBIT'] || '-' }}
-                            </td>
-                            <td>
-                                {{ subject.dataLogs?.['ACTIVE_QUESTIONNAIRE'] || '-' }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <div *ngIf="!isAWS">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Subject id</th>
+                                <th>Participant id</th>
+                                <th>Android Phone</th>
+                                <th>Health Connect</th>
+                                <th>iOS Phone</th>
+                                <th>iOS Health Kit</th>
+                                <th>iOS Sensor Kit</th>
+                                <th>Fitbit</th>
+                                <th>Questionnaire</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="
+                                    let subject of visibleSubjectsMap[
+                                        prn.project.projectName
+                                    ]
+                                "
+                            >
+                                <td>{{ subject.login }}</td>
+                                <td>{{ subject.externalId }}</td>
+                                <td>
+                                    {{ subject.dataLogs?.['PASSIVE_ANDROID_PHONE'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['PASSIVE_GOOGLE_CONNECT'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['PASSIVE_IOS_PHONE'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['PASSIVE_HEALTH_KIT'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['PASSIVE_SENSOR_KIT'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['PASSIVE_FITBIT'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['ACTIVE_QUESTIONNAIRE'] || '-' }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
             </div>
 
+             <div *ngIf="isAWS" >
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Subject id</th>
+                                <th>Participant id</th>
+                                <th>Fitbit Heart Rate</th>
+                                <th>Fitbit Resting Heart Rate</th>
+                                <th>Fitbit Heart Rate Variability</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="
+                                    let subject of visibleSubjectsMap[
+                                        prn.project.projectName
+                                    ]
+                                "
+                            >
+                                <td>{{ subject.login }}</td>
+                                <td>{{ subject.externalId }}</td>
+                                <td>
+                                    {{ subject.dataLogs?.['fitbit_intraday_heart_rate'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['fitbit_intraday_heart_rate_variability'] || '-' }}
+                                </td>
+                                <td>
+                                    {{ subject.dataLogs?.['fitbit_resting_heart_rate'] || '-' }}
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
 
             <app-load-more
                 [totalItems]="currentProject.totalItems"
@@ -86,6 +164,7 @@
 
 
 </div>
+
 </div>
 
 

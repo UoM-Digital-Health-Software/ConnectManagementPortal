@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="Jindrich Gorner" id="20260420100400_connect_data_log_aws" failOnError="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="connect_data_log_aws"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="connect_data_log_aws">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP"><constraints nullable="true"/></column>
+            <column name="time" type="TIMESTAMP"><constraints nullable="true"/></column>
+            <column name="data_grouping_type" type="varchar(255)"><constraints nullable="true"/></column>
+            <column name="user_id" type="varchar(255)"><constraints nullable="true"/></column>
+            <column name="project_id" type="varchar(255)"><constraints nullable="true"/></column>
+        </createTable>
+
+        <createIndex indexName="idx_connect_data_log_aws_user_type_time" tableName="connect_data_log_aws">
+            <column name="user_id"/>
+            <column name="data_grouping_type"/>
+            <column name="time" descending="true"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
