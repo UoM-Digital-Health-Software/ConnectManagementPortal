@@ -107,48 +107,6 @@ class LatestMeasurementDatesTrackerService(
         latestMeasurementDatesTrackerRepository.saveAndFlush(latestMeasurementDatesFolder)
     }
 
-
-    private fun readLocalResource(latestMeasurementDatesFolder:  LatestMeasurementDatesTracker){
-        val jsonMapper = jacksonObjectMapper()
-
-        val allSubjects =  subjectRepository.findAll()
-
-        allSubjects.forEach {
-            val project = it.activeProject?.projectName
-            val userId = it.user?.login
-
-            if(!userId.isNullOrEmpty() && !project.isNullOrEmpty()) {
-                val path = "$lastMeasurementDataFolder/${latestMeasurementDatesFolder.summaryId}/$project/$userId"
-
-                log.info("[LAST_DATA] path : {}", path)
-
-                try {
-                    val customFilePath = "$path/${userId}_latest_measurement_dates.json"
-                    val jsonString = awsService.readClassPathJson(customFilePath)
-
-                    if(jsonString.isNotEmpty()){
-                        val jsonData: LatestMeasurementDates = jsonMapper.readValue(jsonString)
-
-
-                        Topics.values().forEach {
-                            val result = jsonData.measures.get(it.toString())?.last_measurement_date
-
-
-                            if(result != null) {
-                                addConnectDataLog(userId,result, it.toString(), project)
-                            }
-                        }
-                    }
-
-                }
-                catch (e: Exception) {
-                    log.error("[LAST_DATA] Failed to process user $userId")
-                }
-            }
-        }
-
-    }
-
     fun getLatestProcessedManifest(): LatestMeasurementDatesTracker? {
         val latestManifest =  latestMeasurementDatesTrackerRepository.findFirstByGeneratedTrueAndLoadedTrueOrderByRequestedOnDesc()
         return latestManifest
@@ -172,8 +130,6 @@ class LatestMeasurementDatesTrackerService(
         createdBy: String = "system",
         local: Boolean = false
     ) : ApiResponse {
-       val local = true // remove
-
         if( currentUser == null) {
             throw IllegalArgumentException("Subject or current user is not present")
         }
@@ -187,8 +143,6 @@ class LatestMeasurementDatesTrackerService(
         val existingManifest = latestMeasurementDatesTrackerRepository.findBySummaryId(summaryId)
 
         if(existingManifest.isNotEmpty()) {
-            log.info("[AWS] already requested")
-
             return ApiResponse(success = false, message = "The summary has been already requested.")
         }
 
@@ -204,8 +158,6 @@ class LatestMeasurementDatesTrackerService(
 
         val s3Client =  awsService.createS3Client()
 
-
-
         if(local) {
             val outputDir = File("src/main/resources/$resourceFolderPath")
 
@@ -220,13 +172,8 @@ class LatestMeasurementDatesTrackerService(
 
         }
 
-
         if(s3Client == null) {
-
-            log.error("[AWS] s3 client is null")
-
             return ApiResponse(success = false, message = "Summary requested.")
-
         }
 
         try {
@@ -238,14 +185,14 @@ class LatestMeasurementDatesTrackerService(
                     .contentType("application/x-yaml")
                     .build()
 
-
                 val result = s3Client.putObject(
                     request,
                     software.amazon.awssdk.core.sync.RequestBody.fromBytes(
                         yamlContent.toByteArray(StandardCharsets.UTF_8)
                     )
                 )
-                addLatestMeasurementDatesTracker(summaryId)
+
+            addLatestMeasurementDatesTracker(summaryId)
                 return ApiResponse(success = true, message = "Summary requested.")
 
             } catch(e: Exception) {
@@ -302,8 +249,6 @@ class LatestMeasurementDatesTrackerService(
 
 
 
-    // move to awsservice
-
     fun folderExists(s3Client: S3Client, folderTarget: String): Boolean {
         val sanitizedTarget = folderTarget.trim('/')
 
@@ -319,4 +264,111 @@ class LatestMeasurementDatesTrackerService(
 
         return response.hasContents() || response.hasCommonPrefixes()
     }
+
+
+    fun getNestedLatestData(): Map<String, Map<String, Map<String, java.time.Instant>>> {
+        val flatResults = connectDataLogAWSRepository.findAggregatedLatestLogs()
+
+        return flatResults
+            .filter { it.projectId != null && it.userId != null && it.dataGroupingType != null }
+            .groupBy { it.projectId!! }
+            .mapValues { siteEntry ->
+                siteEntry.value.groupBy { it.userId!! }
+                    .mapValues { userEntry ->
+                        userEntry.value.associate {
+                            it.dataGroupingType!! to it.latestTime!!
+                        }
+                    }
+            }
+    }
+
+
+    fun readLocalResourceDynamic(latestMeasurementDatesFolder: LatestMeasurementDatesTracker?) {
+        val jsonMapper = jacksonObjectMapper()
+        val classLoader = Thread.currentThread().contextClassLoader
+        var summaryId = "2026-05-20_latest-measurement-dates";
+
+        val basePath = "fitbit-latest-measurement-dates/${summaryId}/latest-measurement-data"
+
+        val resource = classLoader.getResource(basePath)
+        if (resource == null) {
+            log.error("[LAST_DATA] Base path not found in resources: $basePath")
+            return
+        }
+
+        val baseDir = File(resource.toURI())
+
+        val projectFolders = baseDir.listFiles { file -> file.isDirectory } ?: emptyArray()
+
+        projectFolders.forEach { projectFolder ->
+            val projectName = projectFolder.name
+
+            val userFolders = projectFolder.listFiles { file -> file.isDirectory } ?: emptyArray()
+
+            userFolders.forEach { userFolder ->
+                val userId = userFolder.name
+                val jsonFileName = "${userId}_latest_measurement_dates.json"
+                val jsonFile = File(userFolder, jsonFileName)
+
+                if (jsonFile.exists()) {
+                    try {
+                        val jsonContent = jsonFile.readText()
+                        if (jsonContent.isNotEmpty()) {
+                            val jsonData: LatestMeasurementDates = jsonMapper.readValue(jsonContent)
+
+                            Topics.values().forEach { topic ->
+                                val result = jsonData.measures[topic.toString()]?.last_measurement_date
+                                if (result != null) {
+                                    addConnectDataLog(userId, result, topic.toString(), projectName)
+                                }
+                            }
+                        }
+                        log.info("[LAST_DATA] Processed dynamic user: $userId in project: $projectName")
+                    } catch (e: Exception) {
+                        log.error("[LAST_DATA] Failed to process user $userId in $projectName: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun readLocalResource(latestMeasurementDatesFolder:  LatestMeasurementDatesTracker){
+        val jsonMapper = jacksonObjectMapper()
+
+        val allSubjects =  subjectRepository.findAll()
+
+        allSubjects.forEach {
+            val project = it.activeProject?.projectName
+            val userId = it.user?.login
+
+            if(!userId.isNullOrEmpty() && !project.isNullOrEmpty()) {
+                val path = "$lastMeasurementDataFolder/${latestMeasurementDatesFolder.summaryId}/$project/$userId"
+
+                try {
+                    val customFilePath = "$path/${userId}_latest_measurement_dates.json"
+                    val jsonString = awsService.readClassPathJson(customFilePath)
+
+                    if(jsonString.isNotEmpty()){
+                        val jsonData: LatestMeasurementDates = jsonMapper.readValue(jsonString)
+
+
+                        Topics.values().forEach {
+                            val result = jsonData.measures.get(it.toString())?.last_measurement_date
+
+
+                            if(result != null) {
+                                addConnectDataLog(userId,result, it.toString(), project)
+                            }
+                        }
+                    }
+
+                }
+                catch (e: Exception) {
+                    log.error("[LAST_DATA] Failed to process user $userId")
+                }
+            }
+        }
+
+    }
+
 }

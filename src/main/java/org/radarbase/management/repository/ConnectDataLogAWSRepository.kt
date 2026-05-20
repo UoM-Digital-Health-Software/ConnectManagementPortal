@@ -2,6 +2,7 @@ package org.radarbase.management.repository
 
 import org.radarbase.management.domain.ConnectDataLogAWS
 import org.radarbase.management.domain.support.ConntetDataLogView
+import org.radarbase.management.service.dto.LatestLogDTO
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
@@ -25,4 +26,22 @@ interface ConnectDataLogAWSRepository  : JpaRepository<ConnectDataLogAWS, Long?>
                 "ORDER BY u.\"user_id\", u.\"data_grouping_type\", u.time DESC", nativeQuery = true
     )
     fun findLatestLogsByUserIds(@Param("userIds") userIds: List<String?>?): List<ConnectDataLogAWS?>?
+
+
+    @Query("""
+        SELECT new org.radarbase.management.service.dto.LatestLogDTO(
+            c.projectId,
+            c.userId,
+            c.dataGroupingType,
+            MAX(c.time)
+        )
+        FROM ConnectDataLogAWS c
+        GROUP BY c.projectId, c.userId, c.dataGroupingType
+    """)
+    fun findAggregatedLatestLogs(): List<LatestLogDTO>
+
+
+
+
+
 }

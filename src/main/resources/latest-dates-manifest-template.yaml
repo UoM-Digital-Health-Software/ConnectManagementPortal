@@ -1,86 +1,82 @@
 run_id: {{RUN_ID}}
 profile: connect
-created_by: {{CREATED_BY}}
+created_by:  {{CREATED_BY}}
 created_at: {{CREATED_AT}}
 priority: medium
 
 source:
-    bucket: connect-output-storage
-    prefix: output
-    participants: []
-    discover_all: true
-    sites:
-        - Cardiff
-        - Edinburgh
-        - Glasgow
-        - KCL
-        - Manchester
-        - Sussex
+  bucket: connect-output-storage
+  prefix: output
+  participants: []
+  discover_all: true
+  sites:
+    - Cardiff
+    - Edinburgh
+    - Glasgow
+    - KCL
+    - Manchester
+    - Sussex
 
 filters:
-    include_metrics:
-        - connect_fitbit_intraday_heart_rate
-        - connect_fitbit_intraday_heart_rate_variability
-        - connect_fitbit_resting_heart_rate
-    exclude_metrics: []
+  include_metrics:
+    - connect_fitbit_intraday_heart_rate
+    - connect_fitbit_intraday_heart_rate_variability
+    - connect_fitbit_resting_heart_rate
+  exclude_metrics: []
 
 workspace:
-    root: /mnt/connect/workdir
-    run_subdir: runs/{run_id}
+  root: /mnt/connect/workdir
+  run_subdir: runs/{run_id}
 
 batching:
-    strategy: site
-    max_participants: 100
-    resume_completed: true
+  strategy: site
+  max_participants: 100
+  resume_completed: true
 
 provenance:
-    enabled: true
-    snapshot_source_state: false
-    upload_run_provenance: true
-    parent_dataset_manifest: ""
-    apply_parent_history_update: false
+  enabled: true
+  snapshot_source_state: false
+  upload_run_provenance: true
+  parent_dataset_manifest: ""
+  apply_parent_history_update: false
 
 outputs:
-    merged_prefix: s3://connect-uom/merged-data/{site}/{participant_id}/
-    summary_prefix: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/summary-data/{site}/{participant_id}/
-    manifest_key: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/manifests/manifest.json
-    logs_prefix: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/logs/
+  merged_prefix: s3://connect-uom/merged-data/{site}/{participant_id}/
+  summary_prefix: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/summary-data/{site}/{participant_id}/
+  manifest_key: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/manifests/manifest.json
+  logs_prefix: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/logs/
 
 processing:
-    steps:
-        - type: download
-          update: true
-          refresh:
-              mode: incremental
-        - type: latest_measurement_dates
-          output_prefix: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/latest-measurement-data/{site}/{participant_id}/
-          manifest_prefix: s3://connect-uom/latest-measurement-date-manifests/
-          measures:
-              - id: fitbit_intraday_heart_rate
-                metric: connect_fitbit_intraday_heart_rate
-                date_pattern: '(?P<date>\d{8})_\d{4}\.csv\.gz$'
-                date_format: '%Y%m%d'
-                value_fields:
-                    - value.heartRate
-              - id: fitbit_intraday_heart_rate_variability
-                metric: connect_fitbit_intraday_heart_rate_variability
-                date_pattern: '(?P<date>\d{8})_\d{4}\.csv\.gz$'
-                date_format: '%Y%m%d'
-                value_fields:
-                    - value.rmssd
-              - id: fitbit_resting_heart_rate
-                metric: connect_fitbit_resting_heart_rate
-                date_pattern: '(?P<date>\d{8})_\d{4}\.csv\.gz$'
-                date_format: '%Y%m%d'
-                value_fields:
-                    - value.restingHeartRate
-        - type: publish
+  steps:
+    - type: latest_measurement_dates
+      output_prefix: s3://connect-uom/fitbit-latest-measurement-dates/{run_id}/latest-measurement-data/{site}/{participant_id}/
+      manifest_prefix: s3://connect-uom/latest-measurement-date-manifests/
+      measures:
+        - id: fitbit_intraday_heart_rate
+          metric: connect_fitbit_intraday_heart_rate
+          date_pattern: '(?P<date>\d{8})_\d{4}\.csv\.gz$'
+          date_format: '%Y%m%d'
+          value_fields:
+            - value.heartRate
+        - id: fitbit_intraday_heart_rate_variability
+          metric: connect_fitbit_intraday_heart_rate_variability
+          date_pattern: '(?P<date>\d{8})_\d{4}\.csv\.gz$'
+          date_format: '%Y%m%d'
+          value_fields:
+            - value.rmssd
+        - id: fitbit_resting_heart_rate
+          metric: connect_fitbit_resting_heart_rate
+          date_pattern: '(?P<date>\d{8})_\d{4}\.csv\.gz$'
+          date_format: '%Y%m%d'
+          value_fields:
+            - value.restingHeartRate
+    - type: publish
 
 publishing:
-    delete_local_workspace: false
-    retain_local_logs: 7d
-    remove_local_raw_after_publish: true
-    remove_local_merged_after_publish: true
-    remove_local_summary_after_publish: true
-    remove_local_latest_measurement_after_publish: true
-    notifications: []
+  delete_local_workspace: false
+  retain_local_logs: 7d
+  remove_local_raw_after_publish: true
+  remove_local_merged_after_publish: true
+  remove_local_summary_after_publish: true
+  remove_local_latest_measurement_after_publish: true
+  notifications: []
