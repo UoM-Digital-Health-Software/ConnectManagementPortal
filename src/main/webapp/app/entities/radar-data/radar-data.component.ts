@@ -3,6 +3,7 @@ import {
     Component,
     OnInit,
     OnDestroy,
+
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, Subscription, of, from, BehaviorSubject } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
@@ -16,6 +17,7 @@ import { SubjectService } from 'app/shared/subject';
 import { Subject as Participant } from 'app/shared/subject';
 import { HttpResponse } from '@angular/common/http';
 import { ChangeDetectorRef } from '@angular/core';
+import { AlertService } from 'app/shared/util/alert.service';
 
 interface SubjectWithDataLogs extends Participant {
     dataLogs?: { [type: string]: string };
@@ -57,7 +59,7 @@ export class RadarDataComponent implements OnInit, OnDestroy {
     allProjects$: Observable<Project[]>
     allProjects: Project[]
     selectedProject: Project | null = null;
-
+    isAWS: boolean = false;
     private subscriptions = new Subscription();
 
     visibleSubjectsCount: { [projectName: string]: number } = {};
@@ -65,11 +67,15 @@ export class RadarDataComponent implements OnInit, OnDestroy {
 
     visibleSubjectsMap: { [projectName: string]: SubjectWithDataLogs[] } = {};
 
+    latestDate: String
+
+
     constructor(
         private projectService: ProjectService,
         private subjectService: SubjectService,
         private organizationService: OrganizationService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private alertService: AlertService
     ) { }
 
 
@@ -79,6 +85,15 @@ export class RadarDataComponent implements OnInit, OnDestroy {
         })
 
         this.allProjects$ = this.projectService.fetch()
+
+        this.subjectService.getLatestManifest().toPromise().then((response) => {
+           console.log("response", response.headers)
+           console.log("response date", new Date(response.body.requestedOn))
+
+          this.latestDate = new Date(response.body.requestedOn).toISOString().split('T')[0];
+
+           console.log("manifest ", this.latestDate)
+        })
 
 
 
@@ -129,7 +144,7 @@ export class RadarDataComponent implements OnInit, OnDestroy {
 
         const ids = subjects.map((subject) => subject.login)
 
-        const data = from(this.subjectService.findDataLogsForSubjects(ids).toPromise().then((response) => {
+        const data = from(this.subjectService.findDataLogsForSubjects(ids, this.isAWS).toPromise().then((response) => {
             return subjects.map((subject) => {
                 if (response.body[subject.login]) {
                     const data = response.body[subject.login]
@@ -189,5 +204,31 @@ export class RadarDataComponent implements OnInit, OnDestroy {
             projectName,
             this.visibleSubjectsMap[projectName]
         );
+    }
+
+
+    onToggleChange() {
+        //@ts-ignore
+     const visible = this.currentProject.subjects.slice(0, this.defaultVisibleCount) as SubjectWithDataLogs[];
+   //@ts-ignore
+        console.log('Value updated in JS:', this.currentProject.project.projectName);
+        visible.forEach((s) => { s.dataLogs = undefined; s._loading = false })
+        //@ts-ignore
+        this.loadDataLogsForSubjects(this.currentProject.project.projectName, visible);
+
+
+  }
+
+    async requestSummary() {
+        const result = await this.subjectService.requestLatestDatesSummary().toPromise()
+
+        if (result.success) {
+            console.log("it has been success")
+            this.alertService.success('The summary has been requested.', null);
+        } else {
+            this.alertService.error(result.message, null);
+        }
+
+        this.cdr.detectChanges();
     }
 }

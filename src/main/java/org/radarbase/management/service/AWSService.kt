@@ -43,6 +43,19 @@ data class S3JsonData(
     val feature_statistics: Map<String, FeatureStatistics>,
     val questionnaire_responses: QuestionnaireResponses
 )
+
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class LatestMeasurementDates(val measures: Map<String, Measures>
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Measures (
+   var last_measurement_date : String?
+)
+
+
+
 data class ApiResponse(
     val success: Boolean,
     val message: String

@@ -56,5 +56,10 @@
 
     <include file="classpath:config/liquibase/changelog/20260410150000_add_index_conncect_data_log.xml" relativeToChangelogFile="false"/>
 
+    <include file="classpath:config/liquibase/changelog/20260417150000_add_latest_date_tracker.xml" relativeToChangelogFile="false"/>
+
+    <include file="classpath:config/liquibase/changelog/20260420100400_add_aws_log_table.xml" relativeToChangelogFile="false"/>
+
+
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>
