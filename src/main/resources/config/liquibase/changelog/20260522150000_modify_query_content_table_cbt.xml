@@ -66,30 +66,30 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="20260526150000_modify_rename_cbt_uuid" author="Jindrich Gorner">
+<!--    <changeSet id="20260526150000_modify_rename_cbt_uuid" author="Jindrich Gorner">-->
 
-        <preConditions onFail="MARK_RAN">        <not>            <columnExists tableName="query_content" columnName="cbt_version"/>        </not>    </preConditions>
-
-
-        <renameColumn
-                tableName="query_content"
-                oldColumnName="cbt_uuid"
-                newColumnName="cbt_version"
-                columnDataType="varchar(50)"/>
+<!--        <preConditions onFail="MARK_RAN">        <not>            <columnExists tableName="query_content" columnName="cbt_version"/>        </not>    </preConditions>-->
 
 
+<!--        <renameColumn-->
+<!--                tableName="query_content"-->
+<!--                oldColumnName="cbt_uuid"-->
+<!--                newColumnName="cbt_version"-->
+<!--                columnDataType="varchar(50)"/>-->
 
-        <renameColumn
-                tableName="query_content_aud"
-                oldColumnName="cbt_uuid"
-                newColumnName="cbt_version"
-                columnDataType="varchar(50)"/>
 
-        <renameColumn
-                tableName="query_content_aud"
-                oldColumnName="cbtuuid_mod"
-                newColumnName="cbtversion_mod"
-                columnDataType="boolean"/>
-    </changeSet>
+
+<!--        <renameColumn-->
+<!--                tableName="query_content_aud"-->
+<!--                oldColumnName="cbt_uuid"-->
+<!--                newColumnName="cbt_version"-->
+<!--                columnDataType="varchar(50)"/>-->
+
+<!--        <renameColumn-->
+<!--                tableName="query_content_aud"-->
+<!--                oldColumnName="cbtuuid_mod"-->
+<!--                newColumnName="cbtversion_mod"-->
+<!--                columnDataType="boolean"/>-->
+<!--    </changeSet>-->
 
 </databaseChangeLog>
