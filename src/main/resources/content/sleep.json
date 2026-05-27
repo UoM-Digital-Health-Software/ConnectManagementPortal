@@ -1,0 +1,175 @@
+        [
+            {
+                "name": "Actissist - Sleep Exercises",
+                "questionSourceUUID": "3e17a2aa-d3cb-411c-bc91-e396cde51309",
+                "version": "1",
+                "conditionalResponses": [
+                    {
+                        "route": "1",
+                        "items": [
+                            {
+                                "section": "caffeine",
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Having too much caffeine, or caffeine at the wrong times, can affect your sleep.</p><p>Caffeine has many positive effects, it is an antioxidant, it can help you feel alert and energetic.</p><p>However, too much caffeine can:</p><ul><li>affect sleep – stopping you getting to sleep or making you wake up in the night</li><li>make ‘restless legs’ worse (the feeling of having to move your legs which is usually worse at night before sleep)</li><li>make you feel anxious, jittery, irritable or restless</li><li>make you urinate more (go to the toilet more) and get dehydrated (when your body doesn’t have enough water)</li></ul><p>Even if you can usually sleep after having caffeine, it's possible caffeine is contributing at times when you can’t sleep. The sleep switch 07.01.20.mp4</p><p>Let’s check how much caffeine you’re having and compare it to the recommended amounts. We can then see if it might be affecting your sleep.</p><p><strong>Common drinks and food that contain caffeine:</strong><br>Tea, coffee, dark chocolate, energy drinks, cola, green tea</p><p>The recommended daily intake of caffeine is not above 400mg. For instance, a healthy amount of caffeine could be:</p><p>1 cup of brewed coffee (about 160mg each) and 2 cups of tea (about 40mg each) = about 240mg</p><p>Or</p><p>4 instant coffees (the coffee granules or powder that dissolves in water); (about 57mg each) = about 228mg</p><p>An unhealthy amount might be:</p><p>1 litre bottle of cola (192mg) and 2 brewed coffees = about 512mg</p><p>OR</p><p>3 Monster energy drinks (160mg each) = 480mg</p><p>The amount of caffeine in tea and coffee depends on their strength and size, so these numbers are just estimates.</p><p>The time of day you have caffeine also determines how much it affects your sleep. Some people recommend stopping caffeine by midday, while others might suggest 2pm. The best cut-off time depends on how early or late you go to bed.</p><p>Although caffeine affects you quickly (reaching its full effect within 45 minutes), it takes a long time to wear off. After 5-6hrs, half of the caffeine you consumed is still in your body.</p><p>People’s sensitivity to caffeine varies a lot based on age, genetics, metabolism, liver function, smoking habits, and even the use of birth control tablets. There are many individual factors at play. It’s hard to predict how sensitive you are to caffeine, and this can change over time. If you think you might be more sensitive to caffeine, it might be worth trying to have less.</p><p>You could note down the caffeinated products you had yesterday and add up the caffeine content. You can also ask your healthcare professional for help you assess or reduce your caffeine intake.</p><p>Here are some caffeine calculators that provide estimates of caffeine content in various drinks:</p><p>Caffeine Calculator | foodinsight.org<br>Caffeine Calculator</p><p>[if possible ask] Based on this, do you think you might be having too much caffeine, or caffeine too late at night?</p><p>Yes (shows next screen)</p><p>No (skip back to ‘Many things can affect your sleep’ so they can assess another area)</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>It’s a good idea to gradually reduce your caffeine intake rather than stopping abruptly, as you might get withdrawal symptoms, like headaches.</p><p>Try reducing the number of caffeinated drinks by a quarter tomorrow. Decide which ones you will cut out or swap for a decaf version. After a few days, reduce it more.</p><p>Consider setting a time of day after which you won't have any caffeine. You could try “not within 10 hrs of when I will be going to sleep”. So, if you go to sleep at 11pm, try not having caffeine after 1pm.</p><p>Some people keep a note of what caffeine they are having, to stay motivated and track how much they have reduced it. Make a note on paper or on your phone of what you are having.</p><p>Reducing caffeine doesn’t have to mean missing out. If you haven’t tried decaf tea or coffee, it might be worth a try. People often say it tastes pretty similar. See if there are some herbal teas which are naturally caffeine free that you could try.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "2",
+                        "items": [
+                            {
+                                "index": "2",
+                                "type": "reassuranceText",
+                                "text": "<p>Although alcohol can feel relaxing and seem to help you fall asleep, it actually disrupts the quality of your sleep.</p><p>This is for a few reasons:</p><ul><li>Alcohol makes you need to urinate more (go to the toilet more), which can wake you up.</li><li>Alcohol affects your brain in a way that disrupts REM sleep (which is essential for your overall mental and emotional health), leading to more ‘light sleep’ and waking up more later in the night.</li><li>If you snore or have sleep apnoea, alcohol will make this worse. It makes your throat muscles excessively relaxed and floppy.</li><li>If you drink most nights, you might get used to falling asleep with alcohol, and it could feel strange to sleep without it.</li></ul><p>Experts recommend not drinking alcohol within 3 hours of bedtime.</p><p>If you only drink occasionally, it’s probably not affecting your sleep except at the specific times you drink. But, if you are drinking several nights a week, it’s more likely to be affecting your sleep.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Try setting a specific time in the evening to stop drinking alcohol, ideally 3 hours before bedtime.</p><p>If you are drinking several nights a week, consider reducing it to fewer nights per week.</p><p>Consider drinking a lower strength drink. For instance, if you drink strong beer or cider, switch to a weaker one.</p><p>If you are drinking spirits mixed into drinks, measure the spirit so you know how much you are drinking and reduce the strength or the number of drinks.</p><p>If you are drinking heavily, it is not recommended to stop abruptly without medical advice, as you may experience withdrawal symptoms. Talk to your healthcare professional if you are considering stopping completely and suddenly.</p><p><a href=\"https://www.drinkaware.co.uk/facts/health-effects-of-alcohol/general-health-effects/alcohol-withdrawal-symptoms\">Learn more about alcohol withdrawal symptoms</a></p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You could try setting some limits with the voices. Tell them you will talk to them later when you have more time."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "Some people find setting limits with voices can help. Here are some tips on how to do this: <ol><li>Put aside set times for listening to the voices.</li><li>Tell the voices, “I will not listen to you now. Come back at 3.00pm (or whenever suits you). </li><li>At your chosen time, spend 15 minutes or so listening to the voices.</li><li>After the 15 minutes, tell the voices that you are not going to listen to them until the next scheduled time, when you will give them your full attention. </li><li>Then get on with your day.</li></ol>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "4",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Nicotine (in tobacco) is a stimulant. While smoking or vaping might seem relaxing, it actually makes you more alert. People often don’t realise this.</p><p>People who smoke regularly take longer to fall asleep, get less sleep overall, and spend less time in deep sleep compared to people who don’t smoke.</p><p>Vaping is not as bad for your health as smoking tobacco, but the nicotine it contains can still affect sleep.</p><p>It is recommended not to smoke within 4 hours of going to sleep.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Choose a cut-off time for smoking or vaping that works for you. This will depend on how much you smoke or vape. Aim to balance smoking or vaping too late, where the nicotine can keep you awake, and stopping too early in the evening, which might lead to nicotine cravings by bedtime.</p><p>If you can gradually reduce the amount you smoke or vape per day, it will be easier to avoid smoking or vaping within 4 hours of bedtime without experiencing strong cravings.</p><p>If you are vaping, consider having a lower strength vape if you are going to vape in the evening.</p><p>You could consider quitting completely, as this would also be likely to improve your sleep in the long run. Figure out if now might be a good time to try, and talk to your mental health team or GP about what support you can get.</p><p>If you are waking up during the night, really try to avoid smoking or vaping in the middle of the night. It will wake you up more and make it harder to go back to sleep.</p><p>If you smoke or vape in bed or at night, try moving your smoking or vaping supplies to another room or put them out of sight to reduce temptation.</p><p><strong>Do not smoke in bed!</strong> It is very dangerous. If you fall asleep with a lit cigarette, you could set your bedding and yourself on fire.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "5",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>It might seem like staying in bed longer would help you get more sleep, but sometimes it can actually make it harder to sleep if you allow yourself to be in bed for far too long.</p><p>There are two reasons for this:</p><ul><li>If you are in bed too much you don’t build up enough ‘sleep pressure’ through the day, so you can find it difficult to sleep. <button>Watch/read an explanation of sleep pressure</button></li><li>If you stay awake in bed for too long, your brain might start thinking that bed is for being awake instead of for sleeping. <button>Watch/read an explanation of associating bed with sleep</button></li></ul><p><strong>sleep_pressure_12.02.20.mp4</strong></p><p>This video explains sleep pressure. There is currently no example video available explaining the stimulus control model (associating bed with sleep), as this was originally delivered live during the intervention. A written or diagram explanation could be created to replace this.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If you’re spending more and more time in bed and not sleeping properly, it might be a good idea to set some goals for how long you stay in bed. This can help you get better quality sleep and feel more rested.</p><p>Keep track of when you go to bed and try to fall asleep, when you wake up, and any naps you take during the day. Add up all these times to see how many hours you're spending in bed.</p><p>If it is more than 7–9 hours, it is probably too long; people vary in how long they need to sleep, but very few people routinely need more than 9 hours sleep as adults.</p><p>An exception to this is if you are recovering from a flu or a fever or something similar, when you might temporarily need more sleep.</p><p>Decide what you want to change: your bedtime, your wake-up time, or maybe both.</p><p>If you decide to go to bed later, think about how you’ll spend the extra time in the evening. Choose something relaxing and not too exciting before bed. Only go to bed when you feel sleepy and it’s your bedtime.</p><p>If you want to start getting up earlier, try setting an alarm clock for your new wake-up time. If it’s a big change, you might want to adjust it gradually by setting the alarm a little earlier each day. Some people find it helpful to place the alarm clock away from the bed so they have to get up to turn it off. Avoiding the snooze button can help you feel more alert and sleep better at night.</p><p>If you want to avoid taking naps, think about when you usually feel like napping and plan something to keep you awake during that time. You could go for a walk, do some exercise, finish some chores, or play a game. Many people feel sleepy in the early afternoon or after a big meal. If you can stay awake during that sleepy time, you'll probably start feeling more alert soon after, even without having a nap. Test it out.</p><p>Try this for a week and see how it affects your sleep. It might not get better right away, but if you keep it up for several days, the extra sleep pressure should help you fall asleep and stay asleep more easily.</p><p>It could be helpful to let your friends, family, or mental health care team know about the changes you're making to improve your sleep. They might be able to support you and help you stick to your new routine.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "6",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>If you're in bed and can't fall asleep, or if you wake up in the middle of the night, it might seem like staying in bed is the best way to fall back asleep. But, if you've been awake for more than 15 minutes, or if you're feeling restless, stressed, or frustrated, it might actually help to get up for a little while.</p><p>This can help because:</p><ul><li>It's important to help your brain link your bed with sleep, not being awake. So, if you avoid staying in bed for a long time while awake, it strengthens this connection and helps you sleep better.</li><li>If you stay in bed too long, you might be trying too hard to fall asleep, which is called \"sleep effort.\" This usually doesn't work and can actually make it harder to sleep. It's better to relax and let sleep come naturally.</li></ul><p>If you find yourself stuck worrying about something, it might help to get up and do a different activity to break that cycle. Once you feel calm again, you can go back to bed.</p><p><strong>sleep effort 12.02.20.mp4</strong></p><p>This content explains the stimulus control model (associating bed with sleep). If you cannot access the video, a written or diagram-based explanation should be included here as an alternative learning resource.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>How to reduce your time lying in bed awake:</p><p>Plan ahead of time what will make you decide to get out of bed. Is it based on how you're feeling in your body or mind (e.g., if you start to feel frustrated), how long you've been lying awake (e.g., if it's been 20 minutes), or a combination of both (e.g., if it's been more than 15 minutes and you're feeling restless, not drowsy)?</p><p>Make a plan about what activities you can do if you need to get up in the middle of the night. Try to choose:</p><ul><li>Something not using a phone or computer (it’s too stimulating and the light will wake you up).</li><li>Not eating, and not drinking something with caffeine. If you want a small herbal tea, hot milky drink, or a glass of water this can be ok.</li><li>Something relatively calming or mundane (folding washing, pairing socks, reading a book, listening to a podcast, doing meditation or mindfulness can all be good options).</li></ul><p>Now when you wake up in the night, or can’t get to sleep, get up, move to another location or room, and do the activity you planned. You might not feel like moving, but try it out. You can take a blanket or your quilt with you if it will be too cold; the change of environment is the main thing.</p><p>Now you are up, don’t worry about sleep. Just do your activity and relax. When you start feeling sleepy, get back in bed.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "7",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>If you haven’t had enough sleep it can be tempting to cancel things or decide not to do as much in the daytime. However, if you cancel too much it can get into a vicious cycle. If you are less active in the daytime, that can mean you aren’t really tired in the same way when it comes to bedtime. If you spend time lying down or napping in the daytime it can be even worse for your sleep. If you aren’t doing things and moving about, your body can hardly tell the difference between day and night.</p><p>Sometimes once you get started on an activity, even if you didn’t really feel like it, or you feel you are too tired to manage it, it can actually be easier than you expected and you might enjoy it. Or maybe you didn’t enjoy it, but you got what you needed to done.</p><p><strong>Exception:</strong> You should not drive if you feel like you are going to fall asleep.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If this is something you do, cancel things because of poor sleep, then you might want to consider trying out taking a different approach.</p><p>If you have a specific plan, try just sticking to it anyway, as an experiment, and see how you feel once you get going.</p><p>If it is a plan with a friend, instead of cancelling altogether, you could tell them you haven’t slept very well but that you’d like to meet up anyway. They might appreciate it, and if you seem a bit less lively than usual, they are unlikely to be offended.</p><p>If the plan seems too big or difficult, instead of cancelling it altogether, see if you can find a middle ground. Can you do some parts of it still? Or do the same thing, but in an easier way?</p><p>Maybe you don’t always have concrete plans, and the issue is when you are tired you end up doing nothing all day. In this case it might help to make yourself some more concrete plans, to make it easier to get going if you aren’t in the mood. People often find it easier to get going with something when it is broken down into small specific steps, and they have already agreed a set time to do it. People say writing down the plan can help (e.g. set off to town at 11am), or telling someone.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>There might be a lot of reasons people struggle to go outside in the daytime but being outside at least for a while each day can improve your mood, your sleep and your circadian rhythm (body clock).</p><p>There are two ways that going outside can help:</p><ul><li>Natural light exposure</li><li>Exercise / physical activity</li></ul><p>Your brain relies on you seeing light to maintain your circadian rhythm, and outdoor light is so much brighter than indoors from a light bulb or a window. It is hard to get enough light in the daytime without going outside.</p><p>For most people, morning light exposure makes more difference to mood and sleep than later in the afternoon. Some light exposure is always better than none though.</p><p>Even on an overcast day, it is still up to 10 times brighter outside than inside, so it will still help, even if it is less appealing than when it is sunny. Even bright looking indoor lighting is usually not a good substitute for outdoor light (unless it’s a specific light-therapy device).</p><p><strong>Circadian rhythm 07.01.20.mp4</strong></p><p>You don’t need to go on a big hike or go to a picturesque natural area for it to bring benefits. A short walk can be enough.</p><p>Going into a park or through green areas can help with mood if you have that option.</p><p>Being physically active helps with sleep and mood as well. It doesn’t have to be intense activity like running or sport to help. Just being more active by walking more or doing active tasks like DIY or cleaning can also help.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>See if there are ways you can incorporate walking outside as part of a task you have to do anyway, like going to the shop. If you can, then plan to do this in the morning so that the light makes the most difference.</p><p>Arrange to meet someone outside, or at a place that you can walk or cycle to.</p><p>Plan an activity that involves being outside either during it or on the way.</p><p>If you are getting public transport, there is probably a bit of walking outside to get to it, which might be better than driving or getting a taxi.</p><p>There is nothing wrong with going for a walk around the block. It doesn’t have to take long. If you find it boring, you could listen to a podcast on headphones whilst walking (having only one headphone in can be advisable so you can still hear traffic and people).</p><p>If you like routine, you could go for a walk at the same time every day if it keeps you more motivated. You could also set an alarm on your phone to tell you it is time to go out.</p><p>If you struggle to go outside alone, see if you can get some support from friends or family or services, and speak to your mental health professional about getting help to work on this.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "8",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>If you have the main light on in the evening it may delay the time you find you start feeling sleepy. This is because the body’s internal clock uses light as a cue to know what time of day it is. So light in the evening tells your body clock it is still daytime.</p><p>Computers and phones also emit light which can have the same effect as bright artificial lights. The content on computers and phones, especially scrolling social media or watching short videos, can also be stimulating and keep us awake.</p><p>If you are naturally an evening person (night owl) then you are more likely to be more sensitive to the sleep-delaying effects of evening light.</p><p>If you are outside during the day it makes the effect of artificial indoor light less bad, but if you haven’t been outside all day, then your body clock is more sensitive to the sleep-delaying effect of evening light. Outdoor light can be 10 times brighter than even bright-looking indoor lighting, so artificial light in the daytime is usually not a good substitute for outdoor light.</p><p><strong>timing of light 08.01.20.mp4</strong></p><p><strong>Circadian rhythm 07.01.20.mp4</strong></p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>See if you can find a dimmer, warmer-toned bulb or lamp to switch to once it is evening.</p><p>Ideally this should be only 10 lux (a measure of brightness), which is equivalent to twilight or candlelight, dim enough that you can only just see colour.</p><p>Switch to more dim, warm-toned light at least 3 hours before bed.</p><p>You can buy colour-changing bulbs which have different settings controllable by a small battery-powered remote. You could set it to orange or red in the evening.</p><p>Try setting a time after which you won’t use your phone or computer, or after which you won’t use your phone for certain apps.</p><p>If you need alternative activities to do instead of using your phone or computer, consider using this interest checklist (link if available) to think about other activities to do in the evening.</p><p>Set a goal to go outside during the daytime every day if possible. Morning is even more effective, but afternoon light also helps keep your body clock regular and not delayed.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "9",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Light can interrupt sleep, and having light at night can weaken our circadian rhythm (body clock rhythm).</p><p>There are lots of reasons people might sleep with the light on though. If you feel like you need a light on at the moment, or generally, let’s see if we can minimise the impact on your sleep.</p><p>Dim light won’t have as much effect on your sleep and your body clock as bright light, and your eyes will adjust so you can still see in very dim light after just a few minutes.</p><p>Warm-coloured light, ideally red or orange light, has less effect on your sleep and your body clock than blue-toned light or cold-coloured light (white light is worse than more yellow or orange-toned light at night).</p><p>Think about the light you have on at night. Is it right next to your bed and your face? Is it lighting up the whole room? Or is it coming from a night-light or just leaking in from the landing?</p><p>A good way to judge if light is bright is: if you can still clearly see colour, then it is brighter than you ideally want in the middle of the night.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Ways to reduce the impact of having a light on at night:</p><p>Some people use a nightlight plug, so the light is very dim and coming from low to the floor rather than near your face while you are sleeping.</p><p>A lamp with a smaller, more-dim bulb is usually going to be better than the main ceiling light.</p><p>You can buy colour-changing bulbs. If you use one of these on the red setting, this won’t affect your sleep as much. They often have a small battery-powered remote control so you can make it normal coloured in the daytime if you want.</p><p>Similarly, colour-changing fairy lights, or red fairy lights might do the job.</p><p>Having the corridor light on and just a bit of light coming in through the door is a good solution for some people.</p><p>If you think that having a light on but then wearing a sleep mask might work for you, you could try that.</p><p>Figure out what you are going to do and try it for a week. Give yourself a chance to get used to the change before you decide if it is manageable or helpful.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "10",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>What you are doing in the period before trying to go to sleep can affect how easy you find it to fall asleep.</p><p>If you are doing something that isn’t much of a wind down, this might make it harder to turn off ready for sleep. Examples of things that are not very good straight before sleep are:</p><ul><li>Too exciting or scary (like watching a horror movie)</li><li>Too stressful (like sorting out finances)</li><li>Something too stimulating (like watching short YouTube clips or going on social media)</li><li>Something that you find hard to put down (an addictive computer game, or a creative project that you are really into)</li><li>Things that involve screens can also keep you awake because of the light as well as the content</li></ul><p>Examples of good activities for in the run-up to going to bed:</p><ul><li>Something more passive, like reading a book or listening to a podcast</li><li>Engaging in a calming hobby, like crafts if you enjoy them</li><li>Relaxing with your pet</li><li>Chores that aren’t too active, like sorting items or folding clothes</li><li>Doing mindfulness or meditation, if this is something you enjoy</li><li>Having a bath or a shower</li><li>Doing gentle exercise, like stretching or yoga. Some people find strenuous exercise too close to bedtime wakes them up, but other people are fine doing exercise then going to sleep soon after. If you want to do strenuous exercise before bed, you can try and see how you feel.</li></ul><p>Try not to sit doing nothing at all for a long period if this results in you worrying or going round in circles with your thoughts.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Think about what activities you currently do before bed, which are suitable, and which are likely to be less helpful. [This requires you to be able to refer to the list from the last page with examples — you may wish to re-paste it here.]</p><p>Decide which activities you can carry on with, and any you want to stop doing near bedtime.</p><p>If you need new activities to try, because a lot of what you were doing before bed was unsuitable, consider using this interest checklist for inspiration [an amended version of the L-DART interests checklist could be used here, containing only activities which might be suitable in a wind-down routine].</p><p>Figure out when you want to do your bed-preparation (e.g. brushing your teeth, washing your face, taking any night-time medications, and anything else you need to do before you get into bed). Do you want to do it at the start, then relax for a bit afterwards, or at the end just before getting into bed?</p><p>If you find that brushing your teeth in the bright bathroom light wakes you up, see if you can make it dimmer in the bathroom, or do it earlier in the evening (but after you have finished eating).</p><p>Decide what time you want to start your wind-down routine, and how long you want to spend winding down.</p><p>Some people set an alarm to tell them to stop what they are doing and start winding down for bed, if they find they get engrossed in things and don’t naturally wind down.</p>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]

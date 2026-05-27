@@ -1,0 +1,314 @@
+        [
+            {
+                "name": "Actissist - Suspicious Thoughts - Exercises",
+                "questionSourceUUID": "5076c473-2ba9-4238-97b4-1b3ee6a58419",
+                "version": "1", 
+                "conditionalResponses": [
+                    {
+                        "route": "1",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>You’re not alone. This thought is extremely common, but people rarely talk about it.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Try and test out the thought that people are against you. You could try to imagine that you are going up against yourself in court.</p><p>Think of a thought that upsets you…</p><p><ul><li>Step 1: Pretend that your upsetting thought is on trial in court.</li><li>Step 2: Look at the evidence for and against the thought. Be as objective as possible.</li></ul></p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Cathy, a service user with experience of psychosis, believed that seeing a police car meant that the police were following her. Cathy pretended that this thought was on trial in court. She looked at the evidence for and against this belief. The upsetting thought she tested was: ‘The police are following me to build up a criminal case against me’.</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Cathy found some evidence for this belief (they are looking in my direction; it’s too much of a coincidence that they are here), but she also found some evidence against this belief (they have never interviewed me; there are other people around so they could be looking at someone else).</p><p>What thoughts might you test? You could try and test them out like Cathy did by going to the <a href='/factsheet13'>Testing Out Thoughts</a> part of the app. You might also like to read more about how common <a href='/factsheet0'>feeling suspicious</a> is.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "2",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Is there any evidence that people are against you?</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>It can be hard to decide whether your suspicions are correct, but asking yourself certain key questions can help:</p><ol><li>Would other people agree with my suspicions or worries?</li><li>What would my best friend / care co-ordinator say?</li></ol><p>Continued...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p><ol><li start=\"3\">Have I talked to others about my worries?</li><li>Is it very likely that I would be singled out above anyone else?</li><li>Is it possible that I am being over-sensitive?</li></ol><p>There are no hard and fast rules for deciding whether worries are real or not. <a href='/factsheet13'>Testing out your beliefs</a> is the first step to working out if they are real.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Just suppose people aren’t against you. Might there be another explanation? </p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>It’s often hard to know what people’s comments or actions really mean. Just suppose you pass someone you know in the street. You smile at them but they don’t smile back. There are lots of possible explanations for this...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p><ol><li>They didn’t see you because they weren’t wearing their glasses. </li><li>They were lost in their own thoughts.</li><li>They had their Headphones in, or music on, and weren’t paying attention.</li><li>They’re shy in social situations and try to avoid them.</li></ol><p>Any of these explanations could be true. </p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Try to keep a balanced and an open mind, and remember, there might be other reasons. You could try talking to someone you trust, or a health professional, about your worries and see what they say.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "4",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>It is understandable that you feel unsafe if you believe people are against you. </p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Connect with others – talk to a health professional or someone you trust about how you feel. If you prefer, you could <a href= '/useful-links' >post on a forum</a> to see how others might feel in this situation. </p> <p>If you decide that you want to share your experiences with other people - family, friends, care co-ordinator, or anyone you might feel safe with - it may be useful to note down your thoughts and plan how you are going to do this, like Sam did in the following example.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Sam wrote down the following plan of action for sharing thoughts and experiences with others:</p><p><ul><li>Step 1: I am going to share my experiences with someone else because I hope it will make me feel safer and help me question my thoughts.</li><li>Step 2: I am going to do this by speaking to a friend and my care co-ordinator.</li><li>Step 3: I plan to arrange to meet a friend for a coffee.</li><li>Step 4: The concerns I have about doing this are that my friend won’t listen to me and I will be nervous and anxious.</li><li>Step 5: Things that might be in the way of me going through with the plan are feeling worried about where we might meet for coffee and how I am going to get there.</li><li>Step 6: What can I do about this? I will phone or text my friend and ask them where they would like to meet; I will arrange a place to meet that’s easy to get to. </li></ul></p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>What plan of action might you take to overcome some upsetting thoughts you might have? You could ask yourself the following:</p><p><ul><li>Step 1: What do I hope to achieve?</li><li>Step 2: Who am I going to talk to?</li><li>Step 3: Make a plan to talk to the person</li><li>Step 4: What concerns do I have about this plan?</li><li>Step 5: What might get in the way of meeting up with someone?</li><li>Step 6: What can I do about it?</li></ul></p><p>You can read more about <a href='/factsheet8'>Making Friends</a> here.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "5",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Nearly everyone has suspicious thoughts or feels unsafe at some point in their life. It really can help to share your worries with others you trust. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Tips for coping with suspicious thoughts:</p><ol><li>Try not to see the situation as a threat. See it for what it is and nothing more.</li><li>Try to find the positive in the situation.</li><li>Try to assess your situation calmly and realistically.</li><li>See the problem as something separate from yourself so you can deal with it. Try not to take things personally.</li><li>Keep reminding yourself of the good things about yourself.</li><li>Get things into proportion – nothing is really that important.</li><li>Don’t let it knock your confidence and stop you from doing the things you enjoy.</li></ol><p>You can click <a href='/coping-strategies'>here</a> for some more ideas on coping with worries.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "6",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Believe it or not, a lot of people feel suspicious or unsafe at some point in their life. It can stop them from doing the things they want to do or enjoy.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Feeling suspicious can affect people’s behavior so that people stop doing things to prevent their fears from happening. Most commonly, people avoid a situation. For example, if you’re worried about being attacked, you might avoid certain places or keep yourself constantly on guard. </p><p>Avoiding things can rob us from any chance of testing out our fears. It means you can never find out whether you are really in danger or not. Avoidance might also mean that you end up not seeing friends, feeling nervous around people or worrying about situations for no good reason! </p><p>Try not to let your reactions to your experiences hold you back – challenge them!</p><p>You can read more about <a href='/factsheet13'>Testing Out Thoughts</a> or ways to <a href='/factsheet9'>Confront Problems</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "7",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>It can be hard to trust people, especially when you have been hurt or let down in the past.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Trusting others and making friends can improve the way you feel. Some people prefer to have lots of friends. Others prefer to have a few friends. Either way, it helps to have a supportive friend around you in case you find yourself in a tricky situation. </p><p>Making a good friend can be hard and it takes time and effort. Research has shown that the average person meets 20 people before they make a friend. This means that you need to commit time and effort to making good friends. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Here are some things you can do to help you meet new people:</p><p><ul><li>Exercise: join a gym or a sports centre or do some exercise at a nearby park</li><li>Do a course: learn something new – do a course to meet people with similar interests. It can take time to find something that is right for you, but it can be worthwhile.</li></ul></p><p>Continued...</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p><ul><li>Volunteer: you can make friends when you work with people. There are often volunteering opportunities at charity shops, local clean up campaigns, hospitals, churches, museums, community centres and other organisations.</li><li>Go out with your dog (if you have one, or borrow someone else’s!): make conversation with people who stop to talk.</li><li>Internet chat rooms, forums, blogs, dating sites.</li></ul></p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>Your care co-ordinator might be able to help you enroll in a course or get a gym membership, for example.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "8",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Trusting people might feel risky, but it can be worth it.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>The most helpful way to deal with worries is to keep them in check and to not let them disrupt your life. Panicking about your worries can make you miserable and stressed and can mean you back away from the things you enjoy. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Tips for coping with worries: <ul><li>Ignore your worries - ignoring suspicious thoughts can really help. </li><li>Carry on with what you’re doing - Let the thought go. </li><li>Remind yourself…A thought is just a thought not a fact. </li><li>The upsetting thought is just another of the many thoughts you have each day.</li></ul></p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Problem solve your worries: <ul><li>Try and be objective.</li><li>Think of the suspicious thought as a problem that needs to be solved. </li><li>Think about why you are having this thought and whether it is accurate. </li><li>Look for evidence, particularly any evidence that the thought isn’t true.</li><li>Ask other people for advice on how to deal with the upsetting thought. Look at the wider picture - remember times when people have been kind or supportive.</li></ul></p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>Talk to others about your worries: <ul><li>The most common step people take to ease their worries is talking to others. </li><li>Talking to others about your worries helps you get another viewpoint.</li><li>You might also get some reassurance or good advice on how to cope with your worries. </li><li>It could be a trusted friend, family member, your care co-ordinator, or even a blog or chat room.</li></ul></p>"
+                            },
+                            {
+                                "index": "6",
+                                "type": "cbtText",
+                                "text": "<p>For more information on these tips you might like to read a book called: Overcoming paranoid and suspicious thoughts: A self-help guide using cognitive behavioural techniques (Freeman, Freeman & Garety, 2006).</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "9",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Nearly everyone feels bad for things they have done. If doing bad things now and again is a sign of being a completely bad person then all of us are in the same boat! Doing bad things doesn’t make you a bad person </p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>People can change. Here's a good example of how Charlie changed: </p><p>When  Charlie was younger, he bullied kids at school, got into fights and sold drugs for a local drug dealer. Years later, he was in a relationship that made him unhappy. He beat up his girlfriend and was sent to prison for 3 years. When he got out of prison, he felt lost and depressed.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p> A family friend took Charlie into his home. He began to reflect on how empty his life felt. With some help, he started to change his thinking and decided to not be so angry about the things that had happened in his life. He volunteered at a youth centre and soon found himself in a position where young people looked up to him. He started to share his experiences in the hope that others could learn from his mistakes. Charlie ended up managing the youth centre and is now an important spokes person for youth mental health.</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>This example shows that people can change – just because you might have done bad things doesn’t mean you will always feel bad.</p><p>If you like, you can read some more about <a href='/factsheet11'>Making Changes</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "10",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "We are all capable of making mistakes and acting in both good and bad ways"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>When someone has a negative thought, like “I am bad”, it can seem as if their whole self is bad. It’s a bit like a drop of ink in a glass of water – this drop of ink colours or clouds your ability to form a more realistic or balanced view of yourself. </p><p>Ask yourself the question: Does an action define a person? </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Remember:<ol><li>Bad behaviour is not the same as being all bad.</li><li>Just because someone does some bad things, doesn’t mean that they are completely bad. Everyone makes mistakes. Everyone does both good and bad things.</li></ol></p><p>Try <a href='/factsheet13'>Testing Out Your Thoughts</a> in the ‘My Toolkit’ part of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "11",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Just because someone has done bad things in the past doesn’t mean they are completely bad."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>The following examples illustrates this point: Just suppose there was a bowl containing fruit, and someone placed a bad piece of fruit in it. Would you think it was a good bowl or a bad bowl?</p><p>Perhaps you would say that it is neither good nor bad.</p><p>The important thing to think about this example is the bowl! Just because there is some good fruit and bad fruit in the bowl, doesn’t mean the bowl itself is good or bad. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>No-one is totally good or bad even if they have some bad fruit in them. If there are times when you feel like a bad person, try thinking of yourself as the bowl and your behaviour as one piece of bad fruit in it. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "12",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Feeling suspicious can make us feel stressed, down and miserable about ourselves. The worse someone feels, the longer suspicious thoughts can stick around. </p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Common ways suspicious thoughts can get us down or make us feel stressed or depressed:<ul><li>We feel out of control or powerless to shake off our worries. </li><li>Suspicious thoughts bring up all sorts of negative feelings about ourselves.</li><li>People can have such a low opinion of themselves that they feel as though they deserve to be punished or harmed.</li><li>Our negative views of our situation and the world in general can be confirmed. For example, people are mean, life is unfair.</li></ul></p><p>You could go the <a href='/chill-out-area'>Chill Out</a> area or read more about <a href='/factsheet2'>low mood</a> if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "13",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "It is understandable that you feel stressed if you feel suspicious of others or things around you."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>The most helpful way to deal with worries is to keep them in check and to not let them disrupt your life. Panicking about your worries can make you miserable and stressed and can mean you back away from the things you enjoy. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Tips for coping with worries: <ul><li>Ignore your worries - ignoring suspicious thoughts can really help. </li><li>Carry on with what you’re doing - Let the thought go. </li><li>Remind yourself…A thought is just a thought not a fact. </li><li>The upsetting thought is just another of the many thoughts you have each day.</li></ul></p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Problem solve your worries: <ul><li>Try and be objective.</li><li>Think of the suspicious thought as a problem that needs to be solved. </li><li>Think about why you are having this thought and whether it is accurate. </li><li>Look for evidence, particularly any evidence that the thought isn’t true.</li><li>Ask other people for advice on how to deal with the upsetting thought. Look at the wider picture - remember times when people have been kind or supportive.</li></ul></p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>Talk to others about your worries: <ul><li>The most common step people take to ease their worries is talking to others. </li><li>Talking to others about your worries helps you get another viewpoint.</li><li>You might also get some reassurance or good advice on how to cope with your worries. </li><li>It could be a trusted friend, family member, your care co-ordinator, or even a blog or chat room.</li></ul></p>"
+                            },
+                            {
+                                "index": "6",
+                                "type": "cbtText",
+                                "text": "<p>For more information on these tips you might like to read a book called: Overcoming paranoid and suspicious thoughts: A self-help guide using cognitive behavioural techniques (Freeman, Freeman & Garety, 2006).</p><p>You can try to get busy and active to overcome your worries by using some of the <a href='/coping-strategies'>coping strategies</a> or visit the <a href='/chill-out-area'>Chill Out</a> area.</p>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]

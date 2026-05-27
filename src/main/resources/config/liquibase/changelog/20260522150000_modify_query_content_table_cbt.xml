@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- Create table for app configs / feature flags -->
+
+
+    <changeSet id="20260522150000_modify_query_content_table_cbt" author="Jindrich Gorner">
+        <addColumn tableName="query_content">
+            <column name="cbt_type" type="varchar(50)" >
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="cbt_uuid" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+
+            <column name="cbt_route" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet id="20260522150000_modify_query_content_table_cbt_aud" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">        <not>            <columnExists tableName="query_content_aud" columnName="cbt_type"/>        </not>    </preConditions>
+
+
+        <addColumn tableName="query_content_aud">
+
+
+            <column name="cbt_type" type="varchar(50)" >
+                <constraints nullable="true"/>
+            </column>
+            <column name="cbt_type_mod" type="boolean" >
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="cbt_version" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="cbt_version_mod" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+
+
+            <column name="cbt_route" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="cbt_route_mod" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+
+
+
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260526150000_modify_rename_cbt_uuid" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">        <not>            <columnExists tableName="query_content" columnName="cbt_version"/>        </not>    </preConditions>
+
+
+        <renameColumn
+                tableName="query_content"
+                oldColumnName="cbt_uuid"
+                newColumnName="cbt_version"
+                columnDataType="varchar(50)"/>
+
+
+
+        <renameColumn
+                tableName="query_content_aud"
+                oldColumnName="cbt_uuid"
+                newColumnName="cbt_version"
+                columnDataType="varchar(50)"/>
+
+        <renameColumn
+                tableName="query_content_aud"
+                oldColumnName="cbtuuid_mod"
+                newColumnName="cbtversion_mod"
+                columnDataType="boolean"/>
+    </changeSet>
+
+</databaseChangeLog>

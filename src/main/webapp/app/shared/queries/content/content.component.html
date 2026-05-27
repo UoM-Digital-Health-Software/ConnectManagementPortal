@@ -45,6 +45,15 @@
             >
                 <span class="">Add module link</span>
             </button>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                (click)="addContent(ContentType.CBT_CONTENT)"
+                [disabled]="isMultimediaDisabled() || isReadOnlyMode"
+            >
+                <span class="">Add CBT content</span>
+            </button>
         </div>
 
         <div class="content-column">

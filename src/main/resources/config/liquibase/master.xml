@@ -66,6 +66,9 @@
 
     <include file="classpath:config/liquibase/changelog/20260420100400_add_aws_log_table.xml" relativeToChangelogFile="false"/>
 
+    <include file="classpath:config/liquibase/changelog/20260522150000_modify_query_content_table_cbt.xml" relativeToChangelogFile="false"/>
+
+
 
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ContentItem } from './queries.model';
+import { CBT_CONTENT_TYPE, ContentItem } from './queries.model';
 import { QueryGroup } from './queries.model';
 import { Observable } from 'rxjs';
 
@@ -113,5 +113,9 @@ export class QueriesService {
                 params: { status },
             }
         );
+    }
+
+     getCBTContent(type: string) {
+        return this.http.get("api/" + 'cbtcontent/exercises/' + type);
     }
 }

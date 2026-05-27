@@ -9,6 +9,7 @@ import {
 import { ContentItem, ContentType } from '../queries.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalContentComponent } from './modal-content/modal-content.component';
+import { QueriesService } from '../queries.service';
 
 @Component({
     selector: 'query-content',
@@ -34,7 +35,8 @@ export class ContentComponent implements OnInit {
 
     constructor(
         private modalService: NgbModal,
-        private differs: IterableDiffers
+        private differs: IterableDiffers,
+        private queryService: QueriesService,
     ) {
         this.differ = this.differs.find([]).create();
     }
@@ -49,13 +51,13 @@ export class ContentComponent implements OnInit {
     }
 
     addContent(contentType: ContentType) {
-        if (contentType == ContentType.PARAGRAPH) {
+        if (contentType == ContentType.PARAGRAPH || contentType == ContentType.CBT_CONTENT) {
             this.items.push({ type: contentType });
             this.itemsChange.emit(this.items);
         }
         if (
             contentType == ContentType.VIDEO ||
-            contentType == ContentType.IMAGE
+            contentType == ContentType.IMAGE 
         ) {
             const modalRef = this.modalService.open(ModalContentComponent);
             modalRef.componentInstance.type = contentType;

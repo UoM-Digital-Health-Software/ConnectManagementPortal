@@ -3,6 +3,35 @@ import { User } from '../user/user.model';
 
 type optionalString = string | null | undefined;
 
+export interface CBTContent {
+  name: string;
+  questionSourceUUID: string;
+  conditionalResponses: ConditionalResponse[];
+}
+
+export interface ConditionalResponse {
+  route: string;
+  items: CBTContentItem[];
+}
+
+export interface CBTContentItem {
+  index: string;
+  type: string;
+  text: string;
+}
+
+export enum CBT_CONTENT_TYPE {
+    CANNABIS,
+    FEELING_CRITICISED,
+    SLEEP,
+    SUSPICIOUS_THOUGHTS,
+    VOICES,
+    GETTING_OUT
+}
+
+
+
+
 export interface QueryGroup {
     id?: any;
     name?: string;
@@ -72,6 +101,7 @@ export enum ContentType {
     IMAGE = 'IMAGE',
     VIDEO = 'VIDEO',
     MODULE_LINK = 'MODULE_LINK',
+    CBT_CONTENT = "CBT_CONTENT"
 }
 
 export interface ContentItem {
@@ -84,6 +114,9 @@ export interface ContentItem {
     isValidImage?: boolean;
     queryGroupId?: number;
     resourceId?: number;
+    cbtType?: string | undefined | null;
+    cbtVersion?: string;
+    cbtRoute?: string;
 }
 
 export interface ContentGroup {

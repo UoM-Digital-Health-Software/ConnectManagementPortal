@@ -107,7 +107,12 @@ class QueryContentService(
 
                 if (this.type == ContentType.IMAGE) {
                     this.imageBlob = decoder.decode(dto.imageBlob)
-                } else {
+                } else if (this.type == ContentType.CBT_CONTENT) {
+                    this.cbtRoute = dto.cbtRoute;
+                    this.cbtType = dto.cbtType?.name;
+                    this.cbtVersion = dto.cbtVersion
+                }
+                else {
                     this.value = dto.value
                     this.heading = dto.heading
                 }
