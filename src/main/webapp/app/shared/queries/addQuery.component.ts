@@ -113,6 +113,7 @@ export class AddQueryComponent {
     public contentGroupItemsError = false;
     public queryRulesError = false;
     public contentParagraphError = false;
+    public cbtContentError = false;
     public contentModuleLinkError = false;
 
     public isDuplicateMode = false;
@@ -602,6 +603,7 @@ export class AddQueryComponent {
         this.contentGroupItemsError = false;
         this.contentParagraphError = false;
         this.contentModuleLinkError = false;
+        this.cbtContentError = false; 
 
         if (
             !this.currentEditingCopy?.name ||
@@ -639,6 +641,14 @@ export class AddQueryComponent {
             if (item.type === 'MODULE_LINK') {
                 if (item.resourceId === null || item.resourceId === undefined) {
                     this.contentModuleLinkError = true;
+                    hasError = true;
+                    break;
+                }
+            }
+
+            if(item.type === 'CBT_CONTENT') {
+                if(item.cbtRoute === null || item.cbtType === null || item.cbtVersion === null || item.cbtRoute === undefined || item.cbtType === undefined || item.cbtVersion === undefined) {
+                    this.cbtContentError = true ; 
                     hasError = true;
                     break;
                 }
