@@ -1,0 +1,294 @@
+        [
+            {
+                "name": "Actissist - Cannabis Exercises",
+                "questionSourceUUID": "00360daa-c7f3-42a1-bc13-a2f825c7d0cc",
+                "version": "1",
+                "conditionalResponses": [
+                    {
+                        "route": "1",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Sounds like you're feeling motivated to make some changes.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If you have decided to change your cannabis use, it's important to know what change you plan to make. Some questions for you to consider are:</p><p><ul><li>Do you want to cut down or stop using cannabis all together?</li><li>If you want to cut down, by how much?</li><li>When do you plan to start?</li></ul></p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>If you are thinking of cutting down or stopping, set yourself a goal and stick to it (e.g. 'I will cut down to smoking one joint a day (or a week), starting from Monday').</p><p>My goal:</p><p><ul><li>I will (e.g. cut down, quit, etc.): ______________________</li><li>Starting from:    ______________________</li></ul></p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Remember, effective goals are <strong>SMART</strong> goals:</p><p><ul><li><strong>S (Specific)</strong>: What exactly do you want to do?</li><li><strong>M (Measurable)</strong>: How will you know when you have achieved your goal?</li><li><strong>A (Achievable)</strong>: What support do you need to achieve your goal? Do you have the tools or support you need to achieve your goals?</li><li><strong>R (Realistic)</strong>: Is your goal realistic at this moment?</li><li><strong>T (Time limited)</strong>: When would you like to complete this goal? </li></ul></p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>There are some more ideas about setting goals in the <a href='/factsheet10'>'Setting Goals'</a> part of the app. Go for it! </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "2",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Sounds like change is afoot - go for it!"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Using cannabis may have become a habit, routine or need in your life. It can be helpful to think about and plan making changes by writing a 'change plan'. Ben, a service user who has experienced psychosis, made this plan:</p><ol start=\"1\" type=\"1\"> <li>The change I want to make is: '<em>I will stop smoking cannabis'</em></li><li>The reasons I want to make this change are: <em>'For my health', 'To feel what it's like to be me without using drugs', 'I feel paranoid when I smoke cannabis'</em></li><li>The steps I am taking in making this change are: '<em>Replacing cannabis with exercise', 'spending time with friends who are supportive', 'allowing my body to recover from 3 years of smoking', 'getting into a regular routine and sleep pattern', 'enjoy the money I save from not using'.</em></li><li>Some things that might get in the way of my plans: '<em>Seeing my friends who smoke cannabis', 'feeling the need to relax by smoking'.</em></li><li>What can I do to make sure things don't get in the way: 'Plan new activities', 'see friends who don't smoke'.</li></ol><p>What plan of action will you take? Perhaps Ben's example can help you think about how you can put change into action.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Looks like you're ready to make changes in your life."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Setting limits on the frequency, quantity, timing and/or amount of money spent on cannabis is a good first step in change. Here's an example of some limits Sue, a service user with psychosis, set:</p><p><ol start=\"1\" type=\"1\"><li><em>I will allow myself to smoke on Friday and Saturday (start by cutting down to 2 days and I will build from there).</em></li><li><em>I won't smoke more than 2 joints in 1 day.</em></li></ol></p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>It can help to remind yourself about the most important reasons why you want to make a change (e.g. save money, help with voices/paranoia). You could write these down. If you're ready to set yourself a goal about changing cannabis use you can find some helpful tips on <a href='/factsheet10'>Setting Goals</a> in the 'My Toolkit' part of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "4",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You may have thought about change but not felt ready to take action."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Some people find it hard to know how to change. Here are some things you can do to get started: </p><p><ul><li><strong>Substitute cannabis for other things</strong>: instead of using, substitute cannabis for other things, like going to the gym, exercising, spending time with non-using friends, and so on.</li><li><strong>Have a regular routine</strong>: Here are some things you might want to add in to your routine: go for short walks, visit good friends/family, get up at regular times each day, set aside time to take care of yourself and your health in general.</li><li><strong>Re-establish old friendships</strong>: with people who don't use cannabis.</li><li><strong>Avoidance</strong>: of friendships and areas where drugs are easily available. Delete dealers' phone numbers from your phone.</li><li><strong>Use supports around you</strong>: particularly the support from your care co-ordinator or a trusted family member/friend.</li></ul></p><p>You can read more about <a href='/factsheet14'>cannabis</a> here if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "5",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Although in the short term cannabis may make you feel better, many people find that they hear less voices and have less suspicious thoughts when they stop using."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>It might be that you think now and again about changing your cannabis use, but you're not really ready to do so at the moment. As a general rule, the more cannabis you use the more likely it is to have a negative effect on your mental health. </p><p>If you can't or don't want to stop using, you could try and cut down on how much cannabis you smoke and how often you get stoned. Take control - try and get as much pleasure and positive effects from cannabis as you can, and to reduce as many of the negative bits as you can. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Different ways you could use are:</p><p><ul><li>Try using only in the evenings or at weekends.</li><li>Stick to using a set amount (in weight) every week/month. If your stash runs out, go without.</li><li>Have a rest from smoking regularly - you'll actually feel stoned again if you give it a break.</li><li>Don't use daily - if you do try and keep at least 2-3hours between smokes.</li><li>Rather than smoking skunk only, try smoking resin instead, at least some of the time.</li><li>Remember that cannabis is still illegal to posses or supply to others.</li></ul></p><p>You can read more about <a href='/factsheet14'>cannabis</a> here if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "6",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Stopping using cannabis can be difficult, but in the long term it can really help to improve your mental health."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>It can be helpful to weigh up the pros (things that are good) and cons (things that are not so good) of using cannabis. To start with, write down all the positive things associated with using cannabis. Next, write down all the not so good things about using cannabis.</p><p><ul><li><strong>Pros to smoking</strong>: ________________</li><li><strong>Cons to smoking</strong>: ________________</li></ul></p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>What are the good things about making a change? You could write this down on a piece of paper, or in the <a href='/mooddiary'>daily diary</a> part of the app, or you could talk about it with a trusted friend/family member or your care co-ordinator.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "7",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Making changes can be difficult, but you might surprise yourself with what you can achieve if you commit to change."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>One way of making changes is to set yourself a goal. Think about what it is about using cannabis that you would like to change (e.g. do you want to cut down, stop smoking all together, or stop using skunk?). </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Remember, effective goals are <strong>SMART</strong> goals:</p><p><ul><li><strong>S (Specific)</strong>: What exactly do you want to do?</li><li><strong>M (Measurable)</strong>: How will you know when you have achieved your goal?</li><li><strong>A (Achievable)</strong>: What support do you need to achieve your goal? Do you have the tools or support you need to achieve your goals?</li><li><strong>R (Realistic)</strong>: Is your goal realistic at this moment?</li><li><strong>T (Time limited)</strong>: When would you like to complete this goal? </li></ul></p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>There are some more ideas about setting goals in the <a href='/factsheet10'>'Setting Goals'</a> part of the 'My Toolkit' section of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "8",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You might surprise yourself with what you can achieve if you put your mind to it. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If you smoke all the time it's difficult to tell if cannabis is helping or not. There is no harm in stopping for a while to see if things seem better or worse. Regular users will actually feel properly stoned again if they have a break.</p><p>It can be hard to take a break or say no to using cannabis when you see friends you usually smoke with, when you find yourself in a stressful situation, or when you're simply in the routine of using. It's hard to say no, especially when you have said yes before.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>But, your feelings and your goals are really important, so it can be helpful for you to practice what you might say if you find yourself in a situation where you would normally use before it happens. There are some key ways to get your message across, in a way that you feel comfortable, and that won't offend other people. To help you say no comfortably, take some time to prepare some responses you might make if someone offers you cannabis or wants to smoke with you. </p><p>Click <a href='/recovery-journeys'>here</a> to see some videos about cannabis.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "9",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You might feel a bit stuck about how to change at the moment? "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Top tips for changing your cannabis use:</p><p><ol><li>Think about the good things about making change.</li><li>Remind yourself about the bad side of using drugs.</li><li>Get involved in new activities to replace using drugs.</li><li>Keep away from or limit situations where you might use.</li><li>Avoid friends who smoke.</li><li>Tell people you have made changes.</li><li>Reward yourself for making changes.</li><li>Ask a friend, or your care co-ordinator, to support you.</li></ol></p><p>What were your strengths, skills and other interests before you used cannabis? You could talk to a trusted friend/family member, or your care co-ordinator about this some more.</p><p>You might also think about setting yourself some small <a href='/factsheet10'>goals</a> to get yourself into action!</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "10",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "If you were to change, what would it be like? "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If you haven't given your cannabis use much thought, you could start out with dividing a piece of paper into 2 columns. In 1 column, write down all the positive things associated with using cannabis. In the other column, write down all the not so good things about using cannabis?</p><p>Weigh up the balance – do the less good things outweigh the good aspects? If they do, maybe it's worth thinking about how, if at all, cannabis impacts your day-to-day life. </p><p>You could use the <a href='/mooddiary'>daily diary</a> in the app to weigh up the pros and cons.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "11",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "What would have to happen for it to become important to you to change your cannabis use? What would making a change be like?"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>People use cannabis for lots of different reasons. Some of the different reasons people give for why they use cannabis are: </p> <p><ul><li>It's what their friends do</li><li>To relax</li><li>To get high/feel good/feel the buzz</li><li>It helps them mix and fit in with others</li><li>It helps them concentrate</li><li>It helps them feel less depressed or anxious</li><li>To cope with feeling suspicious or with hearing voices</li><li>It's something they've just always done</li><li>They crave it</li></ul></p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>What are your reasons for using cannabis? What would it be like for you to change your cannabis use? You could talk to a trusted friend/family member or your care co-ordinator about it.</p><p>It is worth remembering that you can get a variety of different effects from cannabis. Learn to get what you want from it. </p><p>Click <a href='/recovery-journeys'>here</a> to watch some videos about people who have used cannabis.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "12",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Using cannabis is up to you. Only you know what's right and works for you."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Once people start using cannabis regularly, it can be hard to change. Using cannabis can also change the way you feel. Some people find that cannabis helps them deal with stressful situations. Others think it will make them more confident, while some use to block out thoughts. Seeing other people use or being in stressful situations, can trigger using. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>What are your own reasons for using? Maybe you've decided that it's worth keeping on using cannabis despite some bad after effects. </p><p>You can watch some stories about how cannabis has affected people who have experienced psychosis. You'll find these in the <a href='/recovery-journeys'>'Recovery Journeys'</a> part of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "13",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "It seems like cannabis isn't really a problem for you at the moment."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If you're interested in reading more about cannabis at any time, you can go to the <a href='/factsheet14'>cannabis section</a> and read some information and watch some <a href='/recovery-journeys'>recovery stories</a> from service users about their experience of using cannabis. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "14",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Everyone has a different story about how they came to use cannabis and how cannabis effects them."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>If you feel like it, you can watch some stories about how cannabis has affected people who have experienced psychosis. You'll find these in the <a href='/recovery-journeys'>'Recovery Journeys'</a> section in the 'My Toolkit' part of the app. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "15",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "People often say they use cannabis for different reasons."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>People use cannabis for lots of different reasons. Some of the different reasons people give for why they use cannabis are: </p> <p><ul><li>It's what their friends do</li><li>To relax</li><li>To get high/feel good/feel the buzz</li><li>It helps them mix and fit in with others</li><li>It helps them concentrate</li><li>It helps them feel less depressed or anxious</li><li>To cope with feeling suspicious or with hearing voices</li><li>It's something they've just always done</li><li>They crave it</li></ul></p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>What are your reasons for using cannabis? What would it be like for you to change your cannabis use? You could talk to a trusted friend/family member or your care co-ordinator about it.</p><p>It is worth remembering that you can get a variety of different effects from cannabis. Learn to get what you want from it. </p>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]

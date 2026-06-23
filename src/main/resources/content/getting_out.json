@@ -1,0 +1,264 @@
+        [
+            {
+                "name": "Actissist - Getting out and about",
+                "questionSourceUUID": "53993cb6-4cc4-41a7-8256-57d5d8e2ff29",
+                "version": "1", 
+                "conditionalResponses": [
+                    {
+                        "route": "1",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>You’re not alone. Many people feel a bit different sometimes. </p> Chat to others – talk about how you feel with a health professional or someone you trust."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Feeling different can make it difficult to talk to others. </p> <p>Top tips for chatting with people: <ul><li> Try and make eye contact. </li><li> Show interest in what the other person is saying (smile, nod head). </li><li> Try saying things like: ‘I like to do that too’, ‘That’s interesting’. ‘Sounds good’. </li><li> Try talking about things you might both be interested in (e.g. Sport, TV, films, video games, music). </li> </ul> </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "2",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Lots of people feel different to everyone else. You aren’t on your own. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Sometimes people’s self-esteem can be affected when they feel like they don’t fit in. </p><p>You can read some top tips for overcoming low <a href='/factsheet1'>Self Esteem</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "It’s not unusual to feel like you don’t belong. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Try not to let your reactions to your experiences hold you back – challenge them! </p><p>Perhaps you could test out your belief that you don’t fit in by checking out this thought more closely. You can read more about <a href='/factsheet13'>‘Testing out Thoughts’</a> in the ‘My Toolkit’ part of the app. </p> "
+                            }
+                        ]
+                    },
+                    {
+                        "route": "4",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "It’s getting started that can be difficult."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Planning ahead and scheduling activities each day can help get you started. Why not try using the calendar on the phone to make some plans or schedule some activities?</p> <p>Tips on scheduling activities: <ul> <li>Step 1: Think of things you enjoy and/or find satisfying. It could be as simple as listening to some music or tackling the washing up. </li><li>Step 2: As a start, plan some activities over the next 2-3 days, maybe just in the afternoons.</li><li>Step 3: Break activities down hour-by-hour rather than in bigger chunks (e.g. 2.00pm-3.00pm, 4.00pm-5.00pm).</li><li>Step 4: Try and stick to the plan.</li><li>Step 5: Once you have done the activity, reward yourself for your efforts.</li></ul> <p>You could schedule some activities for the next few days on a calendar to get you started.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "5",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Seeing other people can be an effort but can make you feel better and give you purpose."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Having a sense of purpose is important for everyone. It may involve being a good friend or having voluntary/paid work. It’s different for everyone. For some people, experiencing psychosis can mean some people lose their sense of purpose. You might have lost friends or stopped doing the things you used to do. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Some activities that can make you feel good and give you purpose are:</p><p>Doing sports, arts/crafts, music, drama/dancing, hanging out with mates, being with family, voluntary or paid work. </p><p>Try and do something you enjoy. There are some more ideas about things you can do in the <a href='/coping-strategies'>‘Coping Strategies’</a> section of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "6",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "A journey of a thousand miles begins with a single step"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Getting out and about can feel like effort sometimes. </p> <p>Can you improve the way you spend time? Can you do some more enjoyable activities?</p><p>Tips: Taking small steps can make it easier to do things. </p> <ul><li>Step 1: Think of things you enjoy or find satisfying. It could be as simple as listening to some music or tackling the washing up. </li><li>Step 2: As a start, plan some activities over the next 2-3 days, maybe just in the afternoons.</li><li>Step 3: Break activities down hour-by-hour rather than in bigger chunks (e.g. 2.00pm-3.00pm, 4.00pm-5.00pm).</li><li>Step 4: Try and stick to the plan.</li><li>Step 5: Once you have done the activity, reward yourself for your efforts.</li></ul><p>You could schedule some activities for the next few days on a calendar to get you started. You might also think about setting yourself some <a href='/factsheet10'>goals</a> to get yourself into action. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "7",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Everyone is important and has something good to offer. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "It is helpful to remind yourself of the good things about you. Note down up to 5 positive things about yourself. It could be things you like about yourself, things you have achieved, or something someone else has told you they liked about you. If you can’t think of something, ask a friend, family member, a health professional or someone you trust to help. You can note this down in the <a href='/mooddiary'>diary</a> if you like. You can also click here for some top tips on improving <a href='/factsheet1'>self-esteem</a>."
+                            }
+                        ]
+                    },
+                    {
+                        "route": "8",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Remember that making and keeping friends can be hard. However, it’s never too late to make a friend."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "Here are some things you can do to help you meet new people: <ul><li>Exercise: join a gym or a sports centre or do some exercise at a nearby park</li><li>Do a course: learn something new – do a course to meet people with similar interests. It can take time to find something that is right for you, but it can be worthwhile.</li></ul></p><p>Continued...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p><ul><li>Volunteer: you can make friends when you work with people. There are often volunteering opportunities at charity shops, local clean up campaigns, hospitals, churches, museums, community centres and other organisations.</li><li>Go out with your dog (if you have one, or borrow someone else’s!): make conversation with people who stop to talk.</li><li>Internet chat rooms, forums, blogs, dating sites.</li></ul>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Your care co-ordinator might be able to help you enroll in a course or get a gym membership, for example."
+                            }
+                        ]
+                    },
+                    {
+                        "route": "9",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "People might not be avoiding you on purpose. It might be they have other things going on in their life and have been too busy to see friends."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "Try getting in touch with someone you know and check out how things are for them. <p>You could text them, send an instant message, Facebook or phone them. Or, if you prefer, you could <a href= '/useful-links' >post on a forum</a> to express how you feel.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "10",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "About 1 in 3 people are regularly bothered by feeling that people might be against them. So it’s not unusual to feel like this now and again."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Remember the 5 rules of helpful thinking:</p><ol><li>Remember thoughts aren't always true. </li><li>Weigh up the evidence for and against a thought being true.</li><li>Try to think of other reasons for why things have happened.</li><li>Don't just accept things are true. Test out these reasons.</li><li>Keep an open mind.</li></ol>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Perhaps you could go to the <a href='/chill-out-area'>'Chill Out Area'</a> for some time out from your worries?</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "11",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "There might be someone who is on your side. Most people find it difficult to talk about their worries with people close to them."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Being suspicious or on guard can be helpful sometimes - it can help protect you from danger or harm. But, worrying about your fears too much can be unhelpful – you can miss out on things you enjoy in life. </p><p>Feeling like people are against us can make people feel down or low. </p><p>You can find some tips on how to improve your mood in the <a href='/factsheet2'>Feeling Low</a> section of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "12",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You’re not alone. This thought is extremely common, but people don’t often talk about it. In fact, it’s rare to go through life without feeling a bit suspicious or paranoid of people"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "It can be hard to decide whether your suspicions are justified, but asking yourself certain key questions can help: <ul><li>Would other people think my suspicions are realistic?</li><li>What would a good friend/care co-ordinator say?</li><li>Have I talked to others about my worries?</li></ul><p>Continued...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<ul><li>Is it possible that I have exaggerated how I’m feeling?</li><li>Is it very likely that I would be singled out above anyone else?</li><li>Is it possible that I am being over-sensitive?</li></ul><p>There are no hard and fast rules for deciding whether worries are real or not. Testing out your beliefs is the first step towards working out if they are real.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "13",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "When people are anxious they tend to make anxious predictions about what they can and can’t do, or about what might happen in the future."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>The problem with predictions is that they can stop you from doing things to find out whether they are true or not. Why not try getting out and about or catching up with a friend/family member.</p><p>Click <a href='/factsheet13'>Checking out Thoughts</a> for some tips on testing out unhelpful predictions. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "14",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "A journey of a thousand miles begins with a single step."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Getting out and about and seeing people can be overwhelming. You might consider trying to confront your fears by breaking a problem down into very small steps. This might stop you feeling overwhelmed.</p><p>You can find some top tips on <a href='/factsheet9'>Confronting Problems</a> in the ‘My Toolkit’ part of the app. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "15",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "When you are feeling anxious ask yourself the question: What is the worst thing that could happen?"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Anxiety is a normal bodily response to stress. When we feel threatened in some way, we often become anxious. Anxiety can be a problem when we experience stress in situations that aren’t necessarily threatening, like when we meet new people. </p><p>People who are anxious tend to have more worrying thoughts than others – they overestimate danger and underestimate their ability to cope. Try to remember that thoughts are just thoughts, not facts. Thinking it will be a bad day does not mean it will be a bad day. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>You can read more about <a href='/factsheet3'>Feeling Anxious</a> in the ‘My Toolkit’ section of the app, or you can go to the <a href='/chill-out-area'>Chill Out Area</a> for some time out from your worries. </p>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]

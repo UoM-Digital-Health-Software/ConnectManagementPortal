@@ -19,4 +19,11 @@
 
 
     </div>
+
+     <div *ngIf="item.type == ContentType.CBT_CONTENT">
+
+        <cbt-content-item [item]="item" (triggerDeleteItemFunction)="deleteItem()"></cbt-content-item>
+
+
+    </div>
 </div>

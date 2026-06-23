@@ -1,0 +1,399 @@
+        [
+            {
+                "name": "Actissist - Voices Exercises",
+                "questionSourceUUID": "3e17a2aa-d3cb-411c-bc91-e396cde51309",
+                "version": "2",
+                "conditionalResponses": [
+                    {
+                        "route": "1",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Perhaps you could set rules or boundaries with the voices or ignore them.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>One way of setting boundaries with voices is to imagine the voices are like a nosey neighbour who is always poking their nose in your business. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>How would you stop a neighbour from being too nosey? You probably wouldn’t talk to them because that would encourage them to be nosey. You might try to avoid the neighbor at all costs, but then you couldn’t go out and do what you want to do.</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>If your neighbor was bothering you, you would probably have to put your foot down, say you’re busy, maybe tell them to come back when you have more time. You would try to be polite but it would be important to stick to your guns. </p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>Voices can be like a nosey neighbour: you can start to hear them when you don’t want to; they just come in when they’re not wanted. You might not go out because you feel tense, frightened and on edge in case the voices suddenly appear…sound familiar?</p>"
+                            },
+                            {
+                                "index": "6",
+                                "type": "cbtText",
+                                "text": "<p>Same as with the nosey neighbour, you could set rules or boundaries with voices and say, ‘I’ll talk to you later when I have more time’ (but be sure you feel comfortable doing this). Perhaps you could also decide to only listen to the voices at certain times of the day, like you might do with a nosey neighbour, and decide that you would only talk to them maybe once or twice a week for 10 minutes. </p>"
+                            },
+                            {
+                                "index": "7",
+                                "type": "cbtText",
+                                "text": "<p>What thoughts do you have about setting limits with the voices? Perhaps you could talk about it with a person you trust or your care co-ordinator. You can also note down some ideas in the <a href='/mooddiary'>daily diary</a> if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "2",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>It might be helpful to think about times you can control the voices.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "There are some things you can do to help cope with voices: <ul><li>Focus for a short period on what your voices say. Is this similar to your own thoughts?</li><li>If it feels comfortable, tell the voices to go away</li><li>Sing one of your favourite songs under your breath</li><li>It’s OK to set limits and boundaries with voices. Make some ‘voice time’ – only listen to voices at a set time of the day or week.</li></ul><p>There are some more ideas in the <a href='/coping-strategies'>Coping Strategies</a> part of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You could try setting some limits with the voices. Tell them you will talk to them later when you have more time."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "Some people find setting limits with voices can help. Here are some tips on how to do this: <ol><li>Put aside set times for listening to the voices.</li><li>Tell the voices, “I will not listen to you now. Come back at 3.00pm (or whenever suits you). </li><li>At your chosen time, spend 15 minutes or so listening to the voices.</li><li>After the 15 minutes, tell the voices that you are not going to listen to them until the next scheduled time, when you will give them your full attention. </li><li>Then get on with your day.</li></ol>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "4",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "The voices might not bother you when you keep yourself busy. Maybe you could distract yourself."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Sometimes, the more someone focuses on something (e.g. what the voices are saying; upsetting thoughts or memories), the worse it seems. </p> <p>Try this exercise when you’re not hearing voices: pay attention to the noises around you, right at this moment. What can you hear? Spend a moment listening to the noises around you...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>When you focus on the noises around you, you might notice that they seem louder.</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>It can be like this with thoughts, and even with voices…the more you focus on them, the more intrusive and distressing they seem.</p> <p>When you feel anxious/hear voices, try focusing your attention on something – it could be a clock in the room, a far away noise, the TV. The aim is to distract yourself from the voices by focusing elsewhere. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "5",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Perhaps you could try standing up to the voices."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>What would you do if a person sat next to you and kept interrupting you?</p><p>You would probably tell them to go away or to stop interrupting.</p><p>Try telling the voices out loud (when you are alone) to ‘Stop’ or ‘Go away’ in a firm voice. Or you could say, ‘I can’t listen to you right now. I’m busy’.</p> "
+                            }
+                        ]
+                    },
+                    {
+                        "route": "6",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Maybe the voices don’t always get things right. Have they got things wrong in the past? "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>There is a clever experiment you can do to see whether or not voices are always right!</p><p>Ask a friend or family member to write a word on a piece of paper. Make sure they don’t tell you what word they have written down. Now, ask the voices to predict what the person has written down…Did they get it right?</p><p>Try it again. </p><p>Did the voices get it right? If not, what does this tell you about voices? </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "7",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Maybe the voices don't know everything about you. Maybe they get things wrong. You could ask the voices to predict something in the future and see if they get it right. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Next time you get together with a person you trust or your care co-ordinator, try this exercise. </p><p>Ask the person you trust to write a word on a piece of paper. Make sure they don’t tell you what word they have written down. Now, ask the voices to predict what the person has written down…Did they get it right?</p><p>If not, what does this tell you about voices? </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>You can read more about <a href='/factsheet13'>Testing Out Thoughts</a> in the ‘My Toolkit’ part of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "8",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Do the voices really know everything, as they claim? "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Maybe voices get things wrong sometimes. </p><p>Do they tell you one thing and then another time something else? </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Jessie found that the voices told her that they were no good, but then at other times they told her that they were special. This led Jessie to wonder whether the voices got confused sometimes, and whether they actually get things wrong now and again.</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Something else to consider is whether the voices have got dates or details of events wrong? </p><p>To test this idea out, you could try to keep a diary of the things the voices say (you can use the <a href='/mooddiary'>ActiNow diary</a> to do this). After a week or so, see if you can pick out any inconsistencies or errors. Perhaps you will find that voices, just like people, get things wrong!</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "9",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Just suppose voices tell lies and take credit for things that aren’t their doing."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Read the following story to see how people (and voices) can take credit for things that aren’t their doing:</p><p>In South America, there is a tribe of people who believe that they are the guardians of the world. In order to keep the world spinning and humankind existing, they believe they have to conduct a special ceremony each evening in which they have to spin round and round with their arms held out for two hours.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>This is causing them much disruption. Members of the tribe get dizzy, fall over and injure themselves. It also prevents them from doing other things. The tribe, however, remains fearful of stopping and believes that if they don’t perform this ceremony every evening the world will end.</p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>Let’s think about what this story tells us<ul><li>Changing our behaviour can be scary</li><li>Changing the things people do to protect themselves carries certain risks</li><li>The things people do to protect themselves are often based on a belief that has not been fully tested (maybe certain beliefs we hold are not true!)</li><li>We might have believed something about ourselves for a long time, but it doesn’t mean that it is true.</li><li>Maybe voices take credit for things that they aren’t doing.</li></ul></p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>Are there any parts of this story that you can apply to your own situation? </p><p>What would you need to do to test out the power of your voices? </p><p>There’s another story like this in the <a href='/factsheet4'>Things I Do To Protect Myself</a> fact sheet.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "10",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Have the voices always been able to carry out their threats? Maybe they’re all talk and no action! "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Voices can sometimes be a bit like a school bully. Did you know any bullies at school? </p><p>Bullies can make out like they’re more powerful than they really are. Standing up to a bully, or ignoring them, might mean that the bully gets worse in the short-term. But, in the long term, bullies will probably get bored and give up. The same might be true for the voices. If you stand up to them, or ignore them, they might get a bit worse in the short term, but, like a bully, they might end up giving up.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Try doing what you want. Ignore what the voices want.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "11",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>If the voices were so powerful, they wouldn’t need you to carry out their work. The voices need you to give them power. Remember, they are only as powerful as you let them be.</p><p>Perhaps there are other explanations for the voices? </p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>One way of overcoming distressing thoughts about voices is to consider the reasons for your voices. People sometimes believe that their voices come from things like:</p><ul><li>neighbours</li><li>the Devil</li><li>evil spirits or Djinns</li><li>God</li><li>caused by chemicals in the brain</li><li>drug use</li></ul>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>There are many other explanations too.</p><p>What is your explanation for why you hear voices?</p><p>Some people notice that they only hear voices when they are very stressed or anxious. This means that managing stress might make voices less troubling. </p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>The brain is very complex and can play tricks on us. For example, visual illusions, colour blindness (where people struggle to tell certain colours apart), flashbacks to stressful events and dreams/nightmares, which can feel very real even though they are not really happening.</p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>These mistakes/tricks of the mind can happen after stressful events, like losing a loved one, being abused, being bullied, and many other stressful experiences. Because of the strong connections between the ‘thoughts’ and ‘speech’ parts of the brain, and because the brain is very complex, thoughts can sometimes sound like a real voice.</p>"
+                            },
+                            {
+                                "index": "6",
+                                "type": "cbtText",
+                                "text": "<p>Have you ever thought there might be other explanations for voices? <ul><li>Voices can echo fears and worries</li><li>Voices can reflect the way someone thinks about themselves</li><li>Voices can mirror what people learned to believe about themselves when they were growing up</li></ul><p>Continued...</p>"
+                            },
+                            {
+                                "index": "7",
+                                "type": "cbtText",
+                                "text": "<ul><li>Voices may be a memory of something you read about, heard or saw that frightened you or seemed important</li><li>Voices may be a past memory of something bad that happened</li><li>Voices might be just a vague idea that has floated through your mind</li></ul></p><p>What are your explanations for hearing voices? Perhaps you could talk to someone you trust or your care co-ordinator about your ideas.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "12",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>You might feel as though you are to blame for things that have happened in your life, but are there any other explanations?  You could try talking to someone else about your worries and see what they say.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>One way of overcoming distressing thoughts about voices is to consider the reasons for your voices. People sometimes believe that their voices come from things like:</p><ul><li>neighbours</li><li>the Devil</li><li>evil spirits or Djinns</li><li>God</li><li>caused by chemicals in the brain</li><li>drug use</li></ul>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>There are many other explanations too.</p><p>What is your explanation for why you hear voices?</p><p>Some people notice that they only hear voices when they are very stressed or anxious. This means that managing stress might make voices less troubling. </p>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>The brain is very complex and can play tricks on us. For example, visual illusions, colour blindness (where people struggle to tell certain colours apart), flashbacks to stressful events and dreams/nightmares, which can feel very real even though they are not really happening.</p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>These mistakes/tricks of the mind can happen after stressful events, like losing a loved one, being abused, being bullied, and many other stressful experiences. Because of the strong connections between the ‘thoughts’ and ‘speech’ parts of the brain, and because the brain is very complex, thoughts can sometimes sound like a real voice.</p>"
+                            },
+                            {
+                                "index": "6",
+                                "type": "cbtText",
+                                "text": "<p>Have you ever thought there might be other explanations for voices? <ul><li>Voices can echo fears and worries</li><li>Voices can reflect the way someone thinks about themselves</li><li>Voices can mirror what people learned to believe about themselves when they were growing up</li></ul><p>Continued...</p>"
+                            },
+                            {
+                                "index": "7",
+                                "type": "cbtText",
+                                "text": "<ul><li>Voices may be a memory of something you read about, heard or saw that frightened you or seemed important</li><li>Voices may be a past memory of something bad that happened</li><li>Voices might be just a vague idea that has floated through your mind</li></ul></p><p>What are your explanations for hearing voices? Perhaps you could talk to someone you trust or your care co-ordinator about your ideas.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "13",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Sometimes voices can echo our own fears and worries"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Talk it out. You could try talking to someone you trust about how you feel. Choose a caring person who you reckon will be honest. If you can’t think of anyone why not talk to your care co-ordinator.</p><p>You can read more about how common voices are by clicking <a href='/factsheet0'>here</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "14",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Sometimes voices can reflect the way someone feels about themselves."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>It is helpful to remind yourself of the good things about you.  Note down up to 5 positive things about yourself. It could be things you like about yourself, things you have achieved, or something someone else has told you they liked about you. If you can’t think of something, ask a friend, family member, a health professional or someone you trust to help.</p><p>You can also note this down in the <a href='/mooddiary'>daily diary</a> if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "15",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "You're not mad. Remember, many people hear voices. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>There are many famous people who have experienced mental health problems and heard voices:</p><p>John Frusciante (guitarist, Red Hot Chilli Peppers), Vinnie Jones (English Footballer and Actor), John Nash (Award Winning Mathematician from the story, ‘A Beautiful Mind’), Kelly Holmes (Olympic gold medal athlete), Victoria Pendleton (Olympic gold medal cyclist), Tom Daly (Olympic gold medal diver), Professor Green (rapper), DMX (rapper), Mariah Carey (Singer), Frankie Sandford (Singer), Britney Spears (Singer).  You can hear some famous people talking about their experiences <a href= '/useful-links'>here</a>.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>People with no psychiatric diagnosis can have mental health problems when they are either physically ill, using drugs, without food and water, not getting enough sleep, stressed or bereaved (lost a loved one). This shows that stress can make anyone have unusual experiences and shows us that mental health symptoms like delusions (unusual beliefs) and hallucinations (hearing things/seeing things) are not ‘abnormal’ - they are just at one end of a scale of experiences that everyone can have. </p><p>You can read more about how common voices are by clicking <a href='/factsheet0'>here</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "16",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Voices are common. If having these experiences is a sign of madness then lots of people are in the same boat!"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Psychosis-like symptoms are quite common. Surveys of the general public suggest that:</p><ul><li>1 in 4 people experience mental health problems at some point in their lives</li><li>Over 2 million people in the UK have a diagnosis of psychosis</li><li>Up to 1 in 4 people have had a hallucination (seeing or hearing things that others can’t see or hear) at least once</li></ul><p>Continued...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<ul><li>Around 1 in 3 people experience suspicious thoughts regularly</li><li>Up to 1 in 5 people have regular unusual ideas that other people don’t necessarily hold</li><li>Around 70% of people have, at some time, experienced the feeling that people were deliberately trying to harm or upset them in some way</li><li>80% of people have felt that strangers were looking at them critically</li></ul>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>This means that it is rare to go through life without having unusual experiences at some time or another!</p><p>You can read more about this in the <a href='/factsheet0'>Making Sense of My Situation</a> fact sheet in the ‘My Toolkit’ part of the app. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "17",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "Feeling stressed and not getting enough sleep can make you feel anxious and worried. "
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Top tips to sleeping well:<ol><li>Take regular exercise during the day</li><li>Don’t eat a heavy meal before bed</li><li>Don’t have caffeine or alcohol before bed</li><li>Keep regular hours – go to bed/get up at the same time</li><li>Have a relaxing bedtime routine (like a warm bath)</li><li>Use bed for sleeping (don’t watch TV or use your phone/computer)</li><li>If you can’t sleep after 20-30 minutes, get up and do something else</li><li>Keep your bedroom dark and fairly cool</li><li>Keep noise levels down</li><li>Avoid lying in the next day, even if you are tired. It is important you get up at the same time each day, no matter how tired you feel</li></ol></p><p>Perhaps try a relaxation or mindfulness exercise in the <a href='/chill-out-area'>Chill Out Area</a>.</p>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]

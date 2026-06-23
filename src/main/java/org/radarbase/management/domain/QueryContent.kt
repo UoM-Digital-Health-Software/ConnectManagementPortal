@@ -47,6 +47,16 @@ class QueryContent : AbstractEntity(), Serializable {
     @Column(name = "image_alternative_text")
     public val imageAltText: String? = null
 
+
+    @Column(name = "cbt_type")
+    public var cbtType: String? = null
+
+    @Column(name = "cbt_version")
+    public var cbtVersion: String? = null
+
+    @Column(name = "cbt_route")
+    public var cbtRoute: String? = null
+
     @ManyToOne
     @JoinColumn(unique = true, name = "query_group_id")
     var queryGroup: QueryGroup? = null

@@ -199,6 +199,15 @@
             >
                 <label>Please fill in all fields.</label>
             </div>
+            <div
+                *ngIf="
+                    cbtContentError
+                
+                "
+                class="alert alert-danger"
+            >
+                <label>Please select the CBT content.</label>
+            </div>
 
 
              <div

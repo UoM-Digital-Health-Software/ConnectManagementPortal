@@ -1,0 +1,339 @@
+        [
+            {
+                "name": "Actissist - Suspicious Thoughts - Exercises",
+                "questionSourceUUID": "2e6f8312-98ee-4403-9654-4753dbceff13",
+                "version": "1", 
+                "conditionalResponses": [
+                    {
+                        "route": "1",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p> Sometimes comments can seem critical or harsh, but when you talk it over it can turn out to be that the other person is just worried about you.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Try doing something you enjoy or do something relaxing for some time out from your worries. It’s easier to stand up for yourself when you feel better in yourself.</p><p>There are some more ideas about things you can do in the <a href='/coping-strategies'>coping strategies</a> fact sheet in the ‘My Toolkit’ part of the app. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "2",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>At times, people dislike things about themselves, especially when they are feeling criticised.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Limit the time you spend with people you don’t feel good around. </p><p>Give yourself credit for all the things you do. Criticising yourself when you are feeling criticised by others won’t help. In fact, being hard on yourself will just make you feel worse. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>It is helpful to remind yourself of the good things about you.</p><p>Note down up to 5 positive things about yourself. It could be things you like about yourself, things you have achieved, or something someone else has told you they liked about you. If you can’t think of something, ask a friend, family member, a health professional or someone you trust to help. You can also note this down in the <a href='/mooddiary'>daily diary</a> if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "3",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>You have probably had a lot to cope with over recent times. Be kind to yourself, even if others are not.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Remember something good or enjoyable that you have done recently or in the past. </p><p>Try putting together an action plan of activities you enjoy and that help you to relax. Here is an example of an action plan Sam, a service user with experience of psychosis, put together.</p><p><b>Sam’s action plan</b></p><p><i>I have decided to</i>:</p><p>Take up a new activity I enjoy</p><p><i>I hope that will help me to:</i></p><p>Feel like I am enjoying life more</p><p><i>I have decided that I am going to do this by:</i></p><p>Going to the cinema once a week</p><p><i>The steps I need to take to do this are:</i></p><ul><li>Have a look online or on my cinema app at the cinema times</li><li>Contact a friend and see if they want to come along</li><li>Decide what film to see</li></ul><p><i>My concerns are:</i></p><p>My friend might not want to go with me</p><p>You might want to put together a similar table to help motivate you to plan some enjoyable activities into your week, or you could note some thoughts down in the <a href='/mooddiary'>daily diary</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "4",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Believe it or not, the person you feel criticised by makes mistakes and gets things wrong, just like anyone else.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Learning how to stand up for yourself is called being assertive. Being assertive can help you to feel less stressed and can make others listen to your point of view. Try to be assertive. No-one can know what you’re thinking unless you tell them, so it is important to express yourself and let others know how you feel and what you want. After all, it’s only fair you let others know what effect they are having on you! Being assertive is not to be confused with being aggressive- getting what you want is not about getting what you want <i>at all costs</i>. It is important to respect others feelings too. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Tips for being assertive:</p><p><ol><li>Be clear about what you want.</li><li>Calmly and seriously tell the person how you feel and what you want (if you’re feeling angry then it’s a good idea to wait until you feel fairly calm).</li><li>Be clear about how you feel and only concentrate on the incident at hand (don’t say things like ‘you always…’ or ‘you never…’).</li><li>Focus on the effect the other person had on you (e.g. ‘You probably didn’t mean to, but telling me I’m lazy really upset me’).</li><li>Move on to what you want to happen. You could say, “It would really help me if you didn’t say things like that again’</li><li>Try to stay calm but serious. No-one responds well when they feel under attack. If you start shouting or raising your voice you might end up in a row</li><li>If you get a positive response, thank them for it. </li></ol></p><p>You might like to set yourself the goal to be a bit more assertive now and again. You can click here to read more about <a href='/factsheet10'>setting goals</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "5",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Sometimes people say things that feel hurtful but don’t mean to hurt you</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "Praise yourself for something good that you have done. It might be that you helped someone out or gave someone some useful information or advice"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "6",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "It’s easy to forget your strengths and good qualities."
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Be kind to yourself. Do something you enjoy. It could be anything:</p><ul><li>Going somewhere you want to visit</li><li>Listening to your favourite music</li><li>Having a warm bath</li><li>Cooking</li><li>Exercising</li><li>Seeing a friend</li><li>Playing on the computer</li></ul>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>It may even be something you have been avoiding. You may be surprised how good you feel after doing it!</p><p>There are some more ideas about things you can do in the <a href='/coping-strategies'>coping strategies</a> fact sheet. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "7",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Sometimes there are people around us who are demanding or not the best for our well-being.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Here are a few tips for helping to deal with critical people:</p><ul><li>Place limits on the amount of time you spend with the person.</li><li>If it’s possible, think about when and where to see them (e.g. it may be best for you to see the person when you feel at your strongest, or in a place where there are either a lot, or very few, distractions).</li></ul><p>Continued...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<ul><li>Plan something nice for after you have seen them. You could go for a walk so you can think things through, or plan to see someone afterwards</li><li>In some cases, no matter what someone does, contact with certain people can be negative. If so, you many need to avoid contact with them or take time out from them.</li><li>If you live with the person you feel criticised by, try putting headphones in for a while. </li></ul>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "8",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>You have probably had a lot to cope with over recent years. Be kind to yourself, even if others are not</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Remember something good or enjoyable that you have done recently or in the past. </p><p>Think about these questions:</p><ol><li> What do you like about yourself, however small and infrequently you feel like this?</li></li>What are your good qualities?</li><li>What do other people value about you or compliment you on?</li><li>What have you achieved in your life, however small?</li><li>What do you do well?</li>You could go to the <a href='/chill-out-area'>Chill Out</a> area for some time out from your worries.</li></ol>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "9",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>When you are going through a tough time, it is easy to forget your strengths</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>You could try to be honest about how you feel with the person you feel criticised by.</p><p>Tips for being assertive:</p><ol><li> Be clear about what you want.</li><li>Calmly and seriously tell the person how you feel and what you want (if you’re feeling angry then it‘s a good idea to wait until you feel fairly calm).</li><li>Be clear about how you feel and only concentrate on the incident at hand (don’t say things like ‘you always…’ or ‘you never…’).</li><li>Focus on the effect the other person had on you (e.g. ‘You probably didn’t mean to, but telling me I’m lazy really upset me’).</li><li> Move on to what you want to happen. You could say, “It would really help me if you didn’t say things like that again’</li><li>Try to stay calm but serious. No-one responds well when they feel under attack. If you start shouting or raising your voice you might end up in a row</li><li>If you get a positive response, thank them for it.</li>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "10",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>When you are going through a tough time, it is easy to forget your strengths</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Limit the time you spend with people you don’t feel good around. </p><p>Give yourself credit for all the things you do. Criticising yourself when you are feeling criticised by others won’t help. In fact, being hard on yourself will just make you feel worse. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>It is helpful to remind yourself of the good things about you.</p><p>Note down up to 5 positive things about yourself. It could be things you like about yourself, things you have achieved, or something someone else has told you they liked about you. If you can’t think of something, ask a friend, family member, a health professional or someone you trust to help.</p><p>You can also note this down in the <a href='/mooddiary'>daily diary</a> if you like.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "11",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Sometimes people are critical without a good reason. </p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Here are a few things to do to protect yourself from critical people:</p><ul><li>Place limits on the amount of time you spend with the person.</li><li>Think about when and where to see them (e.g. it may be best for you the person when you feel at your strongest, or in a place where there are a lot or few distractions).</li></ul><p>Continued...</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<ul><li>Plan something nice for after you have seen them. You could go for a walk so you can think things through, or plan to see someone else afterwards.</li><li>In some cases, no matter someone does, contact with certain people can have a negative impact. If so, you many need to avoid contact with them or take time out from them.</li></ul>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "12",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Go easy on yourself. Talk to someone you trust.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Try and think about which people in your life are good at helping and supporting you. They can be a friend, partner, relative, health care professional, as long as it is someone you can trust and who is regularly available to you.</p><p>It’s best if they are open-minded and understanding about your difficulties and able to give you accurate and positive feedback. </p><p>Ask them if it is OK for you to phone, text or contact them for a chat when you feel down on yourself.</p> <p>You might also think about <a href = '/useful-links'>posting on a forum</a> to see how others might feel in a similar situation.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "13",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Sometimes people criticise others because they feel bad about themselves.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Limit your contact with the critical person. </p><p>Criticism can hurt, particularly when it’s from people that matter to us. But just because people say hurtful things doesn't mean that they are true. Think about a school bully - bullies sometimes say hurtful things to other people because they feel insecure or bad about themselves.</p><p>You could go to the <a href='/chill-out-area'>Chill Out Area</a> for some time out from your worries. Doing a relaxation or mindfulness exercise might help!</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "14",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Be kind to yourself. People are often good at being caring and kind towards others, but not so good at being kind towards themselves.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>You could try to tell yourself the following: </p><p><i>I have value</i></p><p><i>My heart is in the right place</i></p><p><i>I am learning to be stronger</i></p><p><i>Others might judge me but I don’t have to judge myself</i></p><p>What are some other kind and caring phrases you could say about yourself?</p><p>You could note these down in the <a href='/mooddiary'>daily diary</a> part of the app. </p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "15",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Just because someone close to you says hurtful things doesn’t mean that it is true.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Sometimes people learn to think about themselves as <i>worthless, stupid, weak or bad</i> because other people told them these things.</p><p>Is there a more balanced way of thinking about yourself, one that takes into account the effort you make and your strengths?</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Look at how Dale, a service user with experience of psychosis, trained himself to think in a more balanced way.</p><p>Negative belief: <i>I am bad</i></p><p>New belief: <i>I do good things</i></p><br><p>Negative belief: <i>I am useless</i></p><p>New belief: <i>I try my best</i></p><br><p>Negative belief<i>: I am worthless</i></p><p>New belief: <i>I don’t have to believe everything people say about me. I try my best and that’s all I can do.</i></p><br>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>What negative beliefs do you hold about yourself and what’s a more balanced way of thinking about yourself? You could write these down on a piece of paper or in the <a href='/mooddiary'>ActiNow diary</a>.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "16",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Feeling stressed is unpleasant but there are things you can do to manage this.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>When people feel stressed, their bodies react in different ways – their heart beats faster, sweating, shaking, shortness of breath, and so on. This prepares us to be alert and responsive to what is going on. Your body’s physical reaction (such as your heart beating faster) can be a good thing, like when you need to pay attention to something that might be a threat. But at other times, your body’s response can make mental health problems worse. </p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>There’s a lot you can do to calm your body down. Try a relaxation or mindfulness exercise in the <a href='/chill-out-area'>Chill Out Area</a> of the app.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "17",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Try to distance yourself from the situation.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Try doing something relaxing and do something that makes you feel good, like phoning a friend, sending someone a text, going on a blog or forum, walking the dog, doing some exercise, reading a book, listening to music or watching TV. There are some other ideas in the <a href='/coping-strategies'>coping strategies</a> fact sheet.</p><p>You could also go to the <a href='/chill-out-area'>Chill Out Area</a> for some time out from your worries.</p>"
+                            }
+                        ]
+                    },
+                    {
+                        "route": "18",
+                        "items": [
+                            {
+                                "index": "1",
+                                "type": "reassuranceText",
+                                "text": "<p>Feeling criticised and stressed can make you feel isolated or alone.</p>"
+                            },
+                            {
+                                "index": "2",
+                                "type": "cbtText",
+                                "text": "<p>Limit your contact with the person you feel criticised by. Try talking to your care co-ordinator or someone you trust about how you feel. </p><p>If you find it hard trusting people you know, you could try to share your experiences with someone you know well.</p>"
+                            },
+                            {
+                                "index": "3",
+                                "type": "cbtText",
+                                "text": "<p>Sharing experiences with others can happen naturally in conversation with others close to you. You might also want to set time aside to share your experiences. If you set time aside, it helps to make sure that everyone involved:</p><ul><li>Feels comfortable to talk</li><li>Has the same amount of time to talk</li><li>Listens carefully to what each other says</li><li>Talks about things that will help the most</li></ul>"
+                            },
+                            {
+                                "index": "4",
+                                "type": "cbtText",
+                                "text": "<p>If you decide that you want to share your experiences with other people - family, friends, care co-ordinator, or anyone you might feel safe with – it may be useful to note down your thoughts and plan how you are going to do this, like Sam did in the example below.</p><p>Sam wrote down the following plan of action for sharing thoughts and experiences with others:</p><p><b>Step 1</b>: I am going to share my experiences with someone else because I hope it will make me feel safer and help me question my thoughts.</p><p><b>Step 2</b>: I am going to do this by speaking to a friend and my care co-ordinator.</p><p><b>Step 3</b>: I plan to arrange to meet a friend for a coffee.</p><p><b>Step 4</b>: The concerns I have about doing this are that my friend won’t listen to me and I will be nervous and anxious.</p><p><b>Step 5</b>: Things that might be in the way of me going through with the plan are feeling worried about where we might meet for coffee and how I am going to get there.</p><p><b>Step 6</b>: What can I do about this? I will phone or text my friend and ask him where he would like to meet; I will arrange a place to meet that’s easy to get to. </p>"
+                            },
+                            {
+                                "index": "5",
+                                "type": "cbtText",
+                                "text": "<p>What plan of action might you take to overcome some upsetting thoughts you might have? You could ask yourself the following:</p><p><b>Step 1</b>: What do I hope to achieve?</p><p><b>Step 2</b>: Who am I going to talk to?</p><p><b>Step 3</b>: Make a plan to talk to the person</p><p><b>Step 4</b>: What concerns do I have about this plan?</p><p><b>Step 5</b>: What might get in the way of meeting up with someone?</p><p><b>Step 6</b>: What can I do about it?</p>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
