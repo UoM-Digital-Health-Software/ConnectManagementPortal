@@ -400,7 +400,7 @@ h3 {
 
 /* Adjust paragraph text size for readability */
 p {
-    font-size: 15pt;
+    font-size: 9pt;
     margin-bottom: 1em;
 }
 
@@ -694,10 +694,15 @@ td:first-child, th:first-child {
     font-weight: bold;
 }
 
+.histogram_text {
+    font-size:12px;
+
+}
+
 
 .total-average-subtext {
     font-weight: none;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 
