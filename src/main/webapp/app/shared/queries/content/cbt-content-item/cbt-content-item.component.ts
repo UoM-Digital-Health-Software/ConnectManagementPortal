@@ -41,6 +41,8 @@ export class CbtContentItemComponent implements OnInit {
             this.selectItem(matchingResponse)
             this.confirmSelection()
           }
+        } else if(this.item?.cbtRouteSelectionMode == "RANDOM") { 
+              this.pickRandom()
         }
       }
       )
