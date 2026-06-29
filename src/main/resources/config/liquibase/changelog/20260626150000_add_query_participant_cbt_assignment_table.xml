@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20260626120000_create_query_participant_cbt_assignment" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="query_participant_cbt_assignment"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="query_participant_cbt_assignment">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="subject_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="query_participant_content_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="query_content_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="cbt_type" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="cbt_version" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="assigned_cbt_route" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="selection_mode" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_archived" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="query_participant_cbt_assignment"
+                baseColumnNames="query_participant_content_id"
+                referencedTableName="query_participant_content"
+                referencedColumnNames="id"
+                constraintName="fk_qpca_query_participant_content"/>
+
+        <addForeignKeyConstraint
+                baseTableName="query_participant_cbt_assignment"
+                baseColumnNames="query_content_id"
+                referencedTableName="query_content"
+                referencedColumnNames="id"
+                constraintName="fk_qpca_query_content"/>
+
+
+        <createIndex
+                indexName="idx_qpca_subject_id"
+                tableName="query_participant_cbt_assignment">
+            <column name="subject_id"/>
+        </createIndex>
+
+        <createIndex
+                indexName="idx_qpca_query_participant_content_id"
+                tableName="query_participant_cbt_assignment">
+            <column name="query_participant_content_id"/>
+        </createIndex>
+
+        <createIndex
+                indexName="idx_qpca_query_content_id"
+                tableName="query_participant_cbt_assignment">
+            <column name="query_content_id"/>
+        </createIndex>
+
+        <createIndex
+                indexName="idx_qpca_subject_content"
+                tableName="query_participant_cbt_assignment">
+            <column name="subject_id"/>
+            <column name="query_participant_content_id"/>
+            <column name="query_content_id"/>
+        </createIndex>
+
+        <addUniqueConstraint
+                tableName="query_participant_cbt_assignment"
+                columnNames="subject_id, query_participant_content_id, query_content_id"
+                constraintName="uk_qpca_subject_participant_content_query_content"/>
+
+    </changeSet>
+
+</databaseChangeLog>

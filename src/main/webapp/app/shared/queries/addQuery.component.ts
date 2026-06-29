@@ -647,7 +647,7 @@ export class AddQueryComponent {
             }
 
             if(item.type === 'CBT_CONTENT') {
-                if(item.cbtRoute === null || item.cbtType === null || item.cbtVersion === null || item.cbtRoute === undefined || item.cbtType === undefined || item.cbtVersion === undefined) {
+                if(  item.cbtType === null || item.cbtVersion === null || item.cbtType === undefined || item.cbtVersion === undefined) {
                     this.cbtContentError = true ; 
                     hasError = true;
                     break;

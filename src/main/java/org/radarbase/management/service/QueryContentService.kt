@@ -2,6 +2,7 @@ package org.radarbase.management.service
 
 
 import org.radarbase.management.domain.*
+import org.radarbase.management.domain.enumeration.CbtRouteSelectionMode
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.repository.*
@@ -38,9 +39,8 @@ class QueryContentService(
     private val queryContentGroupMapper: QueryContentGroupMapper,
     private val moduleRepository: ModuleRepository,
     private val notificationService: NotificationService,
-    private val contentNotificationRepository: ContentNotificationRepository
-
-
+    private val contentNotificationRepository: ContentNotificationRepository,
+    private val cbtContentService: CBTContentService
 ) {
 
     fun convertImgStringToByteArray(imgString: String): ByteArray {
@@ -111,6 +111,9 @@ class QueryContentService(
                     this.cbtRoute = dto.cbtRoute;
                     this.cbtType = dto.cbtType?.name;
                     this.cbtVersion = dto.cbtVersion
+                    if(dto.cbtRouteSelectionMode != null) {
+                        this.cbtRouteSelectionMode =   CbtRouteSelectionMode.valueOf(dto.cbtRouteSelectionMode!!)
+                    }
                 }
                 else {
                     this.value = dto.value
@@ -215,7 +218,7 @@ class QueryContentService(
          return false
     }
 
-    private fun saveParticipantContentGroup(queryGroup: QueryGroup, queryContentGroup: QueryContentGroup, subject: Subject) {
+    private fun saveParticipantContentGroup(queryGroup: QueryGroup, queryContentGroup: QueryContentGroup, subject: Subject) : QueryParticipantContent {
         val participantContentGroup = QueryParticipantContent()
         participantContentGroup.queryContentGroup = queryContentGroup
         participantContentGroup.queryGroup = queryGroup
@@ -223,7 +226,7 @@ class QueryContentService(
         participantContentGroup.createdDate = ZonedDateTime.now();
         participantContentGroup.isArchived = false;
 
-        queryParticipantContentRepository.save(participantContentGroup);
+        return queryParticipantContentRepository.save(participantContentGroup);
     }
 
 
@@ -243,23 +246,35 @@ class QueryContentService(
     fun tryAssignNewContent(queryGroup: QueryGroup, subject: Subject) : QueryContentGroup? {
         val queryGroupId = queryGroup.id ?: return null
 
-
         val allContentGroups = queryContentGroupRepository.findAllByQueryGroupIdAndStatus(queryGroupId);
         val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroup(subject, queryGroup).map { it.queryContentGroup }
         val assignedContentGroupIds = assignedContentGroups.map { it?.id }.toSet()
-
 
         val uniqueContent = allContentGroups.filter { it.id !in assignedContentGroupIds }
 
         if(uniqueContent.isNotEmpty()){
             val newContent = uniqueContent.random();
-            saveParticipantContentGroup(queryGroup, newContent, subject)
+            val participantContentGroup = saveParticipantContentGroup(queryGroup, newContent, subject)
+
+            assignCBTContent(participantContentGroup, newContent,subject)
+
             return newContent
         }
 
         return null
     }
 
+    fun assignCBTContent(participantContentGroup:  QueryParticipantContent, contentGroup: QueryContentGroup, subject:Subject) {
+        if(contentGroup.id != null) {
+            val contentItems = queryContentRepository.findAllByQueryContentGroupId(contentGroup.id!!)
+
+            for(contentItem in contentItems){
+                if(contentItem.type == ContentType.CBT_CONTENT) {
+                    cbtContentService.createNewCBTAssignmentForParticipant(contentItem, participantContentGroup, subject)
+                }
+            }
+        }
+    }
 
 
     fun getContentItemsForSubjectAndContentGroup(subjectId: Long, contentGroupId: Long) : List<QueryContentDTO> {

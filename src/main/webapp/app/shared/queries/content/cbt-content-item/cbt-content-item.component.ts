@@ -86,6 +86,7 @@ export class CbtContentItemComponent implements OnInit {
     this.confirmedItem = null;
     this.selectedItem = null;
     this.selectedHtml = '';
+    this.initialiseRandomItem() 
   }
 
   confirmSelection() {
@@ -122,6 +123,13 @@ export class CbtContentItemComponent implements OnInit {
       this.item!.cbtVersion = this.currentCBTContent![0].questionSourceUUID
       this.item!.cbtRoute = this.confirmedItem.route;
     }
+  }
+
+  initialiseRandomItem() { 
+    this.item!.cbtType = this.selectedType
+    this.item!.cbtVersion = this.currentCBTContent![0].questionSourceUUID
+    this.item!.cbtRoute = undefined 
+    this.item!.cbtRouteSelectionMode = "RANDOM"
   }
 
   onDeleteItem() {
