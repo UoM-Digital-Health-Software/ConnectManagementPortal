@@ -23,6 +23,8 @@ import org.radarbase.management.domain.Role
 import org.radarbase.management.domain.User
 import org.radarbase.management.domain.enumeration.AppConfigType
 import org.radarbase.management.repository.AppConfigRepository
+import org.radarbase.management.repository.CacheSizeLogRepository
+import org.radarbase.management.repository.QueryParticipantContentRepository
 import org.radarbase.management.repository.SubjectRepository
 import org.radarbase.management.security.JwtAuthenticationFilter.Companion.radarToken
 import org.radarbase.management.service.*
@@ -61,7 +63,6 @@ import javax.servlet.ServletException
     @Autowired private val subjectService: SubjectService,
     @Autowired var objectMapper: ObjectMapper,
     @Autowired private val radarToken: RadarToken,
-    @Autowired private val appConfigService: AppConfigService,
     @Autowired private val userService: UserService
 
 
@@ -71,6 +72,7 @@ import javax.servlet.ServletException
     @Autowired private lateinit var mockSubjectRepository: SubjectRepository
     @Autowired private lateinit var appConfigService: AppConfigService
     @Autowired private lateinit var appConfigRepository: AppConfigRepository
+    @Autowired private lateinit var cacheSizeLogRepository: CacheSizeLogRepository
 
     @BeforeEach
     @Throws(ServletException::class)
@@ -81,7 +83,7 @@ import javax.servlet.ServletException
         mockSubjectRepository = mock()
 
         appConfigRepository = mock()
-        appConfigService = AppConfigService(appConfigRepository)
+        appConfigService = AppConfigService(appConfigRepository,cacheSizeLogRepository)
 
         var appConfigResource = AppConfigResource(appConfigService, mockUserService, mockSubjectRepository)
 
@@ -220,7 +222,7 @@ import javax.servlet.ServletException
         val configMap1: Boolean =
             objectMapper.readValue(json1, object : TypeReference<Boolean>() {})
 
-        assertThat(configMap1).isEqualTo(true)
+        assertThat(configMap1).isEqualTo(false)
 
 
         result = restAppConfigResourceMockMvc.perform(

@@ -66,7 +66,8 @@ class SubjectResource(
     @Autowired private val userService: UserService,
     @Autowired private val queryEValuationService: QueryEValuationService,
     @Autowired private val measurementDatesTrackerService: LatestMeasurementDatesTrackerService,
-    @Autowired private val connectDataLogAWSRepository: ConnectDataLogAWSRepository
+    @Autowired private val connectDataLogAWSRepository: ConnectDataLogAWSRepository,
+    @Autowired private val queryContentService: QueryContentService
 ) {
 
     /**
@@ -739,6 +740,10 @@ class SubjectResource(
 
         currentUser?.let {
             val response =  queryEValuationService.getEvaluationForParticipant(subject)
+            if(subject.id != null) {
+                queryContentService.processCompletedQueriesForParticipant(subject.id!!);
+            }
+
             return ResponseEntity.ok(response);
 
         }

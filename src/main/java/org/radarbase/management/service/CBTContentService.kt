@@ -67,8 +67,14 @@ class CBTContentService(private val objectMapper: ObjectMapper, val cbtAssignmen
 
         cbtAssignment.selectionMode = queryContent.cbtRouteSelectionMode
 
-        cbtAssignmentRepository.save(cbtAssignment)
+        cbtAssignmentRepository.saveAndFlush(cbtAssignment)
 
+    }
+
+    fun getAssignedCBTContent(queryContentId: Long, participantContentGroupId: Long) : QueryParticipantCbtAssignment? {
+        val assignedCBT = cbtAssignmentRepository
+                    .findOneByQueryParticipantContentIdAndQueryContentIdAndIsArchivedFalse(participantContentGroupId, queryContentId)
+        return assignedCBT
     }
 
     companion object {

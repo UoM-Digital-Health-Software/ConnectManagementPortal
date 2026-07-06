@@ -1,6 +1,7 @@
 package org.radarbase.management.config
 
 import org.radarbase.management.domain.*
+import org.radarbase.management.domain.enumeration.CbtRouteSelectionMode
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import java.time.ZonedDateTime
@@ -43,6 +44,19 @@ object ContentTestUtil {
 
         return content;
 
+    }
+
+    fun addCBTContentItem(version: String, type: String, route: String, mode: CbtRouteSelectionMode, queryGroup: QueryGroup, contentGroup: QueryContentGroup): QueryContent {
+        val content =  QueryContent()
+        content.queryGroup = queryGroup
+        content.queryContentGroup = contentGroup
+        content.type = ContentType.CBT_CONTENT
+        content.cbtVersion = version
+        content.cbtType = type
+        content.cbtRoute = route
+        content.cbtRouteSelectionMode =  mode
+
+        return content;
     }
 
 

@@ -67,13 +67,8 @@ class QueryContent : AbstractEntity(), Serializable {
     var queryGroup: QueryGroup? = null
 
     @ManyToOne
-    @JoinColumn(unique = true, name = "query_content_group_id")
+    @JoinColumn( name = "query_content_group_id")
     var queryContentGroup: QueryContentGroup? = null
-
-
-
-
-
 
     override fun toString(): String {
         return ("QueryContent{"

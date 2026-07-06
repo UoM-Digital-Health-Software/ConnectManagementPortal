@@ -8,7 +8,7 @@ import javax.persistence.*
 
 
 @Entity
-@Audited
+//@Audited
 @Table(name = "query_evaluation")
 @EntityListeners(
     AbstractEntityListener::class

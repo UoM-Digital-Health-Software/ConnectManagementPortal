@@ -8,11 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface QueryParticipantCbtAssignmentRepository :
     JpaRepository<QueryParticipantCbtAssignment, Long> {
 
-    fun findAllBySubjectId(subjectId: Long): List<QueryParticipantCbtAssignment>
+    fun findAllBySubjectIdAndIsArchivedFalse(subjectId: Long): List<QueryParticipantCbtAssignment>
 
-    fun findAllByQueryParticipantContentId(queryParticipantContentId: Long): List<QueryParticipantCbtAssignment>
+    fun findAllByQueryParticipantContentIdAndIsArchivedFalse(queryParticipantContentId: Long): List<QueryParticipantCbtAssignment>
 
-    fun findBySubjectIdAndQueryParticipantContentIdAndQueryContentId(
+    fun findOneByQueryParticipantContentIdAndQueryContentIdAndIsArchivedFalse(queryParticipantContentId: Long,  queryContentId: Long): QueryParticipantCbtAssignment
+
+
+
+    fun findBySubjectIdAndQueryParticipantContentIdAndQueryContentIdAndIsArchivedFalse(
         subjectId: Long,
         queryParticipantContentId: Long,
         queryContentId: Long
