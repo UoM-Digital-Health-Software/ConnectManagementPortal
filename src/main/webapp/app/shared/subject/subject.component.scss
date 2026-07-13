@@ -1,4 +1,39 @@
 
+.page-details {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.page-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ececec;
+}
+
+.page-row:last-child {
+    border-bottom: none;
+}
+
+.time {
+    width: 90px;
+    color: #6c757d;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.content {
+    flex: 1;
+}
+
+.badge {
+    margin-right: 10px;
+}
+
+
+
 .subject-wrapper {
     display: flex;
 }
