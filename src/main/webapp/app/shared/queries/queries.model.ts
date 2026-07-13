@@ -117,6 +117,7 @@ export interface ContentItem {
     cbtType?: string | undefined | null;
     cbtVersion?: string;
     cbtRoute?: string;
+    cbtRouteSelectionMode?: "RANDOM" | "FIXED"
 }
 
 export interface ContentGroup {

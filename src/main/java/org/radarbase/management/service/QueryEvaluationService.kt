@@ -358,7 +358,7 @@ public class QueryEValuationService(
 
     @Transactional
     fun  removeQueryParticipantContent(queryGroupId: Long, subjectId: Long) {
-        queryParticipantContentRepository.deleteByQueryGroupIdAndSubjectId(queryGroupId, subjectId);
+        queryParticipantContentRepository.deleteByQueryGroupIdAndSubjectIdAndIsArchivedFalse(queryGroupId, subjectId);
     }
 
     companion object {

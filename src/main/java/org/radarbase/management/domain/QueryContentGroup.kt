@@ -1,10 +1,16 @@
 package org.radarbase.management.domain
 
+import org.hibernate.annotations.Cache
+import org.hibernate.annotations.CacheConcurrencyStrategy
+import org.hibernate.annotations.Cascade
+import org.hibernate.annotations.CascadeType
 import org.hibernate.envers.Audited
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.support.AbstractEntityListener
+import org.radarbase.management.service.catalog.ContentItem
 import java.io.Serializable
 import java.time.ZonedDateTime
+import java.util.HashSet
 import javax.persistence.*
 
 
@@ -34,6 +40,13 @@ class QueryContentGroup : AbstractEntity(), Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: ContentGroupStatus = ContentGroupStatus.INACTIVE
+
+    @JvmField
+    @OneToMany(mappedBy = "queryContentGroup", orphanRemoval = true, fetch = FetchType.EAGER)
+    @Cascade(
+        CascadeType.ALL
+    )
+    var contentItems: MutableSet<QueryContent> = HashSet()
 
 
     override fun toString(): String {

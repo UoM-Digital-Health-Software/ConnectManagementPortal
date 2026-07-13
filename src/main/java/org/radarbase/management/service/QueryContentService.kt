@@ -2,6 +2,7 @@ package org.radarbase.management.service
 
 
 import org.radarbase.management.domain.*
+import org.radarbase.management.domain.enumeration.CbtRouteSelectionMode
 import org.radarbase.management.domain.enumeration.ContentGroupStatus
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.repository.*
@@ -38,9 +39,8 @@ class QueryContentService(
     private val queryContentGroupMapper: QueryContentGroupMapper,
     private val moduleRepository: ModuleRepository,
     private val notificationService: NotificationService,
-    private val contentNotificationRepository: ContentNotificationRepository
-
-
+    private val contentNotificationRepository: ContentNotificationRepository,
+    private val cbtContentService: CBTContentService
 ) {
 
     fun convertImgStringToByteArray(imgString: String): ByteArray {
@@ -111,6 +111,9 @@ class QueryContentService(
                     this.cbtRoute = dto.cbtRoute;
                     this.cbtType = dto.cbtType?.name;
                     this.cbtVersion = dto.cbtVersion
+                    if(dto.cbtRouteSelectionMode != null) {
+                        this.cbtRouteSelectionMode =   CbtRouteSelectionMode.valueOf(dto.cbtRouteSelectionMode!!)
+                    }
                 }
                 else {
                     this.value = dto.value
@@ -152,7 +155,7 @@ class QueryContentService(
 
     fun deleteQueryContentGroup(queryContentGroupId: Long) {
         queryContentRepository.deleteAllByQueryContentGroupId(queryContentGroupId)
-        queryParticipantContentRepository.deleteAllByQueryContentGroupId(queryContentGroupId)
+        queryParticipantContentRepository.deleteAllByQueryContentGroupIdAndIsArchivedFalse(queryContentGroupId)
         queryContentGroupRepository.deleteById(queryContentGroupId)
     }
 
@@ -215,7 +218,7 @@ class QueryContentService(
          return false
     }
 
-    private fun saveParticipantContentGroup(queryGroup: QueryGroup, queryContentGroup: QueryContentGroup, subject: Subject) {
+    private fun saveParticipantContentGroup(queryGroup: QueryGroup, queryContentGroup: QueryContentGroup, subject: Subject) : QueryParticipantContent {
         val participantContentGroup = QueryParticipantContent()
         participantContentGroup.queryContentGroup = queryContentGroup
         participantContentGroup.queryGroup = queryGroup
@@ -223,7 +226,7 @@ class QueryContentService(
         participantContentGroup.createdDate = ZonedDateTime.now();
         participantContentGroup.isArchived = false;
 
-        queryParticipantContentRepository.save(participantContentGroup);
+        return queryParticipantContentRepository.saveAndFlush(participantContentGroup);
     }
 
 
@@ -232,7 +235,7 @@ class QueryContentService(
     fun getRandomAlreadyAssignedContent(queryGroup: QueryGroup, subject: Subject): QueryContentGroup? {
         val queryGroupId = queryGroup.id ?: return null
 
-        val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroup(subject, queryGroup).map { it.queryContentGroup }
+        val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroupAndIsArchivedFalse(subject, queryGroup).map { it.queryContentGroup }
 
 
 
@@ -243,23 +246,38 @@ class QueryContentService(
     fun tryAssignNewContent(queryGroup: QueryGroup, subject: Subject) : QueryContentGroup? {
         val queryGroupId = queryGroup.id ?: return null
 
-
         val allContentGroups = queryContentGroupRepository.findAllByQueryGroupIdAndStatus(queryGroupId);
-        val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroup(subject, queryGroup).map { it.queryContentGroup }
+        val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroupAndIsArchivedFalse(subject, queryGroup).map { it.queryContentGroup }
         val assignedContentGroupIds = assignedContentGroups.map { it?.id }.toSet()
-
 
         val uniqueContent = allContentGroups.filter { it.id !in assignedContentGroupIds }
 
+
         if(uniqueContent.isNotEmpty()){
+            log.info("[TEEST] there is unique content size {}", uniqueContent.size)
             val newContent = uniqueContent.random();
-            saveParticipantContentGroup(queryGroup, newContent, subject)
+            val participantContentGroup = saveParticipantContentGroup(queryGroup, newContent, subject)
+
+            assignCBTContent(participantContentGroup, newContent,subject)
+
+
             return newContent
         }
 
         return null
     }
 
+    fun assignCBTContent(participantContentGroup:  QueryParticipantContent, contentGroup: QueryContentGroup, subject:Subject) {
+        if(contentGroup.id != null) {
+            val contentItems = queryContentRepository.findAllByQueryContentGroupId(contentGroup.id!!)
+
+            for(contentItem in contentItems){
+                if(contentItem.type == ContentType.CBT_CONTENT) {
+                    cbtContentService.createNewCBTAssignmentForParticipant(contentItem, participantContentGroup, subject)
+                }
+            }
+        }
+    }
 
 
     fun getContentItemsForSubjectAndContentGroup(subjectId: Long, contentGroupId: Long) : List<QueryContentDTO> {
@@ -267,17 +285,27 @@ class QueryContentService(
 
 
         val contentGroupOpt = queryContentGroupRepository.findById(contentGroupId)
+        log.info("[TEEEST] content group {}", contentGroupOpt.isPresent)
+        log.info("[TEEEST] content group id  {}", contentGroupId)
         val subjectOpt = subjectRepository.findById(subjectId)
+        log.info("[TEEEST] subjectOpt {}", subjectOpt.isPresent)
 
 
         if(contentGroupOpt.isPresent && subjectOpt.isPresent) {
+            log.info("[TEEEST] both present ")
             val contentGroup = contentGroupOpt.get()
             val subject = subjectOpt.get()
 
-            val participantContentGroupList = queryParticipantContentRepository.findByQueryContentGroupAndSubject(contentGroup, subject);
-
+            val all = queryParticipantContentRepository.findAll()
+            val participantContentGroupList = queryParticipantContentRepository.findByQueryContentGroupAndSubjectAndIsArchivedFalse(contentGroup, subject);
+            log.info("[TEEEST] all size {}", all.size)
+            log.info("[TEEEST] participantContentGroupList {}", participantContentGroupList.size)
             if(participantContentGroupList.isNotEmpty()) {
+                log.info("[TEEEST] list is not empty  ")
+
                 result = findAllByContentGroupId(contentGroup.id!!)
+
+                injectCBTContentIntoQueryContentDTO(participantContentGroupList, result)
             }
 
         }
@@ -285,9 +313,25 @@ class QueryContentService(
         return result
     }
 
+    fun injectCBTContentIntoQueryContentDTO(participantContentGroupList: List<QueryParticipantContent>, result :  List<QueryContentDTO>){
+        val participantContentGroup = participantContentGroupList.first()
+        for(queryContentDTO in result){
+            if(queryContentDTO.type == ContentType.CBT_CONTENT){
+                val assignedCBTContent  = cbtContentService.getAssignedCBTContent(queryContentDTO.id!!, participantContentGroup.id!! )
+                assignedCBTContent?.cbtType?.let { type ->
+                    queryContentDTO.cbtType = CBTContentType.valueOf(type)
+                    queryContentDTO.cbtRoute = assignedCBTContent.assignedCbtRoute
+                    queryContentDTO.cbtVersion = assignedCBTContent.cbtVersion
+                }
+            }
+        }
+    }
+
     fun findAllByContentGroupId(contentGroupId: Long) : List<QueryContentDTO> {
         val queryContentList = queryContentRepository.findAllByQueryContentGroupId(contentGroupId);
-        return queryContentList.mapNotNull { queryContentMapper.queryContentToQueryContentDTO(it) }
+
+        val queryContentListDTO =  queryContentList.mapNotNull { queryContentMapper.queryContentToQueryContentDTO(it) }
+        return queryContentListDTO
     }
 
     fun getAllContentGroupsForParticipant(subjectId: Long): Map<String, List<QueryContentGroupDTO>>  {
@@ -297,7 +341,7 @@ class QueryContentService(
 
         if(subjectOpt.isPresent) {
             val subject = subjectOpt.get();
-            val allAssignedParticipantContent = queryParticipantContentRepository.findBySubject(subject)
+            val allAssignedParticipantContent = queryParticipantContentRepository.findBySubjectAndIsArchivedFalse(subject)
 
 
             for(participantContent in allAssignedParticipantContent) {
@@ -367,7 +411,7 @@ class QueryContentService(
         contentGroup.status = status
 
         if (status == ContentGroupStatus.INACTIVE && contentGroup.id != null) {
-            queryParticipantContentRepository.deleteAllByQueryContentGroupId(contentGroup.id!!)
+            queryParticipantContentRepository.deleteAllByQueryContentGroupIdAndIsArchivedFalse(contentGroup.id!!)
         }
     }
 

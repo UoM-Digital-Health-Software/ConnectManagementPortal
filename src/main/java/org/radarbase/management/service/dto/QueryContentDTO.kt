@@ -17,4 +17,5 @@ class QueryContentDTO {
     var cbtVersion : String? = null
     var cbtType : CBTContentType? = null
     var cbtRoute   : String? = null
+    var cbtRouteSelectionMode : String? = null
 }

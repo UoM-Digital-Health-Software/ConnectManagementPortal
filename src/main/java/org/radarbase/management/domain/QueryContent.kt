@@ -1,6 +1,7 @@
 package org.radarbase.management.domain
 
 import org.hibernate.envers.Audited
+import org.radarbase.management.domain.enumeration.CbtRouteSelectionMode
 import org.radarbase.management.domain.enumeration.ContentType
 import org.radarbase.management.domain.support.AbstractEntityListener
 import java.io.Serializable
@@ -57,18 +58,17 @@ class QueryContent : AbstractEntity(), Serializable {
     @Column(name = "cbt_route")
     public var cbtRoute: String? = null
 
+    @Enumerated(EnumType.STRING)
+    @Column(name= "cbt_route_selection_mode")
+    var cbtRouteSelectionMode: CbtRouteSelectionMode? = null
+
     @ManyToOne
     @JoinColumn(unique = true, name = "query_group_id")
     var queryGroup: QueryGroup? = null
 
     @ManyToOne
-    @JoinColumn(unique = true, name = "query_content_group_id")
+    @JoinColumn( name = "query_content_group_id")
     var queryContentGroup: QueryContentGroup? = null
-
-
-
-
-
 
     override fun toString(): String {
         return ("QueryContent{"

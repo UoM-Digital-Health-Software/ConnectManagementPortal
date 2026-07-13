@@ -8,8 +8,4 @@ enum class ContentType {
     VIDEO,
     MODULE_LINK,
     CBT_CONTENT
-
-
-
-
 }

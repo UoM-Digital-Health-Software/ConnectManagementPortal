@@ -9,16 +9,16 @@ import org.springframework.data.repository.RepositoryDefinition
 @RepositoryDefinition(domainClass = QueryParticipantContent::class, idClass = Long::class)
 interface QueryParticipantContentRepository : JpaRepository<QueryParticipantContent, Long> {
 
-    fun findBySubjectAndQueryGroup(subject: Subject, queryGroup: QueryGroup): List<QueryParticipantContent>
+    fun findBySubjectAndQueryGroupAndIsArchivedFalse(subject: Subject, queryGroup: QueryGroup): List<QueryParticipantContent>
 
-    fun findByQueryContentGroupId(queryContentGroupId: Long): List<QueryParticipantContent>
+    fun findByQueryContentGroupIdAndIsArchivedFalse(queryContentGroupId: Long): List<QueryParticipantContent>
 
-    fun findBySubject(subject: Subject) : List<QueryParticipantContent>
+    fun findBySubjectAndIsArchivedFalse(subject: Subject) : List<QueryParticipantContent>
 
-    fun findByQueryContentGroupAndSubject(queryContentGroup: QueryContentGroup, subject: Subject) : List<QueryParticipantContent>
+    fun findByQueryContentGroupAndSubjectAndIsArchivedFalse(queryContentGroup: QueryContentGroup, subject: Subject) : List<QueryParticipantContent>
 
-    fun deleteAllByQueryContentGroupId(queryContentGroupId: Long)
+    fun deleteAllByQueryContentGroupIdAndIsArchivedFalse(queryContentGroupId: Long)
 
-    fun deleteByQueryGroupIdAndSubjectId(queryGroupId: Long, subjectId: Long)
+    fun deleteByQueryGroupIdAndSubjectIdAndIsArchivedFalse(queryGroupId: Long, subjectId: Long)
 
 }
