@@ -1,6 +1,7 @@
 package org.radarbase.management.service.dto
 
 import org.radarbase.management.domain.enumeration.ContentType
+import org.radarbase.management.service.CBTContentType
 
 class QueryContentDTO {
     var id : Long? = null ;
@@ -12,4 +13,9 @@ class QueryContentDTO {
     var queryGroupId: Long? = null
     var queryContentGroupId: Long? = null
     var resourceId : Long? = null
+
+    var cbtVersion : String? = null
+    var cbtType : CBTContentType? = null
+    var cbtRoute   : String? = null
+    var cbtRouteSelectionMode : String? = null
 }

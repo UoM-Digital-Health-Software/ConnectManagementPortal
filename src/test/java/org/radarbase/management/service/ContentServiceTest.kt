@@ -25,7 +25,8 @@ import org.radarbase.management.service.mapper.QueryContentGroupMapper
 import org.radarbase.management.service.mapper.QueryContentMapper
 
 import java.time.*
-
+import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
 
 
 /**
@@ -50,21 +51,32 @@ class ContentServiceTest(
     @Autowired private val participantContentRepository: QueryParticipantContentRepository,
     @Autowired private val queryContentMapper: QueryContentMapper,
     @Autowired private val queryContentGroupMapper: QueryContentGroupMapper,
-    @Autowired private val moduleRepository: ModuleRepository
+    @Autowired private val moduleRepository: ModuleRepository,
+    @Autowired private val cbtAssignmentRepository: QueryParticipantCbtAssignmentRepository,
+    @Autowired private val cbtContentService: CBTContentService,
+    @Autowired private val entityManagerFactory: EntityManagerFactory
 
 
 ) : BasePostgresIntegrationTest() {
     lateinit var userData: UserData
     lateinit var contentGroups: List<QueryContentGroup>
+    lateinit var contentGroupCBT: QueryContentGroup
     lateinit var subject: Subject
     lateinit var queryGroup : QueryGroup
+    lateinit var queryGroupCBT: QueryGroup
     lateinit var user: User
-
+    private lateinit var entityManager: EntityManager
 
     private lateinit var queryContentServiceMock: QueryContentService
 
     private lateinit var contentNotificationRepositoryMock: ContentNotificationRepository
     private lateinit var notificationService: NotificationService
+  // private lateinit var cbtContentService: CBTContentService
+
+   private var cbtRoute = "1"
+    private var cbtVersion = "version_1"
+    private var cbtType = "SLEEP"
+    private var cbtMode = CbtRouteSelectionMode.FIXED
 
     private fun createNotification(sent: Boolean = false): ContentNotification {
         val user = User()
@@ -80,8 +92,13 @@ class ContentServiceTest(
     }
     @BeforeEach
     fun initTest() {
+
+        entityManager = entityManagerFactory.createEntityManager(
+            entityManagerFactory.properties
+        )
         contentNotificationRepositoryMock = mock()
         notificationService = mock()
+      //  cbtContentService = mock()
 
         queryContentServiceMock =
             spy(QueryContentService(
@@ -97,7 +114,8 @@ class ContentServiceTest(
                 moduleRepository,
 
         notificationService,
-        contentNotificationRepositoryMock
+        contentNotificationRepositoryMock,
+                cbtContentService
         ))
 
 
@@ -107,16 +125,24 @@ class ContentServiceTest(
         userData = generateUserData(64.2,8, 50)
 
         queryGroup = queryGroupRepository.saveAndFlush(createQueryGroup());
+        queryGroupCBT = queryGroupRepository.saveAndFlush(createQueryGroup());
 
         contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName", queryGroup))
-
         contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName 1", queryGroup))
         contentGroups += contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName 2", queryGroup))
 
+        contentGroupCBT = contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupName CBT", queryGroupCBT))
+
         contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[0]))
         contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[1]))
-        contentRepository.saveAndFlush(ContentTestUtil.addContentItem("value", "heading", ContentType.PARAGRAPH, queryGroup, contentGroups[0]))
+        contentRepository.saveAndFlush(ContentTestUtil.addCBTContentItem(cbtVersion, cbtType, cbtRoute, cbtMode, queryGroup, contentGroups[0]))
 
+        contentRepository.saveAndFlush(ContentTestUtil.addCBTContentItem(cbtVersion, cbtType, "",
+            CbtRouteSelectionMode.RANDOM, queryGroup, contentGroups[1]))
+
+
+        contentRepository.saveAndFlush(ContentTestUtil.addCBTContentItem(cbtVersion, cbtType, "",
+            CbtRouteSelectionMode.RANDOM, queryGroupCBT, contentGroupCBT))
 
         ContentTestUtil.addQueryParticipantContent(queryGroup, subject, contentGroups[0])
     }
@@ -252,20 +278,59 @@ class ContentServiceTest(
 
             val sizeAfter =  participantContentRepository.findAll().size
 
+            val contentItems = contentRepository.findAllByQueryContentGroupId(contentGroup.id!!)
+
+            Assertions.assertEquals(sizeBefore + 1,sizeAfter)
             Assertions.assertEquals(sizeBefore + 1,sizeAfter)
         }
-
 
         val finalSize =  participantContentRepository.findAll().size
         var result = queryContentService.tryAssignNewContent(queryGroup, subject)
         val finalSizeAfter =  participantContentRepository.findAll().size
 
+        val cbtAssignedContents =  cbtAssignmentRepository.findAll();
+
         Assertions.assertEquals(finalSize,finalSizeAfter)
 
         Assertions.assertEquals(3, finalSize)
         Assertions.assertEquals(result, null)
+        Assertions.assertEquals(2, cbtAssignedContents.size)
+
+        for( assignedContent in cbtAssignedContents) {
+            if(assignedContent.selectionMode == CbtRouteSelectionMode.FIXED) {
+
+                Assertions.assertEquals(cbtRoute, assignedContent.assignedCbtRoute)
+                Assertions.assertEquals(cbtType, assignedContent.cbtType)
+                Assertions.assertEquals(cbtVersion, assignedContent.cbtVersion)
+                Assertions.assertEquals(cbtMode, assignedContent.selectionMode)
+            } else {
+                Assertions.assertEquals(cbtType, assignedContent.cbtType)
+                Assertions.assertEquals(cbtVersion, assignedContent.cbtVersion)
+                Assertions.assertEquals(CbtRouteSelectionMode.RANDOM, assignedContent.selectionMode)
+            }
+
+        }
+
     }
 
+    @Test
+    @Transactional
+    fun testGetContent() {
+
+        queryContentService.tryAssignNewContent(queryGroupCBT, subject)
+
+       val allContentItems =  queryContentService.getContentItemsForSubjectAndContentGroup(subject.id!!, contentGroupCBT.id!!)
+        Assertions.assertEquals(1, allContentItems.size)
+
+        val cbtContentItem = allContentItems[0]
+
+        Assertions.assertEquals(
+            CbtRouteSelectionMode.RANDOM,
+            CbtRouteSelectionMode.valueOf(cbtContentItem.cbtRouteSelectionMode.toString())
+        )
+        Assertions.assertNotNull(cbtContentItem.cbtRoute)
+
+    }
 
 
     @Test
@@ -274,7 +339,6 @@ class ContentServiceTest(
 
         val queryGroup1 = queryGroupRepository.saveAndFlush(createQueryGroup());
         val inactiveContentGroup = contentGroupRepository.saveAndFlush(ContentTestUtil.addContentGroup("GroupNameInactive", queryGroup1, ContentGroupStatus.INACTIVE))
-
         val sizeBefore =  participantContentRepository.findAll().size
         var result = queryContentService.tryAssignNewContent(queryGroup1, subject)
         val finalSizeAfter =  participantContentRepository.findAll().size
@@ -296,6 +360,7 @@ class ContentServiceTest(
         val newContent = queryContentService.tryAssignNewContent(queryGroup, subject)
         result = queryContentService.getRandomAlreadyAssignedContent(queryGroup, subject)
         Assertions.assertEquals(result!!.contentGroupName, newContent!!.contentGroupName)
+       // Assertions.assertEquals(result!!, newContent!!.contentGroupName)
     }
 
 

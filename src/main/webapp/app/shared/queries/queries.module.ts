@@ -19,6 +19,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
 import { ModalContentComponent } from './content/modal-content/modal-content.component';
 import { ArchivedQueryGroupListComponent } from './archivedQueryGroupList.component';
 import { ModulelinkItemComponent } from './content/modulelink-item/modulelink-item.component';
+import { CbtContentItemComponent } from './content/cbt-content-item/cbt-content-item.component';
 
 @NgModule({
     imports: [
@@ -41,7 +42,8 @@ import { ModulelinkItemComponent } from './content/modulelink-item/modulelink-it
         ParagraphItemComponent,
         ImageItemComponent,
         ModalContentComponent,
-        ModulelinkItemComponent
+        ModulelinkItemComponent,
+        CbtContentItemComponent
     ],
     entryComponents: [],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

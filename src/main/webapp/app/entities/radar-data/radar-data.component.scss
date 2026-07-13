@@ -3,3 +3,16 @@
 .padding-bottom {
     padding-bottom: 30px;
 }
+
+
+.flex {
+    display:flex;
+    justify-content:space-between;
+
+    padding-bottom: 30px;
+}
+.flex-column {
+    display:flex;
+    flex-direction: column;
+
+}

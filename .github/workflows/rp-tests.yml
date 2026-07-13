@@ -33,7 +33,6 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}
-
       - name: Create Firebase credentials file
         run: |
           mkdir -p src/main/resources/notif_config

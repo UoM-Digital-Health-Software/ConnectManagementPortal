@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20260626130000_add_cbt_route_selection_mode_to_query_content" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="query_content" columnName="cbt_route_selection_mode"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="query_content">
+            <column name="cbt_route_selection_mode" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+    </changeSet>
+
+
+
+    <changeSet id="20260626130000_modify_query_content_table_cbt_aud" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">        <not>
+            <columnExists tableName="query_content_aud" columnName="cbt_route_selection_mode_mod"/> </not>
+        </preConditions>
+
+        <addColumn tableName="query_content_aud">
+            <column name="cbt_route_selection_mode" type="varchar(20)" >
+                <constraints nullable="true"/>
+            </column>
+            <column name="cbt_route_selection_mode_mod" type="boolean" >
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet id="20260707130000_add_content_items_to_query_content_group_aud" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">        <not>
+            <columnExists tableName="query_content_group_aud" columnName="content_items_mod"/> </not>
+        </preConditions>
+
+        <addColumn tableName="query_content_group_aud">
+            <column name="content_items_mod" type="boolean"/>    </addColumn>
+    </changeSet>
+
+
+</databaseChangeLog>

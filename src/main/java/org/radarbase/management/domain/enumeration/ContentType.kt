@@ -6,9 +6,6 @@ enum class ContentType {
     PARAGRAPH,
     IMAGE,
     VIDEO,
-    MODULE_LINK
-
-
-
-
+    MODULE_LINK,
+    CBT_CONTENT
 }

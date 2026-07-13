@@ -47,6 +47,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler
+import org.springframework.security.web.header.writers.StaticHeadersWriter
 import java.util.*
 import javax.sql.DataSource
 
@@ -75,6 +76,7 @@ class OAuth2ServerConfiguration {
                 .authorizeRequests()
                 .antMatchers("/oauth/token").permitAll()
                 .antMatchers("/api/config/**").permitAll()
+                .antMatchers("/api/video-bridge/**").permitAll()
                 .and()
                 .addFilterAfter(
                     jwtAuthenticationFilter,
@@ -151,6 +153,7 @@ class OAuth2ServerConfiguration {
                 .skipUrlPattern(HttpMethod.GET, "/js/**")
                 .skipUrlPattern(HttpMethod.GET, "/oauth2/authorize")
                 .skipUrlPattern(HttpMethod.GET, "/radar-baseRR.png")
+                .skipUrlPattern(HttpMethod.GET, "/api/video-bridge/**")
         }
 
         @Throws(Exception::class)
@@ -173,7 +176,9 @@ class OAuth2ServerConfiguration {
                 .and()
                 .headers()
                 .frameOptions()
+
                 .disable()
+
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
@@ -189,6 +194,8 @@ class OAuth2ServerConfiguration {
                 .antMatchers("/api/public/projects").permitAll()
                 .antMatchers("/api/public/**").permitAll()
                 .antMatchers("/api/logout-url").permitAll()
+                .antMatchers("/api/video-bridge/**").permitAll()
+
                 .antMatchers("/api/**")
                 .authenticated() // Allow management/health endpoint to all to allow kubernetes to be able to
                 // detect the health of the service

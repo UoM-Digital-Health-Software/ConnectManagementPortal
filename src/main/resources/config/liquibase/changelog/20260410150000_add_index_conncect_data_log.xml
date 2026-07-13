@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+
+
+        <changeSet id="add-composite-index-connect-data-log" author="HenryGorner">
+            <preConditions onFail="MARK_RAN">
+                <not>
+                    <indexExists indexName="idx_connect_log_user_type_time" tableName="connect_data_log"/>
+                </not>
+            </preConditions>
+            <createIndex indexName="idx_connect_log_user_type_time" tableName="connect_data_log">
+                <column name="userId"/>
+                <column name="dataGroupingType"/>
+                <column name="time" descending="true"/>
+            </createIndex>
+        </changeSet>
+
+
+
+
+
+
+
+</databaseChangeLog>

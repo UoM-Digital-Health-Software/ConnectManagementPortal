@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-04-17T09:40:07Z",
+  "measures": {
+    "fitbit_intraday_heart_rate": {
+      "current_source_latest_object_key": "output/Manchester/ff75b677-365e-44af-9e0e-326b05289a3c/connect_fitbit_intraday_heart_rate/20260209_2300.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-02-09",
+      "last_valid_object_key": "output/Manchester/ff75b677-365e-44af-9e0e-326b05289a3c/connect_fitbit_intraday_heart_rate/20260209_2300.csv.gz",
+      "metric": "connect_fitbit_intraday_heart_rate",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    },
+    "fitbit_intraday_heart_rate_variability": {
+      "current_source_latest_object_key": "output/Manchester/ff75b677-365e-44af-9e0e-326b05289a3c/connect_fitbit_intraday_heart_rate_variability/20260410_0800.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-04-10",
+      "last_valid_object_key": "output/Manchester/ff75b677-365e-44af-9e0e-326b05289a3c/connect_fitbit_intraday_heart_rate_variability/20260410_0800.csv.gz",
+      "metric": "connect_fitbit_intraday_heart_rate_variability",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    },
+    "fitbit_resting_heart_rate": {
+      "current_source_latest_object_key": "output/Manchester/ff75b677-365e-44af-9e0e-326b05289a3c/connect_fitbit_resting_heart_rate/20260311_0000.csv.gz",
+      "files_scanned": 1,
+      "last_measurement_date": "2026-03-11",
+      "last_valid_object_key": "output/Manchester/ff75b677-365e-44af-9e0e-326b05289a3c/connect_fitbit_resting_heart_rate/20260311_0000.csv.gz",
+      "metric": "connect_fitbit_resting_heart_rate",
+      "resolution_method": "scanned_downloaded_files",
+      "status": "ok"
+    }
+  },
+  "participant_id": "ff75b677-365e-44af-9e0e-326b05289a3c",
+  "run_id": "2026-04-17-fitbit-latest-measurement-dates-r3",
+  "site": "Manchester"
+}

@@ -1,6 +1,7 @@
 package org.radarbase.management.service
 import org.radarbase.management.domain.*
 import org.radarbase.management.domain.enumeration.QueryLogicType
+import org.radarbase.management.domain.enumeration.QueryReferenceType
 import org.radarbase.management.domain.enumeration.QueryTimeFrame
 import org.radarbase.management.repository.*
 import org.radarbase.management.service.dto.QueryEvaluationDTO
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
-import java.time.YearMonth
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -16,6 +16,7 @@ import java.util.*
 import org.springframework.scheduling.annotation.Scheduled
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
+
 
 data class DataPoint(
     val month: String,
@@ -31,16 +32,12 @@ data class UserData(
 public class QueryEValuationService(
     private val queryLogicRepository:  QueryLogicRepository,
     private val queryContentService: QueryContentService,
-    private val queryGroupRepository: QueryGroupRepository,
     private val queryEvaluationRepository: QueryEvaluationRepository,
     private val subjectRepository: SubjectRepository,
     private val queryParticipantRepository: QueryParticipantRepository,
     private val queryParticipantContentRepository: QueryParticipantContentRepository,
     private val awsService: AWSService,
     private val pdfSummaryRequestRepository: PdfSummaryRequestRepository,
-
-
-
 ) {
     fun evaluteQueryCondition(queryLogic: QueryLogic, userData: MutableMap<String, DataSummaryCategory>) : Boolean {
         return when(queryLogic.type) {
@@ -109,11 +106,23 @@ public class QueryEValuationService(
         val value = when (entity.lowercase()) {
             "physical" -> physicalData[metric.lowercase()]
             "questionnaire_group" -> questionnaireGroup[metric.lowercase()]
-
             else -> null
         }
 
         return value
+    }
+
+    fun getRollingAvgDates(query: Query): List<String>? {
+        if(query.timeFrame != null && query.referenceType != null && query.referenceType == QueryReferenceType.ROLLING_AVG) {
+            val targetDate = LocalDate.now()
+            val endDate = getStartDateFromTimeFrameAndTargetDate(query.timeFrame!!, targetDate)
+
+
+            val result = extractDatesToQuery(query.rollingWindow!!, endDate)
+
+            return  result
+        }
+        return null
     }
 
     fun evaluateSingleCondition(
@@ -129,8 +138,20 @@ public class QueryEValuationService(
         val timeFrame = query.timeFrame ?: throw IllegalArgumentException("Timeframe is missing")
         val datesToQuery = extractDatesToQuery(timeFrame)
 
-        var avgEvalData = mutableListOf<Double>()
-        var histogramEvalData = mutableMapOf<String, Int>()
+
+        val avgRollilngWindow =  mutableListOf<Double>()
+        val rollingAvgDates = getRollingAvgDates(query)
+
+        if(rollingAvgDates != null) {
+            for(date in rollingAvgDates) {
+                val summary = userData[date] ?: continue
+                avgRollilngWindow += getRelevantDataForAveragedEvaluation(entity, metric, summary) ?: continue
+            }
+
+        }
+
+        val avgEvalData = mutableListOf<Double>()
+        val histogramEvalData = mutableMapOf<String, Int>()
 
         for (date in datesToQuery) {
             val summary = userData[date] ?: continue
@@ -142,7 +163,38 @@ public class QueryEValuationService(
             }
         }
 
+        return if(query.referenceType == QueryReferenceType.ROLLING_AVG) {
+            evaluateRollingAvgComparison(comparisonOperator, avgEvalData, avgRollilngWindow, expectedValue)
+        } else {
+            evaluateAbsoluteValue(comparisonOperator,histogramEvalData,expectedValue,datesToQuery,avgEvalData)
+        }
+    }
 
+    fun evaluateRollingAvgComparison(   comparisonOperator: String,
+                                  currentValues: List<Double>,
+                                  referenceValues: List<Double>,
+                                  expectedValue: String ): Boolean {
+
+        if (currentValues.isEmpty() || referenceValues.isEmpty()) return false
+
+        val currentAvg = currentValues.average()
+        val referenceAvg = referenceValues.average()
+
+        if (referenceAvg == 0.0) return false
+
+        val percentChange = ((currentAvg - referenceAvg) / referenceAvg) * 100
+        return when (comparisonOperator) {
+            ">"  -> percentChange > expectedValue.toDouble()
+            "<"  -> percentChange < expectedValue.toDouble()
+            ">=" -> percentChange >= expectedValue.toDouble()
+            "<=" -> percentChange <= expectedValue.toDouble()
+            "="  -> kotlin.math.abs(percentChange - expectedValue.toDouble()) < 0.0001
+            "!=" -> kotlin.math.abs(percentChange - expectedValue.toDouble()) >= 0.0001
+            else -> false
+        }
+    }
+    fun evaluateAbsoluteValue(comparisonOperator: String, histogramEvalData: MutableMap<String, Int>, expectedValue: String, datesToQuery: List<String>, avgEvalData: MutableList<Double>
+    ): Boolean {
         return if (comparisonOperator == "IS") {
             evaluateAgainstHistogramData(histogramEvalData, expectedValue, datesToQuery.size)
         } else {
@@ -163,66 +215,19 @@ public class QueryEValuationService(
         }
     }
 
-    fun extractDatesToQuery(timeframe: QueryTimeFrame): List<String> {
-        val today = LocalDate.now()
-        var startDate = today;
-
-        when (timeframe.name) {
-            "PAST_WEEK" -> startDate = startDate.minusWeeks(1)
-            "PAST_MONTH" -> startDate = startDate.minusMonths(1)
-            "PAST_6_MONTH" -> startDate = startDate.minusMonths(6)
-            "PAST_YEAR" -> startDate = startDate.minusYears(1)
-            else -> throw Exception("No timeframe provided")
-        }
+    fun extractDatesToQuery(timeframe: QueryTimeFrame, originDate: LocalDate? = null): List<String> {
+        val targetDate = originDate ?: LocalDate.now()
+        val startDate = getStartDateFromTimeFrameAndTargetDate(timeframe, targetDate)
+            ?: throw Exception("[extractDatesToQuery] startDate null")
 
         val dayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val daysBetween = ChronoUnit.DAYS.between(startDate, today)
+        val daysBetween = ChronoUnit.DAYS.between(startDate, targetDate)
 
         return (0 until daysBetween).map { startDate.plusDays(it).format(dayFormatter) }
     }
 
-    //TODO: delete later, only added  for Sandra evaluation purposes
-    private fun generateUserData(valueHeartRate: Double, valueSleep: Long, HRV: Long)  : UserData{
-        val currentMonth = YearMonth.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM")
 
-        val heartRateData =
-            (0L until 12L).map { monthsAgo ->
-                val month = currentMonth.minusMonths(monthsAgo).format(formatter)
-                val value = valueHeartRate
-                DataPoint(month, value.toDouble())
-            }.reversed()
-
-
-        val sleepData =   (0L until 12L).map { monthsAgo ->
-            val month = currentMonth.minusMonths(monthsAgo).format(formatter)
-            val value = valueSleep
-            DataPoint(month, value.toDouble())
-        }.reversed()
-
-
-        val HRV =   (0L until 12L).map { monthsAgo ->
-            val month = currentMonth.minusMonths(monthsAgo).format(formatter)
-            val value = HRV
-            DataPoint(month, value.toDouble())
-        }.reversed()
-
-
-        val sleepHistogram =   (0L until 12L).map { monthsAgo ->
-            val month = currentMonth.minusMonths(monthsAgo).format(formatter)
-            val value =  mapOf("6-8" to 2, "8-10" to 18, "4-6" to 2, "10-12" to 5)
-            DataPoint(month, null, value)
-        }.reversed()
-
-        return UserData(
-            metrics = mapOf(
-                "HEART_RATE" to heartRateData,
-                "SLEEP_LENGTH" to sleepData,
-                "HRV" to HRV,
-                "SLEEP_5" to sleepHistogram)
-        )
-    }
     //TODO: this will be replaced by a real data and automatic worker
     fun testLogicEvaluation(subject: Subject, project: String,  customUserData: UserData?) : MutableMap<String, Boolean>?  {
         val subjectLogin = subject.user?.login!!
@@ -321,7 +326,7 @@ public class QueryEValuationService(
             val queryGroup  = queryParticipant.queryGroup
             log.info("[evaluateQueries] participant {}", participant)
             log.info("[evaluateQueries] queryGroup {}", queryGroup)
-     
+
 
             if(participant == null  || queryGroup == null ) {
                 continue
@@ -338,10 +343,22 @@ public class QueryEValuationService(
         }
     }
 
+    fun getStartDateFromTimeFrameAndTargetDate(timeFrameName: QueryTimeFrame, targetDate: LocalDate) : LocalDate?  {
+        val result = when (timeFrameName.name) {
+            "PAST_WEEK" -> targetDate.minusDays(7)
+            "PAST_MONTH" -> targetDate.minusDays(30)
+            "PAST_6_MONTH" -> targetDate.minusDays(180)
+            "PAST_YEAR" -> targetDate.minusDays(365)
+            else -> throw Exception("No timeframe provided")
+        }
+
+        return result
+    }
+
 
     @Transactional
     fun  removeQueryParticipantContent(queryGroupId: Long, subjectId: Long) {
-        queryParticipantContentRepository.deleteByQueryGroupIdAndSubjectId(queryGroupId, subjectId);
+        queryParticipantContentRepository.deleteByQueryGroupIdAndSubjectIdAndIsArchivedFalse(queryGroupId, subjectId);
     }
 
     companion object {

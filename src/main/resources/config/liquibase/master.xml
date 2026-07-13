@@ -56,7 +56,12 @@
     <include file="classpath:config/liquibase/changelog/20250902155500_added_device_table.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20251030150000_add_notifications.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20251104150000_modify_query_evaluation_column.xml" relativeToChangelogFile="false"/>
-
-
+    <include file="classpath:config/liquibase/changelog/20260223150000_add_cache_size_log.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260410150000_add_index_conncect_data_log.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260417150000_add_latest_date_tracker.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260420100400_add_aws_log_table.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260522150000_modify_query_content_table_cbt.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260626150000_add_query_participant_cbt_assignment_table.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260626160000_add_cbt_route_selection_mode_to_query_content.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

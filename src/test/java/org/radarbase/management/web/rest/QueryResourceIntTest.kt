@@ -213,6 +213,7 @@ internal class QueryResourceIntTest(
         queryDTO.timeFrame = QueryTimeFrame.PAST_WEEK
         queryDTO.operator = ComparisonOperator.LESS_THAN_OR_EQUALS
 
+
         queryLogicParentDTO.queryGroupId = queryGroup.id
         queryLogicParentDTO.logic_operator = QueryLogicOperator.AND
 
