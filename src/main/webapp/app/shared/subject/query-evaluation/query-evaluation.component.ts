@@ -16,7 +16,7 @@ import { Observable, Subscription } from 'rxjs';
 @Component({
     selector: 'jhi-query-evaluation',
     templateUrl: './query-evaluation.component.html',
-      styleUrls: ['../subject.component.scss']
+    styleUrls: ['../subject.component.scss']
 })
 
 export class QueryEvaluationDialogComponent implements OnInit, OnDestroy {
@@ -26,15 +26,21 @@ export class QueryEvaluationDialogComponent implements OnInit, OnDestroy {
     public dataexample: string;
 
     private baseUrl = 'api/query-builder';
-    dataLogs:any = {};
+    dataLogs: any = {};
+
+    pageViews: any = {}
 
     private subscriptions: Subscription = new Subscription();
+    expandedRow: number | null = null;
 
+    toggleRow(index: number): void {
+        this.expandedRow = this.expandedRow === index ? null : index;
+    }
     constructor(
-            public activeModal: NgbActiveModal,
-            private alertService: AlertService,
-            private subjectService: SubjectService,
-             private http: HttpClient
+        public activeModal: NgbActiveModal,
+        private alertService: AlertService,
+        private subjectService: SubjectService,
+        private http: HttpClient
     ) {
     }
 
@@ -43,6 +49,11 @@ export class QueryEvaluationDialogComponent implements OnInit, OnDestroy {
 
             this.subjectService.findEvalautionsPerParticipant(this.subject.login).subscribe((response: HttpResponse<any>) => {
                 this.dataLogs = response.body
+            });
+
+
+            this.subjectService.getAnalyticsForSubject(this.subject.login).subscribe((response: HttpResponse<any>) => {
+                this.pageViews = response.body
             });
         }
     }
@@ -62,16 +73,16 @@ export class QueryEvaluationDialogComponent implements OnInit, OnDestroy {
     evaluate() {
         var json = this.dataexample ? JSON.parse(this.dataexample) : null;
         this.http
-                .post(this.baseUrl + '/evaluate/' + this.subject.id, json)
-                .subscribe((response) => {
-                    for (const [key, value] of Object.entries(response)) {
-                        if (value) {
-                            this.alertService.success(key + ": Passed");
-                        } else {
-                            this.alertService.error(key + ": Didn't passed");
-                        }
-                      }
-                   });
+            .post(this.baseUrl + '/evaluate/' + this.subject.id, json)
+            .subscribe((response) => {
+                for (const [key, value] of Object.entries(response)) {
+                    if (value) {
+                        this.alertService.success(key + ": Passed");
+                    } else {
+                        this.alertService.error(key + ": Didn't passed");
+                    }
+                }
+            });
     }
 }
 

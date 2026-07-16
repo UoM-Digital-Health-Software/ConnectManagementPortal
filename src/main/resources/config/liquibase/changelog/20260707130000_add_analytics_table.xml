@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20260626130000_add_cbt_route_selection_mode_to_query_content" author="Jindrich Gorner">
+
+
+        <createTable tableName="analytics">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="action" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="participant_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="category" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="page_url" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+
+
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="participant_id"
+                                 baseTableName="analytics"
+                                 constraintName="fk_analytics_participant_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="subject"/>
+
+
+        <createTable tableName="analytics_parameters">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="analytics_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="parameter_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="parameter_value" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="analytics_id"
+                                 baseTableName="analytics_parameters"
+                                 constraintName="fk_analytics_parameters_participant_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="analytics"/>
+
+
+
+    </changeSet>
+
+
+
+
+
+
+</databaseChangeLog>

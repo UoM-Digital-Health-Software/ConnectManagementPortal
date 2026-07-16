@@ -47,7 +47,79 @@
 
         </div>
 
-    </div>
+        <h4 class="modal-title" id="mySubjectLabel"
+            >
+             Page Visits
+        </h4>
+
+                <div class="table-scroll">
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>First View Time</th>
+            <th>Last View Time</th>
+            <th>Duration</th>
+            <th>Pages</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <ng-container *ngFor="let pageview of pageViews; let i = index">
+
+            <!-- Main row -->
+            <tr>
+                <td>{{ pageview.firstViewTime | date:'yyyy-MM-dd' }}</td>
+                <td>{{ pageview.lastViewTime | date:'yyyy-MM-dd' }}</td>
+                <td>{{ pageview.durationSeconds }}</td>
+                <td>
+                    <button
+                        class="btn btn-link p-0"
+                        (click)="toggleRow(i)">
+                        {{ expandedRow === i ? 'Hide' : 'Show' }}
+                        ({{ pageview.analytics.length }})
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Expanded row -->
+            <tr *ngIf="expandedRow === i">
+    <td colspan="4" class="p-0">
+        <div class="page-details">
+            <div class="page-row" *ngFor="let page of pageview.analytics">
+                <div class="time">
+                    {{ page.date | date:'HH:mm:ss' }}
+                </div>
+
+                <div class="content">
+                    <div>
+                        <span class="badge bg-primary">{{ page.action }}</span>
+                        <span class="badge bg-secondary">{{ page.category }}</span>
+
+                        <strong>{{ page.pageUrl }}</strong>
+                    </div>
+
+                    <small class="text-muted">
+                        Duration: {{ page.duration }} s
+                    </small>
+                </div>
+            </div>
+        </div>
+    </td>
+            </tr>
+
+        </ng-container>
+    </tbody>
+</table>
+        </div>
+
+
+
+        </div>
+
+
+
+
+
     <div class="modal-footer">
 
     </div>

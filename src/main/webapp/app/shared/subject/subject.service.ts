@@ -173,6 +173,17 @@ export class SubjectService {
         );
 
     }
+
+    getAnalyticsForSubject(login: string): Observable<HttpResponse<any>> {
+
+        return this.http.get(
+            `api/analytics/subject/${encodeURIComponent(login)}`,
+            {  observe: 'response' }
+        );
+
+    }
+
+
 }
 
 export interface SubjectFilterParams {

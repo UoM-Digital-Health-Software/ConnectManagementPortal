@@ -4,7 +4,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-
+    <property name="clobType" value="clob" dbms="h2"/>
+    <property name="clobType" value="clob" dbms="mysql, oracle, mssql, mariadb, postgresql"/>
 
     <include file="classpath:config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/00000000000001_added_entity_Project.xml" relativeToChangelogFile="false"/>
@@ -63,5 +64,6 @@
     <include file="classpath:config/liquibase/changelog/20260522150000_modify_query_content_table_cbt.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20260626150000_add_query_participant_cbt_assignment_table.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20260626160000_add_cbt_route_selection_mode_to_query_content.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260707130000_add_analytics_table.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>
