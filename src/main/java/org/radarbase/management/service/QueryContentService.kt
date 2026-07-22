@@ -53,6 +53,7 @@ class QueryContentService(
         return decoder.decode(encodedImg.toByteArray(StandardCharsets.UTF_8))
     }
 
+    @Transactional
     fun saveAllOrUpdate(contentGroupDTO: QueryContentGroupDTO): Long? {
         val decoder = Base64.getDecoder()
 
@@ -80,11 +81,16 @@ class QueryContentService(
 
             if (updated) {
                 existingGroup.updatedDate = ZonedDateTime.now()
-                queryContentGroupRepository.save(existingGroup)
+                queryContentGroupRepository.saveAndFlush(existingGroup)
             }
 
-            val oldContents = queryContentRepository.findAllByQueryContentGroupId(existingGroup.id!!)
-            queryContentRepository.deleteAll(oldContents)
+            existingGroup.contentItems.clear()
+            queryContentGroupRepository.save(existingGroup)
+
+
+
+
+            val oldContentsAgain = queryContentRepository.findAllByQueryContentGroupId(existingGroup.id!!)
 
             existingGroup
         } else {
@@ -135,7 +141,7 @@ class QueryContentService(
     }
 
     fun getAllContentGroupsWithContentsQueryGroupId(queryGroupId: Long): List<QueryContentGroupDTO> {
-        val contentGroups = queryContentGroupRepository.findAllByQueryGroupId(queryGroupId)
+        val contentGroups = queryContentGroupRepository.findAllByQueryGroupIdAndIsArchivedFalse(queryGroupId)
 
         return contentGroups.map { group ->
             val queryContents = queryContentRepository.findAllByQueryContentGroupId(group.id!!)
@@ -153,10 +159,20 @@ class QueryContentService(
     }
 
 
-    fun deleteQueryContentGroup(queryContentGroupId: Long) {
-        queryContentRepository.deleteAllByQueryContentGroupId(queryContentGroupId)
-        queryParticipantContentRepository.deleteAllByQueryContentGroupIdAndIsArchivedFalse(queryContentGroupId)
-        queryContentGroupRepository.deleteById(queryContentGroupId)
+    fun archiveQueryContentGroup(queryContentGroupId: Long) {
+        val queryContentGroup = queryContentGroupRepository.findById(queryContentGroupId).get()
+        queryContentGroup.isArchived = true
+
+        val participantContentGroupList = queryParticipantContentRepository.findByQueryContentGroupIdAndIsArchivedFalse(queryContentGroupId)
+
+        for(participantContent in participantContentGroupList) {
+            participantContent.isArchived = true
+            queryParticipantContentRepository.save(participantContent)
+        }
+        queryContentGroupRepository.save(queryContentGroup)
+
+        queryContentGroupRepository.flush()
+        queryParticipantContentRepository.flush()
     }
 
 
@@ -246,7 +262,7 @@ class QueryContentService(
     fun tryAssignNewContent(queryGroup: QueryGroup, subject: Subject) : QueryContentGroup? {
         val queryGroupId = queryGroup.id ?: return null
 
-        val allContentGroups = queryContentGroupRepository.findAllByQueryGroupIdAndStatus(queryGroupId);
+        val allContentGroups = queryContentGroupRepository.findAllByQueryGroupIdAndStatusAndIsArchivedIsFalse(queryGroupId);
         val assignedContentGroups = queryParticipantContentRepository.findBySubjectAndQueryGroupAndIsArchivedFalse(subject, queryGroup).map { it.queryContentGroup }
         val assignedContentGroupIds = assignedContentGroups.map { it?.id }.toSet()
 
@@ -411,7 +427,12 @@ class QueryContentService(
         contentGroup.status = status
 
         if (status == ContentGroupStatus.INACTIVE && contentGroup.id != null) {
-            queryParticipantContentRepository.deleteAllByQueryContentGroupIdAndIsArchivedFalse(contentGroup.id!!)
+            // archive the query groups instead of deleting them for audit purposes
+            val participantContents = queryParticipantContentRepository.findByQueryContentGroupIdAndIsArchivedFalse(contentGroup.id!!)
+            for(participantContent in participantContents){
+                participantContent.isArchived = false
+                queryParticipantContentRepository.saveAndFlush(participantContent)
+            }
         }
     }
 
@@ -474,6 +495,12 @@ class QueryContentService(
             contentNotificationRepository.saveAndFlush(notification)
         }
 
+    }
+
+
+    fun isContentGroupAssigned(queryContentGroupId: Long) : Boolean {
+        val assignedContentGroups = queryParticipantContentRepository.findByQueryContentGroupIdAndIsArchivedFalse(queryContentGroupId);
+        return assignedContentGroups.isNotEmpty()
     }
 
     companion object {

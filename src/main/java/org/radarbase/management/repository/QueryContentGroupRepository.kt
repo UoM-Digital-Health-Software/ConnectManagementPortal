@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional
 @Suppress("unused")
 @RepositoryDefinition(domainClass = QueryContentGroup::class, idClass = Long::class)
 interface QueryContentGroupRepository: JpaRepository<QueryContentGroup, Long> {
-    fun findAllByQueryGroupId(queryGroupId: Long): List<QueryContentGroup>
+    fun findAllByQueryGroupIdAndIsArchivedFalse(queryGroupId: Long): List<QueryContentGroup>
 
 
-    fun findAllByQueryGroupIdAndStatus(queryGroupId: Long, status: ContentGroupStatus = ContentGroupStatus.ACTIVE): List<QueryContentGroup>
+    fun findAllByQueryGroupIdAndStatusAndIsArchivedIsFalse(queryGroupId: Long, status: ContentGroupStatus = ContentGroupStatus.ACTIVE): List<QueryContentGroup>
 
 
     @Transactional

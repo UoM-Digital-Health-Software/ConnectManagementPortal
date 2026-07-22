@@ -122,6 +122,8 @@ export class AddQueryComponent {
 
     public readonlyMode = false;
 
+    public isContentGroupAssigned: boolean = false;
+
     private deletedContentGroupIds: number[] = [];
 
     constructor(
@@ -558,7 +560,7 @@ export class AddQueryComponent {
 
     async deleteContentGroup(group: ContentGroup) {
         const confirmDelete = confirm(
-            "Are you sure you want to delete this? This will also delete the content from the participants' phones."
+            "Are you sure you want to archive this? This will also delete the content from the participants' phones."
         );
         if (!confirmDelete) return;
 
@@ -569,7 +571,7 @@ export class AddQueryComponent {
 
         try {
             await this.queryService
-                .deleteContentGroupByID(group.id)
+                .archiveContentGroupByID(group.id)
                 .toPromise();
             this.contentGroups = this.contentGroups.filter(
                 (g) => g.id !== group.id
@@ -592,9 +594,13 @@ export class AddQueryComponent {
     }
 
     selectGroup(index: number) {
+        this.isContentGroupAssigned = false;
         this.currentEditingIndex = index;
         this.currentEditingCopy = this.contentGroups[index];
         this.isEditingContent = true;
+       this.queryService.isContentGroupAssigned(this.currentEditingCopy.id).subscribe((response: any) => {  
+            this.isContentGroupAssigned   = response
+            })
     }
 
     async saveCurrentEditingGroupToDB() {

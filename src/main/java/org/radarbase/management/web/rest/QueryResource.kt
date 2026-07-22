@@ -236,9 +236,9 @@ class QueryResource(
         return ResponseEntity.ok(id)
     }
 
-    @DeleteMapping("querycontentgroup/{queryContentGroupId}")
-    fun deleteContentGroup(@PathVariable queryContentGroupId: Long){
-        queryContentService.deleteQueryContentGroup(queryContentGroupId)
+    @PutMapping("querycontentgroup/{queryContentGroupId}")
+    fun archiveQueryContentGroup(@PathVariable queryContentGroupId: Long){
+        queryContentService.archiveQueryContentGroup(queryContentGroupId)
     }
 
     @GetMapping("querycontent/querygroup/{queryGroupId}")
@@ -337,6 +337,12 @@ class QueryResource(
 //        queryContentService.updateContentGroupStatus(queryContentGroupId, status);
 //        return ResponseEntity.ok().build()
 //    }
+
+
+    @GetMapping("querycontentgroup/{queryContentGroupId}/assigned")
+    fun isContentGroupAssigned(@PathVariable queryContentGroupId: Long) : ResponseEntity<*>{
+        return ResponseEntity.ok(queryContentService.isContentGroupAssigned(queryContentGroupId))
+    }
 
 
     companion object {
