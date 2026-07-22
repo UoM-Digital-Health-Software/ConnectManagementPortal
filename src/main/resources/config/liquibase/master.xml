@@ -65,5 +65,7 @@
     <include file="classpath:config/liquibase/changelog/20260626150000_add_query_participant_cbt_assignment_table.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20260626160000_add_cbt_route_selection_mode_to_query_content.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20260707130000_add_analytics_table.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20260717130000_add_isArchived_content_group.xml" relativeToChangelogFile="false"/>
+
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+         http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="20260717130000_add_isArchived_content_group" author="Jindrich Gorner">
+
+        <preConditions onFail="MARK_RAN">        <not>
+            <columnExists tableName="query_content_group" columnName="is_archived"/> </not>
+        </preConditions>
+
+
+        <addColumn tableName="query_content_group">
+            <column name="is_archived" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="query_content_group_aud">
+            <column name="is_archived" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_archived_mod" type="boolean"/>
+        </addColumn>
+    </changeSet>
+
+
+
+</databaseChangeLog>

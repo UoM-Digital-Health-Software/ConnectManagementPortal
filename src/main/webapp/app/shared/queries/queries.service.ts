@@ -64,6 +64,12 @@ export class QueriesService {
         );
     }
 
+    archiveContentGroupByID(queryContentGroupId: any) {
+        return this.http.put(
+            this.baseURL + `/querycontentgroup/${queryContentGroupId}`,null
+        );
+    }
+
     checkDuplicateQueryGroupName(name: string, currentId: number | null) {
         return this.http.get<boolean>(
             this.baseURL +
@@ -118,4 +124,11 @@ export class QueriesService {
      getCBTContent(type: string) {
         return this.http.get("api/" + 'cbtcontent/exercises/' + type);
     }
+
+    isContentGroupAssigned(queryContentGroupId: any) {
+        return this.http.get(
+            this.baseURL + `/querycontentgroup/${queryContentGroupId}/assigned`
+        );
+    }
+
 }

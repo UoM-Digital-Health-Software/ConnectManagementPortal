@@ -37,6 +37,10 @@ class QueryContentGroup : AbstractEntity(), Serializable {
     @Column(name = "updated_date")
     var updatedDate: ZonedDateTime? = null
 
+    @Column(name = "is_archived")
+    var isArchived: Boolean? = false
+
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: ContentGroupStatus = ContentGroupStatus.INACTIVE
