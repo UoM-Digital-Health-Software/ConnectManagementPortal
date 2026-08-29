@@ -58,10 +58,27 @@ export class SubjectService {
 
     }
 
-    findDataLogsForSubjects(ids: any[]) {
+    findDataLogsForSubjects(ids: any[], isAWS: boolean) {
         const params = new HttpParams().set('ids', ids.join(','));
+
+        if (isAWS) {
+                  return this.http.get(
+            `api/awsdatalogs`,
+            { params, observe: 'response' }
+        );
+        } else {
         return this.http.get(
             `api/datalogs`,
+            { params, observe: 'response' }
+        );
+        }
+
+    }
+
+    findAwsDataLogsForSubjects(ids: any[]) {
+        const params = new HttpParams().set('ids', ids.join(','));
+        return this.http.get(
+            `api/awsdatalogs`,
             { params, observe: 'response' }
         );
     }
@@ -82,6 +99,22 @@ export class SubjectService {
         );
     }
 
+
+    requestLatestDatesSummary(req?: any): Observable<any> {
+        const params = createRequestOption(req);
+        return this.http.post(
+            `${this.resourceUrl}/latestmeasurementdates`,
+            { params, observe: 'response' }
+        );
+    }
+
+    getLatestManifest(req?: any): Observable<any> {
+        const params = createRequestOption(req);
+        return this.http.get(
+            `${this.resourceUrl}/latestmeasurementdates/latestdate`,
+            { params, observe: 'response' }
+        );
+    }
 
 
 
